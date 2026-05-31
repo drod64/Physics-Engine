@@ -60,6 +60,7 @@ void Scene_Play::sDoAction(const sge::Action &action)
         else if (action.getID() == GameplayAction::SHOOT_ARTILLERY)     { spawnProjectile(ProjectileType::ARTILLERY); }
         else if (action.getID() == GameplayAction::SHOOT_FIREBALL)      { spawnProjectile(ProjectileType::FIREBALL); }
         else if (action.getID() == GameplayAction::SHOOT_LASER)         { spawnProjectile(ProjectileType::LASER); }
+        else if (action.getID() == GameplayAction::SHOOT_FIREWORK)      { spawnFirework("initial-firework", sm::Vec3(0, 0, 0), sm::Vec3(0, 100, 0), 40); }
     }
     else if (action.getType() == sge::ActionType::END)
     {
@@ -116,6 +117,7 @@ void Scene_Play::init()
     this->registerAction(KeyboardKey::KEY_X,        GameplayAction::SHOOT_ARTILLERY);
     this->registerAction(KeyboardKey::KEY_C,        GameplayAction::SHOOT_FIREBALL);
     this->registerAction(KeyboardKey::KEY_V,        GameplayAction::SHOOT_LASER);
+    this->registerAction(KeyboardKey::KEY_B,        GameplayAction::SHOOT_FIREWORK);
 
     // Initializing Camera3D
     this->m_camera.position = {0, 5, 5};
@@ -127,7 +129,7 @@ void Scene_Play::init()
 
 void Scene_Play::spawnProjectile(ProjectileType type)
 {
-    auto e = this->m_entities.addEntity("ball");
+    auto e = this->m_entities.addEntity("projectile");
     auto &t3 = e->addComponent<sge::CTransform3>();
     auto &r3 = e->addComponent<sge::CRigidBody3>();
     e->addComponent<sge::CLifespan>(600);
@@ -158,6 +160,19 @@ void Scene_Play::spawnProjectile(ProjectileType type)
     }
 
     t3.position = sm::Vec3(0, 1.5, 0);
+}
+
+void Scene_Play::spawnFirework(const std::string &tag, const sm::Vec3 &position, const sm::Vec3 &velocity, int lifespan)
+{
+    auto e = this->m_entities.addEntity(tag);
+    auto &r3 = e->addComponent<sge::CRigidBody3>();
+    auto &t3 = e->addComponent<sge::CTransform3>();
+    auto &ls = e->addComponent<sge::CLifespan>(lifespan);
+
+    t3.position = position;
+    r3.setMass(0.1);
+    r3.velocity = velocity;
+    r3.damping = 0.3;
 }
 
 void Scene_Play::sMovement(sm::real dt)
@@ -199,6 +214,13 @@ void Scene_Play::sLifeSpan(sm::real dt)
             // If the lifespan has been reached, destroy the entity
             if (e->getComponent<sge::CLifespan>().remaining <= 0)
             {
+                if (e->tag() == "initial-firework")
+                {
+                    spawnFirework("explosion", e->getComponent<sge::CTransform3>().position, sm::Vec3(10, 10, 0), 60);
+                    spawnFirework("explosion", e->getComponent<sge::CTransform3>().position, sm::Vec3(-10, 10, 0), 60);
+                    spawnFirework("explosion", e->getComponent<sge::CTransform3>().position, sm::Vec3(0, 10, 10), 60);
+                    spawnFirework("explosion", e->getComponent<sge::CTransform3>().position, sm::Vec3(0, 10, -10), 60);
+                }
                 e->destroy();
             }
             // Otherwise decrement the remaining frame count

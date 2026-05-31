@@ -5,7 +5,8 @@ enum ProjectileType {
     PISTOL,
     ARTILLERY,
     FIREBALL,
-    LASER
+    LASER,
+    FIREWORK
 };
 
 #endif // PROJECTILE_TYPE_H

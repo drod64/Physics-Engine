@@ -53,6 +53,8 @@ private:
 
     void spawnProjectile(ProjectileType type);
 
+    void spawnFirework(const std::string &tag, const sm::Vec3 &position, const sm::Vec3 &velocity, int lifespan);
+
     /////////////////////
     //     Systems     //
     /////////////////////
