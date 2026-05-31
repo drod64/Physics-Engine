@@ -7,6 +7,7 @@
 #include <SGE/util/GameEngine.h>
 #include <SGE/util/InputSnapshot.h>
 #include <TestingEngine/Action_Scene_Play.h>
+#include <TestingEngine/ProjectileType.h>
 #include <raylib.h>
 
 class Scene_Play : public sge::Scene {
@@ -50,7 +51,7 @@ private:
      */
     void init();
 
-    void spawnBall();
+    void spawnProjectile(ProjectileType type);
 
     /////////////////////
     //     Systems     //

@@ -10,7 +10,10 @@ enum GameplayAction : sge::ActionID {
     JUMP,
     RIGHT,
     DOWN,
-    SHOOT,
+    SHOOT_PISTOL,
+    SHOOT_ARTILLERY,
+    SHOOT_FIREBALL,
+    SHOOT_LASER,
 };
 
 #endif // ACTION_SCENE_PLAY

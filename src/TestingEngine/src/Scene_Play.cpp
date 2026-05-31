@@ -53,10 +53,13 @@ void Scene_Play::sDoAction(const sge::Action &action)
     if (action.getType() == sge::ActionType::START)
     {
         // Toggle / Single press actions
-            if (action.getID() == GameplayAction::TOGGLE_GRID)         { this->m_drawGrid = !this->m_drawGrid; }
+            if (action.getID() == GameplayAction::TOGGLE_GRID)          { this->m_drawGrid = !this->m_drawGrid; }
         else if (action.getID() == GameplayAction::PAUSE)               { this->m_paused = !this->m_paused; }
         else if (action.getID() == GameplayAction::QUIT)                { this->onEnd(); }
-        else if (action.getID() == GameplayAction::SHOOT)               { spawnBall(); }
+        else if (action.getID() == GameplayAction::SHOOT_PISTOL)        { spawnProjectile(ProjectileType::PISTOL); }
+        else if (action.getID() == GameplayAction::SHOOT_ARTILLERY)     { spawnProjectile(ProjectileType::ARTILLERY); }
+        else if (action.getID() == GameplayAction::SHOOT_FIREBALL)      { spawnProjectile(ProjectileType::FIREBALL); }
+        else if (action.getID() == GameplayAction::SHOOT_LASER)         { spawnProjectile(ProjectileType::LASER); }
     }
     else if (action.getType() == sge::ActionType::END)
     {
@@ -83,8 +86,7 @@ void Scene_Play::sRender()
         if (e->hasComponent<sge::CTransform3>())
         {
             const sge::CTransform3 &t3 = e->getComponent<sge::CTransform3>();
-
-            DrawCircle3D({t3.position.x, t3.position.y, t3.position.z}, 2, {1, t3.rotation.y, t3.rotation.z}, 90, RED);
+            DrawCube({t3.position.x, t3.position.y, t3.position.z}, 2, 2, 2, RED);
         }
     }
 
@@ -110,7 +112,10 @@ void Scene_Play::init()
     this->registerAction(KeyboardKey::KEY_UP,       GameplayAction::JUMP);
     this->registerAction(KeyboardKey::KEY_RIGHT,    GameplayAction::RIGHT);
     this->registerAction(KeyboardKey::KEY_DOWN,     GameplayAction::DOWN);
-    this->registerAction(KeyboardKey::KEY_Z,        GameplayAction::SHOOT);
+    this->registerAction(KeyboardKey::KEY_Z,        GameplayAction::SHOOT_PISTOL);
+    this->registerAction(KeyboardKey::KEY_X,        GameplayAction::SHOOT_ARTILLERY);
+    this->registerAction(KeyboardKey::KEY_C,        GameplayAction::SHOOT_FIREBALL);
+    this->registerAction(KeyboardKey::KEY_V,        GameplayAction::SHOOT_LASER);
 
     // Initializing Camera3D
     this->m_camera.position = {0, 5, 5};
@@ -120,13 +125,39 @@ void Scene_Play::init()
     this->m_camera.up = {0, 1, 0};
 }
 
-void Scene_Play::spawnBall()
+void Scene_Play::spawnProjectile(ProjectileType type)
 {
     auto e = this->m_entities.addEntity("ball");
-
-    e->addComponent<sge::CTransform3>();
-    e->addComponent<sge::CRigidBody3>(sm::Vec3(50,50,0), sm::Vec3(25,25,0), 50, 0.5);
+    auto &t3 = e->addComponent<sge::CTransform3>();
+    auto &r3 = e->addComponent<sge::CRigidBody3>();
     e->addComponent<sge::CLifespan>(600);
+
+    switch (type)
+    {
+        case ProjectileType::PISTOL:
+            r3.setMass(2.0f); // 2.0kg
+            r3.velocity = sm::Vec3(0.0f, 0.0f, 35.0f); // 35m/s
+            r3.damping = 0.99;
+            break;
+        case ProjectileType::ARTILLERY:
+            r3.setMass(200.0f); // 200.0kg
+            r3.velocity = sm::Vec3(0.0f, 30.0f, 40.0f); // 50m/s
+            r3.damping = 0.99;
+            break;
+        case ProjectileType::FIREBALL:
+            r3.setMass(1.0f); // 1.0kg - mostly blast damage
+            r3.velocity = sm::Vec3(0.0f, 0.0f, 10.0f); // 5m/s
+            r3.damping = 0.99;
+            break;
+        case ProjectileType::LASER:
+        default:
+        r3.setMass(0.1f); // 0.1kg - almost no weight
+        r3.velocity = sm::Vec3(0.0f, 0.0f, 100.0f); // 100m/s
+        r3.damping = 0.99;
+        break;
+    }
+
+    t3.position = sm::Vec3(0, 1.5, 0);
 }
 
 void Scene_Play::sMovement(sm::real dt)
