@@ -16,6 +16,9 @@ public:
     void setMass(sm::real mass);
     sm::real getMass() const;
 
+    void addForce(const sm::Vec3 &force);
+    void clearAccumulator();
+
 private:
     sm::real m_inverseMass;
 

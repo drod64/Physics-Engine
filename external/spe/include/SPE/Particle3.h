@@ -22,6 +22,10 @@ public:
     sm::real getInverseMass() const;
     sm::real getMass() const;
 
+    void addForce(const sm::Vec3 &force);
+
+    void clearAccumulator();
+
     void integrate(sm::real duration);
 
 protected:

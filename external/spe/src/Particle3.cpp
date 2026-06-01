@@ -40,6 +40,16 @@ sm::real spe::Particle3::getMass() const
     return 1.0f / this->inverseMass;
 }
 
+void spe::Particle3::addForce(const sm::Vec3 &force)
+{
+    this->forceAccum += force;
+}
+
+void spe::Particle3::clearAccumulator()
+{
+    this->forceAccum = sm::Vec3(0, 0, 0);
+}
+
 void spe::Particle3::integrate(sm::real dt)
 {
 
@@ -59,4 +69,5 @@ void spe::Particle3::integrate(sm::real dt)
     // Apply damping to the velocity
     this->velocity *= real_pow(this->damping, dt);
 
+    clearAccumulator();
 }

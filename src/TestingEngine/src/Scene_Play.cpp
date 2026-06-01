@@ -190,7 +190,8 @@ void Scene_Play::sMovement(sm::real dt)
 
             assert(dt > 0.0f);
             
-            r3.accumulatedForce += sm::Vec3(0, -9.81 * r3.getMass(), 0);
+            // Add gravity force
+            r3.addForce(sm::Vec3(0, -9.81 * r3.getMass(), 0));
             
             // Update position
             t3.position.addScaledVector(r3.velocity, dt);
@@ -201,6 +202,9 @@ void Scene_Play::sMovement(sm::real dt)
 
             // Apply damping to the velocity
             r3.velocity *= real_pow(r3.damping, dt);
+            
+            // Clear forces acting on entity for the next integration frame
+            r3.clearAccumulator();
         }
     }
 }

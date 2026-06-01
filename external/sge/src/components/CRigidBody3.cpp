@@ -22,3 +22,13 @@ sm::real sge::CRigidBody3::getMass() const
 {
     return 1.0 / this->m_inverseMass;
 }
+
+void sge::CRigidBody3::addForce(const sm::Vec3 &force)
+{
+    this->accumulatedForce += force;
+}
+
+void sge::CRigidBody3::clearAccumulator()
+{
+    this->accumulatedForce = sm::Vec3(0, 0, 0);
+}
