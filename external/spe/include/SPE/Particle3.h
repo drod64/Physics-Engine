@@ -18,9 +18,11 @@ public:
 
     void setInverseMass(sm::real inverseMass);
     void setMass(sm::real mass);
+    void setFiniteMass(bool value);
     
     sm::real getInverseMass() const;
     sm::real getMass() const;
+    bool hasFiniteMass() const;
 
     void addForce(const sm::Vec3 &force);
 
@@ -28,9 +30,11 @@ public:
 
     void integrate(sm::real duration);
 
+
 protected:
     sm::real inverseMass;
     sm::Vec3 forceAccum;
+    bool finiteMass;
 
 };
 

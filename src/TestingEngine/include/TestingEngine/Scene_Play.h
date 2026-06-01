@@ -24,7 +24,7 @@ private:
      */
     void update(float dt) override;
     
-    void handleInput(const sge::InputSnapshot &curInput, const sge::InputSnapshot &prevInput);
+    void handleInput(const sge::InputSnapshot &curInput, const sge::InputSnapshot &prevInput) override;
 
     /**
      * Keeps track of which actions should be done (depending on whether key was released or pressed).

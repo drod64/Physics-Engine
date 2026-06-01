@@ -4,6 +4,7 @@ project(SPE)
 
 set(SOURCE_FILES
     src/Particle3.cpp
+    src/Particle3ForceRegistry.cpp
     )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})

@@ -7,7 +7,8 @@ velocity(0,0,0),
 acceleration(0,0,0),
 damping(0.5f),
 inverseMass(0),
-forceAccum(0,0,0)
+forceAccum(0,0,0),
+finiteMass(true)
 {}
 
 spe::Particle3::Particle3(const sm::Vec3 &pos, const sm::Vec3 &vel, const sm::Vec3 &acc, sm::real damping)
@@ -30,6 +31,11 @@ void spe::Particle3::setMass(sm::real mass)
     this->inverseMass = 1.0f / mass;
 }
 
+void spe::Particle3::setFiniteMass(bool value)
+{
+    this->finiteMass = value;
+}
+
 sm::real spe::Particle3::getInverseMass() const
 {
     return this->inverseMass;
@@ -38,6 +44,11 @@ sm::real spe::Particle3::getInverseMass() const
 sm::real spe::Particle3::getMass() const
 {
     return 1.0f / this->inverseMass;
+}
+
+bool spe::Particle3::hasFiniteMass() const
+{
+    return this->finiteMass;
 }
 
 void spe::Particle3::addForce(const sm::Vec3 &force)
