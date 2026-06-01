@@ -16,6 +16,13 @@ sm::Vec3::Vec3(real x, real y, real z)
     this->_pad = 0;
 }
 
+sm::Vec3::Vec3(const std::array<real, 3> &list)
+{
+    this->x = list.at(0);
+    this->y = list.at(1);
+    this->z = list.at(2);
+}
+
 void sm::Vec3::invert()
 {
     this->x = -this->x;

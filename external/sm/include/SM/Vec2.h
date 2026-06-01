@@ -1,8 +1,8 @@
 #ifndef SM_VEC2_H
 #define SM_VEC2_H
-#include <initializer_list>
-#include <iostream>
+#include <array>
 #include <cmath>
+#include <SM/Precision.h>
 
 namespace sm {
 
@@ -15,7 +15,7 @@ public:
     Vec2();
     Vec2(const Vec2 &otherVec);
     Vec2(float x, float y);
-    Vec2(const std::initializer_list<float> &list);
+    Vec2(const std::array<sm::real, 2> &list);
     ~Vec2();
 
     static Vec2 zero();

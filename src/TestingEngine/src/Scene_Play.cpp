@@ -60,7 +60,7 @@ void Scene_Play::sDoAction(const sge::Action &action)
         else if (action.getID() == GameplayAction::SHOOT_ARTILLERY)     { spawnProjectile(ProjectileType::ARTILLERY); }
         else if (action.getID() == GameplayAction::SHOOT_FIREBALL)      { spawnProjectile(ProjectileType::FIREBALL); }
         else if (action.getID() == GameplayAction::SHOOT_LASER)         { spawnProjectile(ProjectileType::LASER); }
-        else if (action.getID() == GameplayAction::SHOOT_FIREWORK)      { spawnFirework("initial-firework", sm::Vec3(0, 0, 0), sm::Vec3(0, 100, 0), 40); }
+        else if (action.getID() == GameplayAction::SHOOT_FIREWORK)      { spawnFirework("initial-firework", {0,0,0}, {0,100,0}, 40); }
     }
     else if (action.getType() == sge::ActionType::END)
     {

@@ -16,19 +16,10 @@ namespace sm
         this->y = y;
     }
 
-    Vec2::Vec2(const std::initializer_list<float> &list)
+    Vec2::Vec2(const std::array<sm::real, 2> &list)
     {
-        if (list.size() == 2)
-        {
-            auto it = list.begin();
-            this->x = *it;
-            ++it;
-            this->y = *it;
-        }
-        else
-        {
-            this->x = this->y = 0;
-        }
+        this->x = list.at(0);
+        this->y = list.at(1);
     }
 
     Vec2::~Vec2()
@@ -160,9 +151,7 @@ namespace sm
     {
         float cosA = std::cos(angle);
         float sinA = std::sin(angle);
-
-        std::cout << "COSA: " << cosA << '\n';
-        std::cout << "SINA: " << sinA << "\n";
+        
         return {(this->x * cosA) - (this->y * sinA), (this->x * sinA) + (this->y * cosA)};
     }
 

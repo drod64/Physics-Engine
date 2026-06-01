@@ -1,5 +1,7 @@
 #ifndef SM_VEC3_H
 #define SM_VEC3_H
+#include <array>
+#include <assert.h>
 #include <SM/Precision.h>
 
 namespace sm {
@@ -22,6 +24,12 @@ public:
      * @param z the z-axis position
      */
     Vec3(real x, real y, real z);
+
+    /**
+     * Explicit construtor that accepts array-style declaration.
+     * @param list an array-style declaration of size 3
+     */
+    Vec3(const std::array<real, 3> &list);
 
     /**
      * Inverts the contents of the Vector3.
