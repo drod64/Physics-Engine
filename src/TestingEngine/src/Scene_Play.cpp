@@ -205,17 +205,22 @@ void Scene_Play::sMovement(sm::real dt)
             
             // Add gravity force (removed to test ForceRegistry)
             // r3.addForce(sm::Vec3(0, -9.81 * r3.getMass(), 0));
-            
-            // Update position
-            t3.position.addScaledVector(r3.velocity, dt);
 
-            // Calculate acceleration (dependending on acting forces)
-            // and Update velocity
+            // Calculate acceleration (dependending on acting forces) and integrate velocity
             r3.velocity.addScaledVector(r3.accumulatedForce * (1.0 / r3.getMass()), dt);
 
             // Apply damping to the velocity (removed to test ForceRegistry)
             // r3.velocity *= real_pow(r3.damping, dt);
             
+            // Numerical rest check
+            if (r3.velocity.sqrMagnitude() < 0.0001)
+            {
+                r3.velocity = {0, 0, 0};
+            }
+            
+            // Integrate position
+            t3.position.addScaledVector(r3.velocity, dt);
+
             // Clear forces acting on entity for the next integration frame
             r3.clearAccumulator();
         }
