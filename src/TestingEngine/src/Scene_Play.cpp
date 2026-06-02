@@ -1,11 +1,15 @@
 #include <TestingEngine/Scene_Play.h>
 
 Scene_Play::Scene_Play() :
-sge::Scene(nullptr)
+sge::Scene(nullptr),
+m_gravity({0, -9.81, 0}),
+m_drag(0.01, 0)
 {}
 
 Scene_Play::Scene_Play(sge::GameEngine *gameEngine, const std::string &levelPath) :
-sge::Scene(gameEngine)
+sge::Scene(gameEngine),
+m_gravity({0, -9.81, 0}),
+m_drag(0.01, 0)
 {
     
     this->m_drawGrid = false;
@@ -160,6 +164,9 @@ void Scene_Play::spawnProjectile(ProjectileType type)
     }
 
     t3.position = sm::Vec3(0, 1.5, 0);
+
+    this->m_registry.add(e.get(), &this->m_gravity);
+    this->m_registry.add(e.get(), &this->m_drag);
 }
 
 void Scene_Play::spawnFirework(const std::string &tag, const sm::Vec3 &position, const sm::Vec3 &velocity, int lifespan)
@@ -173,10 +180,16 @@ void Scene_Play::spawnFirework(const std::string &tag, const sm::Vec3 &position,
     r3.setMass(0.1);
     r3.velocity = velocity;
     r3.damping = 0.3;
+
+    this->m_registry.add(e.get(), &this->m_gravity);
+    this->m_registry.add(e.get(), &this->m_drag);
 }
 
 void Scene_Play::sMovement(sm::real dt)
 {
+    // Update force registry
+    this->m_registry.updateForces(dt);
+
     // Update all entity positions with their velocities and accelerations
     for (auto &e : this->m_entities.getEntities())
     {
@@ -190,8 +203,8 @@ void Scene_Play::sMovement(sm::real dt)
 
             assert(dt > 0.0f);
             
-            // Add gravity force
-            r3.addForce(sm::Vec3(0, -9.81 * r3.getMass(), 0));
+            // Add gravity force (removed to test ForceRegistry)
+            // r3.addForce(sm::Vec3(0, -9.81 * r3.getMass(), 0));
             
             // Update position
             t3.position.addScaledVector(r3.velocity, dt);
@@ -200,8 +213,8 @@ void Scene_Play::sMovement(sm::real dt)
             // and Update velocity
             r3.velocity.addScaledVector(r3.accumulatedForce * (1.0 / r3.getMass()), dt);
 
-            // Apply damping to the velocity
-            r3.velocity *= real_pow(r3.damping, dt);
+            // Apply damping to the velocity (removed to test ForceRegistry)
+            // r3.velocity *= real_pow(r3.damping, dt);
             
             // Clear forces acting on entity for the next integration frame
             r3.clearAccumulator();
@@ -225,6 +238,11 @@ void Scene_Play::sLifeSpan(sm::real dt)
                     spawnFirework("explosion", e->getComponent<sge::CTransform3>().position, sm::Vec3(0, 10, 10), 60);
                     spawnFirework("explosion", e->getComponent<sge::CTransform3>().position, sm::Vec3(0, 10, -10), 60);
                 }
+                
+                // Remove entity from force registry
+                this->m_registry.removeEntity(e.get());
+
+                // Mark entity to be destroyed (by EntityManager)
                 e->destroy();
             }
             // Otherwise decrement the remaining frame count

@@ -2,16 +2,25 @@
 #define SCENE_PLAY_H
 #include <assert.h>
 #include <string>
-#include <SGE/util/Scene.h>
 #include <SGE/entities/Entity.h>
+#include <SGE/util/Scene.h>
 #include <SGE/util/GameEngine.h>
 #include <SGE/util/InputSnapshot.h>
+#include <SGE/systems/physics/ForceRegistry3.h>
+#include <SGE/systems/physics/GravityForce3.h>
+#include <SGE/systems/physics/DragForce3.h>
 #include <TestingEngine/Action_Scene_Play.h>
 #include <TestingEngine/ProjectileType.h>
 #include <raylib.h>
 
 class Scene_Play : public sge::Scene {
 private:
+    // Testing ForceRegistry and ForceGenerators
+    sge::ForceRegistry3 m_registry;
+    sge::GravityForce3 m_gravity;
+    sge::DragForce3 m_drag;
+
+    
     bool m_drawGrid;
     Camera3D m_camera;
 

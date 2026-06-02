@@ -15,12 +15,16 @@ public:
 
     void setMass(sm::real mass);
     sm::real getMass() const;
+    void setStatic(bool value);
+    bool isStatic() const;
 
     void addForce(const sm::Vec3 &force);
     void clearAccumulator();
 
+
 private:
     sm::real m_inverseMass;
+    bool m_static;
 
 };
 } // namespace sge
