@@ -24,6 +24,7 @@ set(SOURCE_FILES
     include/SGE/systems/physics/ForceGenerator3.h
     src/systems/physics/ForceRegistry3.cpp
     src/systems/physics/GravityForce3.cpp
+    src/systems/physics/SpringForce3.cpp
 
     # Utility
     src/util/Action.cpp

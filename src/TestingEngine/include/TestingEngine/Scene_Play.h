@@ -9,6 +9,7 @@
 #include <SGE/systems/physics/ForceRegistry3.h>
 #include <SGE/systems/physics/GravityForce3.h>
 #include <SGE/systems/physics/DragForce3.h>
+#include <SGE/systems/physics/SpringForce3.h>
 #include <TestingEngine/Action_Scene_Play.h>
 #include <TestingEngine/ProjectileType.h>
 #include <raylib.h>
@@ -19,6 +20,10 @@ private:
     sge::ForceRegistry3 m_registry;
     sge::GravityForce3 m_gravity;
     sge::DragForce3 m_drag;
+    // Testing SpringForces
+    std::shared_ptr<sge::SpringForce3> m_spring1;
+    std::shared_ptr<sge::SpringForce3> m_spring2;
+    // End "Testing SpringForces"
 
     
     bool m_drawGrid;
@@ -63,6 +68,8 @@ private:
     void spawnProjectile(ProjectileType type);
 
     void spawnFirework(const std::string &tag, const sm::Vec3 &position, const sm::Vec3 &velocity, int lifespan);
+
+    void spawnSpringConnection();
 
     /////////////////////
     //     Systems     //

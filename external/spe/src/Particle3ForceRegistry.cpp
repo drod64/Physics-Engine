@@ -14,7 +14,7 @@ void spe::Particle3ForceRegistry::remove(spe::Particle3 *particle, spe::Particle
 {
     std::remove_if(this->m_registrations.begin(), this->m_registrations.end(), [&] (Particle3ForceRegistration r) -> bool {
         r.particle = particle;
-        r.fg = fg;
+        return r.fg = fg;
     });
 }
 

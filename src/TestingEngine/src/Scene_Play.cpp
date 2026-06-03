@@ -65,6 +65,7 @@ void Scene_Play::sDoAction(const sge::Action &action)
         else if (action.getID() == GameplayAction::SHOOT_FIREBALL)      { spawnProjectile(ProjectileType::FIREBALL); }
         else if (action.getID() == GameplayAction::SHOOT_LASER)         { spawnProjectile(ProjectileType::LASER); }
         else if (action.getID() == GameplayAction::SHOOT_FIREWORK)      { spawnFirework("initial-firework", {0,0,0}, {0,100,0}, 40); }
+        else if (action.getID() == GameplayAction::SPAWN_SPRING)        { spawnSpringConnection(); }
     }
     else if (action.getType() == sge::ActionType::END)
     {
@@ -117,11 +118,14 @@ void Scene_Play::init()
     this->registerAction(KeyboardKey::KEY_UP,       GameplayAction::JUMP);
     this->registerAction(KeyboardKey::KEY_RIGHT,    GameplayAction::RIGHT);
     this->registerAction(KeyboardKey::KEY_DOWN,     GameplayAction::DOWN);
+
+    // Spawning actions
     this->registerAction(KeyboardKey::KEY_Z,        GameplayAction::SHOOT_PISTOL);
     this->registerAction(KeyboardKey::KEY_X,        GameplayAction::SHOOT_ARTILLERY);
     this->registerAction(KeyboardKey::KEY_C,        GameplayAction::SHOOT_FIREBALL);
     this->registerAction(KeyboardKey::KEY_V,        GameplayAction::SHOOT_LASER);
     this->registerAction(KeyboardKey::KEY_B,        GameplayAction::SHOOT_FIREWORK);
+    this->registerAction(KeyboardKey::KEY_N,        GameplayAction::SPAWN_SPRING);
 
     // Initializing Camera3D
     this->m_camera.position = {0, 5, 5};
@@ -183,6 +187,31 @@ void Scene_Play::spawnFirework(const std::string &tag, const sm::Vec3 &position,
 
     this->m_registry.add(e.get(), &this->m_gravity);
     this->m_registry.add(e.get(), &this->m_drag);
+}
+
+void Scene_Play::spawnSpringConnection()
+{
+    auto e1 = this->m_entities.addEntity("anchor1");
+    e1->addComponent<sge::CLifespan>(500);
+    e1->addComponent<sge::CTransform3>();
+    auto &r3e1 = e1->addComponent<sge::CRigidBody3>();
+    r3e1.setMass(10);
+    r3e1.velocity = {0, 20, 25};
+    
+    auto e2 = this->m_entities.addEntity("anchor2");
+    e2->addComponent<sge::CLifespan>(500);
+    e2->addComponent<sge::CTransform3>().position = {5, 0, 0};
+    auto &r3e2 = e2->addComponent<sge::CRigidBody3>();
+    r3e2.setMass(10);
+    r3e2.velocity = {0, 0, 0};
+
+    this->m_spring1 = std::make_shared<sge::SpringForce3>(e1.get(), 30, 10);
+    this->m_spring2 = std::make_shared<sge::SpringForce3>(e2.get(), 30, 10);
+
+    this->m_registry.add(e1.get(), this->m_spring2.get());
+    this->m_registry.add(e1.get(), &this->m_gravity);
+    this->m_registry.add(e2.get(), this->m_spring1.get());
+    this->m_registry.add(e2.get(), &this->m_gravity);
 }
 
 void Scene_Play::sMovement(sm::real dt)

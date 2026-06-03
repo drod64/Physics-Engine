@@ -14,7 +14,8 @@ enum GameplayAction : sge::ActionID {
     SHOOT_ARTILLERY,
     SHOOT_FIREBALL,
     SHOOT_LASER,
-    SHOOT_FIREWORK
+    SHOOT_FIREWORK,
+    SPAWN_SPRING
 };
 
 #endif // ACTION_SCENE_PLAY
