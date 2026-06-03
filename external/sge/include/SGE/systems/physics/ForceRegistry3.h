@@ -21,6 +21,7 @@ public:
     void add(Entity *e, ForceGenerator3 *fg);
     void remove(Entity *e, ForceGenerator3 *fg);
     void removeEntity(Entity *e);
+    void removeForce(ForceGenerator3 *fg);
 
     void clear();
 

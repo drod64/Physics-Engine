@@ -42,6 +42,17 @@ void sge::ForceRegistry3::removeEntity(sge::Entity *e)
     this->m_registrations.erase(newEnd, this->m_registrations.end());
 }
 
+void sge::ForceRegistry3::removeForce(sge::ForceGenerator3 *fg)
+{
+    // Locate ALL registrations that contain the specific force generator
+    auto newEnd = std::remove_if(this->m_registrations.begin(), this->m_registrations.end(), [fg] (const ForceRegistration3 &fr) -> bool {
+        return fr.fg == fg;
+    });
+
+    // Erase forces from registry
+    this->m_registrations.erase(newEnd, this->m_registrations.end());
+}
+
 void sge::ForceRegistry3::clear()
 {
     this->m_registrations.clear();
