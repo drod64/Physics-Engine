@@ -30,6 +30,9 @@ typedef std::tuple<
     CTransform3
 > ComponentTuple;
 
+/**
+ * Stores entity data such as ID, tag, and it's list of components.
+ */
 class Entity {
 private:
     const size_t m_ID;
@@ -42,17 +45,45 @@ private:
 
 public:
 
+    /**
+     * Marks the entity as destoryed.
+     * Ensure that the entity is stored in an object of type sge::EntityManager.
+     */
     void destroy();
+
+    /**
+     * Checks if the entity is alive/still being used.
+     * @return true if the entity is still alive, false if marked as destroyed
+     */
     bool isAlive() const;
+
+    /**
+     * Retrieves the ID of the entity.
+     * @return the ID of the entity
+     */
     size_t id() const;
+
+    /**
+     * Retrieves the tag of the entity.
+     * @return the tag of the entity
+     */
     const std::string& tag() const;
 
+    /**
+     * Checks if the entity has a specific component.
+     * @return true if the component is attached, false otherwise
+     */
     template<typename T>
     bool hasComponent() const
     {
         return getComponent<T>().has;
     }
 
+    /**
+     * Attaches a component to the entity.
+     * @param mArgs the constructor arguments to create the component with
+     * @return a reference to the newly attached component
+     */
     template<typename T, typename... TArgs>
     T& addComponent(TArgs&&... mArgs)
     {
@@ -62,18 +93,29 @@ public:
         return component;
     }
 
+    /**
+     * Retrieves the desired component.
+     * @return a reference to the component
+     */
     template<typename T>
     T& getComponent()
     {
         return std::get<T>(this->m_components);
     }
 
+    /**
+     * Retrieves the desired component.
+     * @return a const reference to the component
+     */
     template<typename T>
     const T& getComponent() const
     {
         return std::get<T>(this->m_components);
     }
 
+    /**
+     * Removes an attached component from the entity.
+     */
     template<typename T>
     void removeComponent()
     {
