@@ -7,6 +7,7 @@
 #include <SGE/util/GameEngine.h>
 #include <SGE/util/InputSnapshot.h>
 #include <SGE/systems/physics/ForceRegistry3.h>
+#include <SGE/systems/physics/AnchorSpring3.h>
 #include <SGE/systems/physics/GravityForce3.h>
 #include <SGE/systems/physics/DragForce3.h>
 #include <SGE/systems/physics/SpringForce3.h>
@@ -23,6 +24,7 @@ private:
     // Testing SpringForces
     std::shared_ptr<sge::SpringForce3> m_spring1;
     std::shared_ptr<sge::SpringForce3> m_spring2;
+    std::shared_ptr<sge::AnchorSpring3> m_anchorSpring;
     // End "Testing SpringForces"
 
     
@@ -70,6 +72,8 @@ private:
     void spawnFirework(const std::string &tag, const sm::Vec3 &position, const sm::Vec3 &velocity, int lifespan);
 
     void spawnSpringConnection();
+
+    void spawnAnchorSpring(const sm::Vec3 &position);
 
     /////////////////////
     //     Systems     //

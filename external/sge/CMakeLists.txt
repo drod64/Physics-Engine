@@ -20,6 +20,7 @@ set(SOURCE_FILES
     src/entities/EntityManager.cpp
 
     # Systems
+    src/systems/physics/AnchorSpring3.cpp
     src/systems/physics/DragForce3.cpp
     include/SGE/systems/physics/ForceGenerator3.h
     src/systems/physics/ForceRegistry3.cpp

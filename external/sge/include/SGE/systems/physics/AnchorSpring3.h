@@ -6,7 +6,7 @@
 #include <SGE/systems/physics/ForceGenerator3.h>
 
 namespace sge {
-class AnchorSpring3 : ForceGenerator3 {
+class AnchorSpring3 : public ForceGenerator3 {
 private:
     sm::Vec3 m_anchorPoint;
     sm::real m_springConstant;

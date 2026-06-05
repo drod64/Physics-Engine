@@ -57,15 +57,16 @@ void Scene_Play::sDoAction(const sge::Action &action)
     if (action.getType() == sge::ActionType::START)
     {
         // Toggle / Single press actions
-            if (action.getID() == GameplayAction::TOGGLE_GRID)          { this->m_drawGrid = !this->m_drawGrid; }
-        else if (action.getID() == GameplayAction::PAUSE)               { this->m_paused = !this->m_paused; }
-        else if (action.getID() == GameplayAction::QUIT)                { this->onEnd(); }
-        else if (action.getID() == GameplayAction::SHOOT_PISTOL)        { spawnProjectile(ProjectileType::PISTOL); }
-        else if (action.getID() == GameplayAction::SHOOT_ARTILLERY)     { spawnProjectile(ProjectileType::ARTILLERY); }
-        else if (action.getID() == GameplayAction::SHOOT_FIREBALL)      { spawnProjectile(ProjectileType::FIREBALL); }
-        else if (action.getID() == GameplayAction::SHOOT_LASER)         { spawnProjectile(ProjectileType::LASER); }
-        else if (action.getID() == GameplayAction::SHOOT_FIREWORK)      { spawnFirework("initial-firework", {0,0,0}, {0,100,0}, 40); }
-        else if (action.getID() == GameplayAction::SPAWN_SPRING)        { spawnSpringConnection(); }
+            if (action.getID() == GameplayAction::TOGGLE_GRID)              { this->m_drawGrid = !this->m_drawGrid; }
+        else if (action.getID() == GameplayAction::PAUSE)                   { this->m_paused = !this->m_paused; }
+        else if (action.getID() == GameplayAction::QUIT)                    { this->onEnd(); }
+        else if (action.getID() == GameplayAction::SHOOT_PISTOL)            { spawnProjectile(ProjectileType::PISTOL); }
+        else if (action.getID() == GameplayAction::SHOOT_ARTILLERY)         { spawnProjectile(ProjectileType::ARTILLERY); }
+        else if (action.getID() == GameplayAction::SHOOT_FIREBALL)          { spawnProjectile(ProjectileType::FIREBALL); }
+        else if (action.getID() == GameplayAction::SHOOT_LASER)             { spawnProjectile(ProjectileType::LASER); }
+        else if (action.getID() == GameplayAction::SHOOT_FIREWORK)          { spawnFirework("initial-firework", {0,0,0}, {0,100,0}, 40); }
+        else if (action.getID() == GameplayAction::SPAWN_SPRING)            { spawnSpringConnection(); }
+        else if (action.getID() == GameplayAction::SPAWN_ANCHOR_SPRING)     { spawnAnchorSpring({0, 0, 0}); }
     }
     else if (action.getType() == sge::ActionType::END)
     {
@@ -126,6 +127,7 @@ void Scene_Play::init()
     this->registerAction(KeyboardKey::KEY_V,        GameplayAction::SHOOT_LASER);
     this->registerAction(KeyboardKey::KEY_B,        GameplayAction::SHOOT_FIREWORK);
     this->registerAction(KeyboardKey::KEY_N,        GameplayAction::SPAWN_SPRING);
+    this->registerAction(KeyboardKey::KEY_M,        GameplayAction::SPAWN_ANCHOR_SPRING);
 
     // Initializing Camera3D
     this->m_camera.position = {0, 5, 5};
@@ -212,6 +214,23 @@ void Scene_Play::spawnSpringConnection()
     this->m_registry.add(e1.get(), &this->m_gravity);
     this->m_registry.add(e2.get(), this->m_spring1.get());
     this->m_registry.add(e2.get(), &this->m_gravity);
+}
+
+void Scene_Play::spawnAnchorSpring(const sm::Vec3 &position)
+{
+    // Update the anchor spring force generator.
+    this->m_anchorSpring = std::make_shared<sge::AnchorSpring3>(position, 10, 100);
+
+    // Create entity to be anchored.
+    auto e = this->m_entities.addEntity("anchor-spring");
+    // e->addComponent<sge::CLifespan>(600);
+    e->addComponent<sge::CTransform3>().position = {0, -90, 0};
+    auto &r3e = e->addComponent<sge::CRigidBody3>();
+    r3e.setMass(5);
+
+    this->m_registry.add(e.get(), &this->m_gravity);
+    this->m_registry.add(e.get(), &this->m_drag);
+    this->m_registry.add(e.get(), this->m_anchorSpring.get());
 }
 
 void Scene_Play::sMovement(sm::real dt)
