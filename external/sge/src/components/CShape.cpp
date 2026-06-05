@@ -4,12 +4,14 @@ namespace sge
 {
 
     CShape::CShape() :
-    CShape(10.f, 4.f, 2.f)
+    CShape(0, 0, 0)
     {}
 
-    CShape::CShape(float radius, int points, float outlineThickness)
+    CShape::CShape(float radius, int points, sm::real outlineThickness)
     {
-
+        this->radius = radius;
+        this->points = radius;
+        this->outlineThickness = outlineThickness;
     }
 
 } // namespace sge

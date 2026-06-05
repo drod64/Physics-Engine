@@ -57,8 +57,3 @@ const std::map<int, sge::ActionID>& sge::Scene::getActionMap() const
 {
     return this->m_actionMap;
 }
-
-Mesh sge::Scene::createLine(const sm::Vec2 &p1, const sm::Vec2 &p2)
-{
-    
-}

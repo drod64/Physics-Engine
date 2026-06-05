@@ -3,12 +3,21 @@
 #include <SGE/components/Component.h>
 
 namespace sge {
-    
+/**
+ * Component that stores collision data (pending...)
+ */
 class CCollision : public Component {
 public:
     float radius;
 
+    /**
+     * Default Constructor.
+     */
     CCollision();
+
+    /**
+     * Parameterized Constructor.
+     */
     CCollision(float radius);
 };
 

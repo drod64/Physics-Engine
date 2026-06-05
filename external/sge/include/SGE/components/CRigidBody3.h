@@ -4,21 +4,62 @@
 #include <SGE/components/Component.h>
 
 namespace sge {
+/**
+ * Component that stores rigid body data for a 3D environment.
+ */
 class CRigidBody3 : public Component {
 public:
     sm::Vec3 velocity;
     sm::Vec3 accumulatedForce;
     sm::real damping;
 
+    /**
+     * Default Constructor.
+     */
     CRigidBody3();
+
+    /**
+     * Parameterized Constructor.
+     * @param vel the velocity of the rigid body
+     * @param accumulatedForce the accumulated force of the rigid body
+     * @param mass the mass of the rigid body
+     * @param damping the damping scalar of the rigid body
+     */
     CRigidBody3(const sm::Vec3 &vel, const sm::Vec3 &accumulatedForce, sm::real mass, sm::real damping);
 
+    /**
+     * Sets the mass of the rigid body.
+     * @param mass the new mass of the rigid body
+     */
     void setMass(sm::real mass);
+
+    /**
+     * Retrieves the mass of the rigid body.
+     * @param the mass of the rigid body
+     */
     sm::real getMass() const;
+
+    /**
+     * Sets the rigid body as static depending on value.
+     * @param value true or false
+     */
     void setStatic(bool value);
+
+    /**
+     * Checks if the rigid body is static.
+     * @return true if the body is static, false otherwise
+     */
     bool isStatic() const;
 
+    /**
+     * Adds a force to the rigid body.
+     * @param force the force to add to the rigid body
+     */
     void addForce(const sm::Vec3 &force);
+
+    /**
+     * Clears all forces taking effect on the rigid body.
+     */
     void clearAccumulator();
 
 

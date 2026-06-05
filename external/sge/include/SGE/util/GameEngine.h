@@ -11,7 +11,9 @@
 #include <raylib.h>
 
 namespace sge {
-
+/**
+ * Class that stores and updates game data.
+ */
 class GameEngine {
 protected:
     std::string m_currentScene;
@@ -21,14 +23,43 @@ protected:
     InputSnapshot m_curInput;
     InputSnapshot m_prevInput;
 
+    /**
+     * Default Constructor.
+     */
     GameEngine();
+
+    /**
+     * Updates the game by gathering user input and updating the current scene.
+     * @param dt the delta time between frames
+     */
     void update(float dt);
+
+    /**
+     * Stores the previous input state while also updating the current input state.
+     * Also calls the current scene to handle the passed in previous input state and current input state.
+     */
     void sUserInput();
 
+    /**
+     * Updates the input snapshot (state) of the game engine by reading directly
+     * from keyboard/mouse button presses/releases.
+     * @param input the InputSnapshot to update
+     */
     void updateInputSnapshot(InputSnapshot &input);
+
+    /**
+     * Retrives the current scene the game engine is on.
+     * @return a std::shared_ptr<sge::Scene> to the current scene
+     */
     std::shared_ptr<sge::Scene> currentScene();
 
 public:
+    /**
+     * Changes the scene of the game engine.
+     * @param sceneName the name of the desired scene (if it does not exist, it will be created).
+     * @param levelPath the file path to level data
+     * @param endCurrentScene whether to end the current scene before changing to the new scene (false by default)
+     */
     template <typename T>
     void changeScene(const std::string &sceneName, const std::string &levelPath, bool endCurrentScene = false)
     {
@@ -50,9 +81,20 @@ public:
         this->m_currentScene = sceneName;
     }
 
+    /**
+     * Ends the game engine from running.
+     */
     void quit();
+
+    /**
+     * Starts the game engine loop.
+     */
     void run();
 
+    /**
+     * Checks if the game engine is running.
+     * @return true if the engine is running, false otherwise
+     */
     bool isRunning() const;
 };
 

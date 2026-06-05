@@ -6,7 +6,7 @@
 namespace sge {
 /**
  * This is a simple Bitmask class.
- * Each bit represents if a particular key or button is pressed.
+ * Useful to represent if a particular key or button is pressed.
  */
 class Bitmask {
 private:
@@ -27,7 +27,7 @@ public:
 
     /**
      * Copies the value of another Bitmask object
-     * @param otherBitmask  the other bitmask to copy from
+     * @param otherBitmask the other bitmask to copy from
      */
     void setBitmask(const Bitmask& otherBitmask);
 
