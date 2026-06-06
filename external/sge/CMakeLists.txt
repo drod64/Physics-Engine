@@ -22,6 +22,7 @@ set(SOURCE_FILES
     # Systems
     src/systems/physics/AnchorSpring3.cpp
     src/systems/physics/BungeeSpring3.cpp
+    src/systems/physics/BuoyancyForce3.cpp
     src/systems/physics/DragForce3.cpp
     include/SGE/systems/physics/ForceGenerator3.h
     src/systems/physics/ForceRegistry3.cpp
