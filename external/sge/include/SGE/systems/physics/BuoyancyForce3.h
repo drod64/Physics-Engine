@@ -13,7 +13,7 @@ private:
     sm::real m_liquidDensity;
 
 public:
-    BuoyancyForce3(sm::real maxDepth, sm::real volume, sm::real waterHeight, sm::real liquidDensity = 1000.0f);
+    BuoyancyForce3(sm::real maxDepth, sm::real volume, sm::real waterHeight, sm::real liquidDensity = 100.0f);
 
     void updateForce(Entity *e, sm::real dt) override;
 };

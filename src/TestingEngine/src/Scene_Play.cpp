@@ -67,6 +67,8 @@ void Scene_Play::sDoAction(const sge::Action &action)
         else if (action.getID() == GameplayAction::SHOOT_FIREWORK)          { spawnFirework("initial-firework", {0,0,0}, {0,100,0}, 40); }
         else if (action.getID() == GameplayAction::SPAWN_SPRING)            { spawnSpringConnection(); }
         else if (action.getID() == GameplayAction::SPAWN_ANCHOR_SPRING)     { spawnAnchorSpring({0, 0, 0}); }
+        else if (action.getID() == GameplayAction::SPAWN_BUNGEE_SPRING)     { spawnBungeeSpring(); }
+        else if (action.getID() == GameplayAction::SPAWN_BUOYANCY_SPRING)   { spawnBuoyancySpring(); }
     }
     else if (action.getType() == sge::ActionType::END)
     {
@@ -128,6 +130,8 @@ void Scene_Play::init()
     this->registerAction(KeyboardKey::KEY_B,        GameplayAction::SHOOT_FIREWORK);
     this->registerAction(KeyboardKey::KEY_N,        GameplayAction::SPAWN_SPRING);
     this->registerAction(KeyboardKey::KEY_M,        GameplayAction::SPAWN_ANCHOR_SPRING);
+    this->registerAction(KeyboardKey::KEY_Q,        GameplayAction::SPAWN_BUNGEE_SPRING);
+    this->registerAction(KeyboardKey::KEY_E,        GameplayAction::SPAWN_BUOYANCY_SPRING);
 
     // Initializing Camera3D
     this->m_camera.position = {0, 5, 5};
@@ -231,6 +235,41 @@ void Scene_Play::spawnAnchorSpring(const sm::Vec3 &position)
     this->m_registry.add(e.get(), &this->m_gravity);
     this->m_registry.add(e.get(), &this->m_drag);
     this->m_registry.add(e.get(), this->m_anchorSpring.get());
+}
+
+void Scene_Play::spawnBungeeSpring()
+{
+    auto e1 = this->m_entities.addEntity("bungee-spring");
+    e1->addComponent<sge::CLifespan>(600);
+    e1->addComponent<sge::CTransform3>();
+    auto &r3e1 = e1->addComponent<sge::CRigidBody3>();
+    r3e1.setMass(10);
+    
+    auto e2 = this->m_entities.addEntity("bungee-spring");
+    e2->addComponent<sge::CLifespan>(600);
+    e2->addComponent<sge::CTransform3>();
+    auto &r3e2 = e2->addComponent<sge::CRigidBody3>();
+    r3e2.setMass(10);
+    r3e2.setStatic(true);
+
+    this->m_bungeeSpring = std::make_shared<sge::BungeeSpring3>(e2.get(), 100, 10);
+
+    this->m_registry.add(e1.get(), &this->m_gravity);
+    this->m_registry.add(e1.get(), this->m_bungeeSpring.get());
+}
+
+void Scene_Play::spawnBuoyancySpring()
+{
+    auto e = this->m_entities.addEntity("buoyancy-spring");
+    e->addComponent<sge::CLifespan>(600);
+    e->addComponent<sge::CTransform3>().position = {0, 0, 0};
+    auto &r3e = e->addComponent<sge::CRigidBody3>();
+    r3e.setMass(10);
+
+    this->m_buoyancySpring = std::make_shared<sge::BuoyancyForce3>(0, 5, 10);
+
+    this->m_registry.add(e.get(), &this->m_gravity);
+    this->m_registry.add(e.get(), this->m_buoyancySpring.get());
 }
 
 void Scene_Play::sMovement(sm::real dt)

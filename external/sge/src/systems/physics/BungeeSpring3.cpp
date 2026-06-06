@@ -20,7 +20,7 @@ void sge::BungeeSpring3::updateForce(sge::Entity *e, sm::real dt)
 
     magnitude = this->m_springConstant * (this->m_restLength - magnitude);
     force.normalize();
-    force *= -magnitude;
+    force *= magnitude;
 
     r3.addForce(force);
 }
