@@ -223,7 +223,7 @@ void Scene_Play::spawnAnchorSpring(const sm::Vec3 &position)
 
     // Create entity to be anchored.
     auto e = this->m_entities.addEntity("anchor-spring");
-    // e->addComponent<sge::CLifespan>(600);
+    e->addComponent<sge::CLifespan>(600);
     e->addComponent<sge::CTransform3>().position = {0, -90, 0};
     auto &r3e = e->addComponent<sge::CRigidBody3>();
     r3e.setMass(5);
