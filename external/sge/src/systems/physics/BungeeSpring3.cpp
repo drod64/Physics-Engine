@@ -16,11 +16,13 @@ void sge::BungeeSpring3::updateForce(sge::Entity *e, sm::real dt)
 
     sm::real magnitude = force.magnitude();
     // Don't update spring force
-    if (magnitude <= this->m_restLength) return;
+    if (magnitude == 0) return;
+    
+    sm::Vec3 direction = force * (1.f / magnitude);
 
-    magnitude = this->m_springConstant * (this->m_restLength - magnitude);
-    force.normalize();
-    force *= magnitude;
+    sm::real stretch = std::max(0.f, magnitude - this->m_restLength);
 
-    r3.addForce(force);
+    sm::Vec3 springForce = direction * -this->m_springConstant * stretch;
+
+    r3.addForce(springForce);
 }

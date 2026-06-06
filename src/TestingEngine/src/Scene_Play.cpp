@@ -241,8 +241,9 @@ void Scene_Play::spawnBungeeSpring()
 {
     auto e1 = this->m_entities.addEntity("bungee-spring");
     e1->addComponent<sge::CLifespan>(600);
-    e1->addComponent<sge::CTransform3>();
+    e1->addComponent<sge::CTransform3>().position = {0, 5, 0};
     auto &r3e1 = e1->addComponent<sge::CRigidBody3>();
+    r3e1.addForce({0, 0, 10});
     r3e1.setMass(10);
     
     auto e2 = this->m_entities.addEntity("bungee-spring");
@@ -262,7 +263,7 @@ void Scene_Play::spawnBuoyancySpring()
 {
     auto e = this->m_entities.addEntity("buoyancy-spring");
     e->addComponent<sge::CLifespan>(600);
-    e->addComponent<sge::CTransform3>().position = {0, 0, 0};
+    e->addComponent<sge::CTransform3>().position = {0, 15, 0};
     auto &r3e = e->addComponent<sge::CRigidBody3>();
     r3e.setMass(10);
 

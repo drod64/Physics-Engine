@@ -1,5 +1,6 @@
 #ifndef SGE_BUNGEE_SPRING3_H
 #define SGE_BUNGEE_SPRING3_H
+#include <algorithm>
 #include <SM/Precision.h>
 #include <SM/Vec3.h>
 #include <SGE/entities/Entity.h>
