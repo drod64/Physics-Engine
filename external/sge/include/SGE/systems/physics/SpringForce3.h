@@ -12,7 +12,7 @@ namespace sge {
  */
 class SpringForce3 : public ForceGenerator3 {
 private:
-    Entity *m_other;
+    Entity *m_other = nullptr;
     sm::real m_springConstant;
     sm::real m_restLength;
 

@@ -9,19 +9,38 @@ sge::AnchorSpring3::AnchorSpring3(const sm::Vec3 &position, sm::real springConst
 
 void sge::AnchorSpring3::updateForce(sge::Entity *e, sm::real dt)
 {
+    // Retrieve necessary components from entity.
     auto &t3e = e->getComponent<sge::CTransform3>();
     auto &r3e = e->getComponent<sge::CRigidBody3>();
 
-    sm::Vec3 force = t3e.position;
+    // Calculate displacement between entity and anchor point.
+    sm::Vec3 displacement(t3e.position - this->m_anchorPoint);
 
-    force -= this->m_anchorPoint;
+    // Get length of displacement.
+    sm::real length = displacement.magnitude();
 
-    sm::real magnitude = force.magnitude();
-    magnitude = real_abs(magnitude - this->m_restLength);
-    magnitude *= this->m_springConstant;
-
-    force.normalize();
-    force *= -magnitude;
+    sm::Vec3 direction;
+    // Prevent divide by 0
+    if (length > 0.0001)
+    {
+        // Get normalized vector of displacement (which is the direction it is stretched/compressed).
+        direction = displacement * ((sm::real)1 / length);
+    }
+    else
+    {
+        // Fallback if entity is directly on top of anchor point.
+        direction = {0, 1, 0};
+        // Clamp length to 0.
+        length = (sm::real)0;
+    }
     
-    r3e.addForce(force);
+    // Get the stretch scalar.
+    sm::real stretch = length - this->m_restLength;
+    
+    // Early exit if the entity and anchor point are within rest length
+    if (real_abs(stretch) < 0.001) return;
+
+    // Use Hooke's law to calculate spring force
+    // F = -k * strectch
+    r3e.addForce(direction * -this->m_springConstant * stretch);
 }
