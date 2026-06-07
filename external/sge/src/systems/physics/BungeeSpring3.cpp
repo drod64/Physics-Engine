@@ -9,20 +9,36 @@ sge::BungeeSpring3::BungeeSpring3(Entity *other, sm::real springConstant, sm::re
 
 void sge::BungeeSpring3::updateForce(sge::Entity *e, sm::real dt)
 {
+    // Retrieve necessary components from entity.
     auto &t3 = e->getComponent<sge::CTransform3>();
     auto &r3 = e->getComponent<sge::CRigidBody3>();
 
-    sm::Vec3 force = t3.position - this->m_other->getComponent<sge::CTransform3>().position;
+    // Get displacement between both entities.
+    sm::Vec3 displacement = t3.position - this->m_other->getComponent<sge::CTransform3>().position;
 
-    sm::real magnitude = force.magnitude();
-    // Don't update spring force
-    if (magnitude == 0) return;
+    // Calculate squared magnitude of displacement vector.
+    sm::real sqrLength = displacement.sqrMagnitude();
+
+    // Early exit if the squared magnitude is 0.
+    if (sqrLength == 0) return;
+
+    // Cache real length of displacement vector.
+    sm::real length = real_sqrt(sqrLength);
     
-    sm::Vec3 direction = force * (1.f / magnitude);
+    // Normalize the displacement vector to get the direction it is currently stretching.
+    sm::Vec3 direction = displacement * ((sm::real)1 / length);
 
-    sm::real stretch = std::max(0.f, magnitude - this->m_restLength);
+    // Calculate the stretch
+    sm::real stretch = length - this->m_restLength;
+    
+    // Early exit if entities are within rest length and spring is slack
+    if (stretch <= 0) return;
 
+    // Calculate the final spring force using Hooke's Law while...
+    // using the direction vector to know which way it should be applied.
+    // F = -k * stretch
     sm::Vec3 springForce = direction * -this->m_springConstant * stretch;
 
+    // Add spring (pulling) force to entity.
     r3.addForce(springForce);
 }

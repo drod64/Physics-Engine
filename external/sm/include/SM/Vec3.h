@@ -52,6 +52,12 @@ public:
      * Normalizes the Vector3.
      */
     void normalize();
+
+    /**
+     * Creates a normalized Vector3 copy.
+     * @return the normalized version of the Vector3
+     */
+    Vec3 normalized() const;
     
     ////////////////////////////////////////
     //   Modifying Overloaded Operators   //

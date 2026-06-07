@@ -54,6 +54,17 @@ void sm::Vec3::normalize()
     }
 }
 
+sm::Vec3 sm::Vec3::normalized() const
+{
+    sm::real sqrMagnitude = this->sqrMagnitude();
+
+    if (sqrMagnitude == 0) return {0, 0, 0};
+    
+    sm::real invMag = ((sm::real)1 / real_sqrt(sqrMagnitude));
+
+    return *this * invMag;
+}
+
 sm::Vec3& sm::Vec3::operator = (const sm::Vec3 &vec)
 {
     if (this != &vec)
