@@ -8,16 +8,21 @@ sge::DragForce3::DragForce3(sm::real k1, sm::real k2)
 
 void sge::DragForce3::updateForce(sge::Entity *e, sm::real dt)
 {   
+    // Get necessary component from entity.
     auto &r3 = e->getComponent<sge::CRigidBody3>();
 
-    sm::Vec3 force = r3.velocity;
+    // Calculate speed of entity.
+    sm::real speed = r3.velocity.magnitude();
 
-    sm::real dragCoeff = force.magnitude();
+    // Early exit if speed is close to 0.
+    if (speed < 0.0001) return;
 
-    dragCoeff = this->m_k1 * dragCoeff + this->m_k2 *dragCoeff * dragCoeff;
+    // Get direction vector (velocity vector normalized).
+    sm::Vec3 dragDirection = r3.velocity * ((sm::real)1 / speed);
 
-    force.normalize();
-    force *= -dragCoeff;
+    // Calculate drag coefficient.
+    sm::real dragCoeff = this->m_k1 * speed + this->m_k2 * speed * speed;
 
-    r3.addForce(force);
+    // Multiply direction vector by negative drag coefficient (will produce drag in the opposite way it is heading).
+    r3.addForce(dragDirection * - dragCoeff);
 }

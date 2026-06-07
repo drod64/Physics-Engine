@@ -263,11 +263,11 @@ void Scene_Play::spawnBuoyancySpring()
 {
     auto e = this->m_entities.addEntity("buoyancy-spring");
     e->addComponent<sge::CLifespan>(600);
-    e->addComponent<sge::CTransform3>().position = {0, 15, 0};
+    e->addComponent<sge::CTransform3>().position = {0, 4, 0};
     auto &r3e = e->addComponent<sge::CRigidBody3>();
     r3e.setMass(10);
 
-    this->m_buoyancySpring = std::make_shared<sge::BuoyancyForce3>(0, 5, 10);
+    this->m_buoyancySpring = std::make_shared<sge::BuoyancyForce3>(0, 5, 0);
 
     this->m_registry.add(e.get(), &this->m_gravity);
     this->m_registry.add(e.get(), this->m_buoyancySpring.get());

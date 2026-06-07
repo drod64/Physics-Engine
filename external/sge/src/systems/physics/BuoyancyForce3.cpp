@@ -10,23 +10,33 @@ sge::BuoyancyForce3::BuoyancyForce3(sm::real maxDepth, sm::real volume, sm::real
 
 void sge::BuoyancyForce3::updateForce(sge::Entity *e, sm::real dt)
 {
+    // Get necessary component from entity.
     auto &r3 = e->getComponent<sge::CRigidBody3>();
 
     // Get depth of entity
     sm::real depth = e->getComponent<CTransform3>().position.y;
-    // Check if it's above water
-    if (depth >= this->m_waterHeight + this->m_maxDepth) return;
+
+    // Get top and bottom bounds of entity.
+    sm::real top = depth + this->m_maxDepth;
+    sm::real bottom = depth - this->m_maxDepth;
+
+    // (Early exit) Check if it's completely above water.
+    if (bottom >= this->m_waterHeight) return;
 
     sm::Vec3 force = {0, 0, 0};
-    if (depth <= this->m_waterHeight - this->m_maxDepth)
+    // Check if entity is completely submerged.
+    if (top <= this->m_waterHeight)
     {
         force.y = this->m_liquidDensity * this->m_volume;
-        r3.addForce(force);
-        return;
     }
+    // Otherwise it's partially submerged
+    else
+    {
+        // Get submersion ratio (0 - 1).
+        sm::real submersionRatio = (this->m_waterHeight - bottom) / (2 * this->m_maxDepth);
 
-    force.y = this->m_liquidDensity * this->m_volume *
-                (depth - this->m_maxDepth - this->m_waterHeight) / 2 * this->m_maxDepth;
+        force.y = this->m_liquidDensity * this->m_volume * submersionRatio;
+    }
 
     r3.addForce(force);
 }
