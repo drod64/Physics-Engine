@@ -245,15 +245,8 @@ void Scene_Play::spawnBungeeSpring()
     auto &r3e1 = e1->addComponent<sge::CRigidBody3>();
     r3e1.addForce({0, 0, 10});
     r3e1.setMass(10);
-    
-    auto e2 = this->m_entities.addEntity("bungee-spring");
-    e2->addComponent<sge::CLifespan>(600);
-    e2->addComponent<sge::CTransform3>();
-    auto &r3e2 = e2->addComponent<sge::CRigidBody3>();
-    r3e2.setMass(10);
-    r3e2.setStatic(true);
 
-    this->m_bungeeSpring = std::make_shared<sge::BungeeSpring3>(e2.get(), 100, 10);
+    this->m_bungeeSpring = std::make_shared<sge::AnchorBungee3>(sm::Vec3(0,0,0), 50.f, 10.f);
 
     this->m_registry.add(e1.get(), &this->m_gravity);
     this->m_registry.add(e1.get(), this->m_bungeeSpring.get());

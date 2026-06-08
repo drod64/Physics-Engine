@@ -7,6 +7,7 @@
 #include <SGE/util/GameEngine.h>
 #include <SGE/util/InputSnapshot.h>
 #include <SGE/systems/physics/ForceRegistry3.h>
+#include <SGE/systems/physics/AnchorBungee3.h>
 #include <SGE/systems/physics/AnchorSpring3.h>
 #include <SGE/systems/physics/BungeeSpring3.h>
 #include <SGE/systems/physics/BuoyancyForce3.h>
@@ -27,7 +28,7 @@ private:
     std::shared_ptr<sge::SpringForce3> m_spring1;
     std::shared_ptr<sge::SpringForce3> m_spring2;
     std::shared_ptr<sge::AnchorSpring3> m_anchorSpring;
-    std::shared_ptr<sge::BungeeSpring3> m_bungeeSpring;
+    std::shared_ptr<sge::AnchorBungee3> m_bungeeSpring;
     std::shared_ptr<sge::BuoyancyForce3> m_buoyancySpring;
     // End "Testing SpringForces"
 

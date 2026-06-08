@@ -20,6 +20,7 @@ set(SOURCE_FILES
     src/entities/EntityManager.cpp
 
     # Systems
+    src/systems/physics/AnchorBungee3.cpp
     src/systems/physics/AnchorSpring3.cpp
     src/systems/physics/BungeeSpring3.cpp
     src/systems/physics/BuoyancyForce3.cpp
