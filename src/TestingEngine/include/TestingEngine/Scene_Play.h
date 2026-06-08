@@ -13,6 +13,7 @@
 #include <SGE/systems/physics/BuoyancyForce3.h>
 #include <SGE/systems/physics/GravityForce3.h>
 #include <SGE/systems/physics/DragForce3.h>
+#include <SGE/systems/physics/FakeStiffSpring3.h>
 #include <SGE/systems/physics/SpringForce3.h>
 #include <TestingEngine/Action_Scene_Play.h>
 #include <TestingEngine/ProjectileType.h>
@@ -30,6 +31,7 @@ private:
     std::shared_ptr<sge::AnchorSpring3> m_anchorSpring;
     std::shared_ptr<sge::AnchorBungee3> m_bungeeSpring;
     std::shared_ptr<sge::BuoyancyForce3> m_buoyancySpring;
+    std::shared_ptr<sge::FakeStiffSpring3> m_stiffSpring;
     // End "Testing SpringForces"
 
     
@@ -83,6 +85,8 @@ private:
     void spawnBungeeSpring();
 
     void spawnBuoyancySpring();
+
+    void spawnFakeSpring();
 
     /////////////////////
     //     Systems     //

@@ -69,6 +69,7 @@ void Scene_Play::sDoAction(const sge::Action &action)
         else if (action.getID() == GameplayAction::SPAWN_ANCHOR_SPRING)     { spawnAnchorSpring({0, 0, 0}); }
         else if (action.getID() == GameplayAction::SPAWN_BUNGEE_SPRING)     { spawnBungeeSpring(); }
         else if (action.getID() == GameplayAction::SPAWN_BUOYANCY_SPRING)   { spawnBuoyancySpring(); }
+        else if (action.getID() == GameplayAction::SPAWN_FAKE_SPRING)       { spawnFakeSpring(); }
     }
     else if (action.getType() == sge::ActionType::END)
     {
@@ -132,6 +133,7 @@ void Scene_Play::init()
     this->registerAction(KeyboardKey::KEY_M,        GameplayAction::SPAWN_ANCHOR_SPRING);
     this->registerAction(KeyboardKey::KEY_Q,        GameplayAction::SPAWN_BUNGEE_SPRING);
     this->registerAction(KeyboardKey::KEY_E,        GameplayAction::SPAWN_BUOYANCY_SPRING);
+    this->registerAction(KeyboardKey::KEY_R,        GameplayAction::SPAWN_FAKE_SPRING);
 
     // Initializing Camera3D
     this->m_camera.position = {0, 5, 5};
@@ -264,6 +266,20 @@ void Scene_Play::spawnBuoyancySpring()
 
     this->m_registry.add(e.get(), &this->m_gravity);
     this->m_registry.add(e.get(), this->m_buoyancySpring.get());
+}
+
+void Scene_Play::spawnFakeSpring()
+{
+    auto e = this->m_entities.addEntity("fake-spring");
+    e->addComponent<sge::CLifespan>(600);
+    e->addComponent<sge::CTransform3>().position = {0, 4, 0};
+    auto &r3e = e->addComponent<sge::CRigidBody3>();
+    r3e.setMass(10);
+
+    this->m_stiffSpring = std::make_shared<sge::FakeStiffSpring3>(sm::Vec3(0,0,0), 1000, 0.5f);
+
+    this->m_registry.add(e.get(), this->m_stiffSpring.get());
+    this->m_registry.add(e.get(), &this->m_gravity);
 }
 
 void Scene_Play::sMovement(sm::real dt)
