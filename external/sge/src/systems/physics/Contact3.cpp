@@ -24,27 +24,35 @@ void sge::Contact3::resolveVelocity(sm::real dt)
         return;
     }
 
-    sm::real deltaVel = (-separatingVel * this->restitution) - separatingVel;
-
-    sm::real totalInverseMass = entities[0]->getComponent<sge::CRigidBody3>().getInverseMass();
-
-    if (entities[1]) totalInverseMass += entities[1]->getComponent<sge::CRigidBody3>().getInverseMass();
-
-    if (totalInverseMass <= 0.f) return;
-
-    sm::real impulse = deltaVel / totalInverseMass;
-
-    sm::Vec3 impulsePerMass = contactNormal * impulse;
+    // Get delta velocity using refactored formula -(1 + e) * v.
+    sm::real deltaVel = -(1.f + this->restitution) * separatingVel;
     
-    // Apply impulses to entities.
-    auto &r3 = entities[0]->getComponent<sge::CRigidBody3>();
-    r3.velocity = r3.velocity + impulsePerMass * r3.getInverseMass();
+    // Calculate total inverse mass.
+    auto &r3_0 = entities[0]->getComponent<sge::CRigidBody3>();
+    sm::real totalInverseMass = r3_0.getInverseMass();
 
-    // Apply impulse in opposite direction
+    // If other entity exists, cache rigid body component...
+    // ...and add inverse mass.
+    sge::CRigidBody3 *r3_1 = nullptr;
     if (entities[1])
     {
-        auto &r31 = entities[1]->getComponent<sge::CRigidBody3>();
+        r3_1 = &entities[1]->getComponent<sge::CRigidBody3>();
+        totalInverseMass += r3_1->getInverseMass();
+    }
 
-        r31.velocity = r31.velocity + impulsePerMass * -r3.getInverseMass();
+    // Both entities are static / infinite mass.
+    if (totalInverseMass <= 0.f) return;
+
+    // Calculate impulse.
+    sm::real impulse = deltaVel / totalInverseMass;
+    sm::Vec3 impulsePerMass = contactNormal * impulse;
+    
+    // Apply impulses to entity velocities.
+    r3_0.velocity += impulsePerMass * r3_0.getInverseMass();
+
+    // Apply impulse in opposite direction for other entity.
+    if (entities[1])
+    {
+        r3_1->velocity += impulsePerMass * -r3_1->getInverseMass();
     }
 }
