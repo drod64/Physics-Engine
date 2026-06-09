@@ -35,9 +35,15 @@ public:
 
     /**
      * Retrieves the mass of the rigid body.
-     * @param the mass of the rigid body
+     * @return the mass of the rigid body
      */
     sm::real getMass() const;
+
+    /**
+     * Retrieves the inverse mass of the rigid body.
+     * @return the inverse mass of the rigid body
+     */
+    sm::real getInverseMass() const;
 
     /**
      * Sets the rigid body as static depending on value.

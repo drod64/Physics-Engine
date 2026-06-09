@@ -24,6 +24,11 @@ sm::real sge::CRigidBody3::getMass() const
     return 1.0 / this->m_inverseMass;
 }
 
+sm::real sge::CRigidBody3::getInverseMass() const
+{
+    return this->m_inverseMass;
+}
+
 void sge::CRigidBody3::setStatic(bool value)
 {
     this->m_static = value;
