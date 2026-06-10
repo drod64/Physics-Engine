@@ -304,7 +304,7 @@ void Scene_Play::sMovement(sm::real dt)
             // r3.addForce(sm::Vec3(0, -9.81 * r3.getMass(), 0));
 
             // Calculate acceleration (dependending on acting forces) and integrate velocity
-            r3.velocity.addScaledVector(r3.accumulatedForce * (1.0 / r3.getMass()), dt);
+            r3.velocity.addScaledVector(r3.accumulatedForce * (r3.getInverseMass()), dt);
 
             // Apply damping to the velocity (removed to test ForceRegistry)
             // r3.velocity *= real_pow(r3.damping, dt);

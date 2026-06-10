@@ -23,29 +23,50 @@ void sge::Contact3::resolveVelocity(sm::real dt)
     // Get separating velocity.
     sm::real separatingVel = this->getSeparatingVelocity();
 
-    // A positive separating velocity means entities are moving away from each other.
+    // A positive separating velocity means entities are moving away from each other...
+    // ...or resting.
     if (separatingVel > 0.f)
     {
         return;
     }
 
-    // Get delta velocity using refactored formula -(1 + e) * v.
-    sm::real deltaVel = -(1.f + this->restitution) * separatingVel;
-    
-    // Acquire necessary components from components.
+    // Acquire necessary components from entities.
     auto &r3_0 = entities[0]->getComponent<sge::CRigidBody3>();
     sge::CRigidBody3 *r3_1 = (this->entities[1]) ? &this->entities[1]->getComponent<sge::CRigidBody3>() : nullptr;
+
+    // Get new separating velocity.
+    sm::real newSeparatingVel = -separatingVel * this->restitution;
+
+    // Check if velocity was caused solely by acceleration.
+    sm::Vec3 velByAcc = r3_0.accumulatedForce * r3_0.getInverseMass() * dt;
+
+    // Subtract acceleration of second entity (if it exists).
+    if (r3_1)
+        velByAcc -= r3_1->accumulatedForce * r3_1->getInverseMass() * dt;
+
+    // Calculate separating velocity caused by acceleration.
+    sm::real velByAccSepVel = velByAcc.dotProduct(this->contactNormal) * dt;
+
+    // Remove closing velocity from new separating velocity IF it's due to acceleration build-up.
+    if (velByAccSepVel < 0.f)
+    {
+        newSeparatingVel += this->restitution * velByAccSepVel;
+
+        // Cap to 0.
+        if (newSeparatingVel < 0.f) newSeparatingVel = 0;
+    }
+
+    // Get delta velocity.
+    sm::real deltaVel = newSeparatingVel - separatingVel;
 
     // Calculate total inverse mass.
     sm::real totalInverseMass = r3_0.getInverseMass();
 
     // Add second entity's mass (if it exists).
     if (r3_1)
-    {
         totalInverseMass += r3_1->getInverseMass();
-    }
 
-    // Both entities are static / infinite mass.
+    // Both entities are static / infinite mass. Return.
     if (totalInverseMass <= 0.f) return;
 
     // Calculate impulse.
