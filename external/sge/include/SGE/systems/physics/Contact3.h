@@ -9,6 +9,7 @@ public:
     Entity *entities[2];
     sm::real restitution;
     sm::Vec3 contactNormal;
+    sm::real penetration;
 
 protected:
     /**
@@ -29,6 +30,12 @@ private:
      * @param dt the delta time between frames
      */
     void resolveVelocity(sm::real dt);
+
+    /**
+     * Resolves the interpenetration between entities.
+     * @param dt the delta time between frames
+     */
+    void resolveInterpenetration(sm::real dt);
 
 };
 } // namespace sge
