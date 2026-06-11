@@ -86,6 +86,7 @@ void sge::Contact3::resolveVelocity(sm::real dt)
 void sge::Contact3::resolveInterpenetration(sm::real dt)
 {
     // Early exit if entities are not interpenetrating.
+    // Objects are far apart or merely touching (but not penetrating).
     if (this->penetration <= 0) return;
 
     // Check if first entity exists.
@@ -111,15 +112,15 @@ void sge::Contact3::resolveInterpenetration(sm::real dt)
     // If total inverse mass is infinite, return.
     if (totalInverseMass <= 0.f) return;
 
-    // Calculate movement vector.
-    sm::Vec3 movePerInverseMass = this->contactNormal * (-this->penetration / totalInverseMass);
+    // Calculate positional correction vector.
+    sm::Vec3 posCorrectVec = this->contactNormal * (this->penetration / totalInverseMass);
 
-    // Apply movement to first entity so it is no longer interpenetrating.
-    t3_0.position += movePerInverseMass * r3_0.getInverseMass();
+    // Apply position correction to first entity so it is no longer interpenetrating.
+    t3_0.position += posCorrectVec * r3_0.getInverseMass();
 
-    // If second entity exists, apply same logic.
+    // If second entity exists, apply same logic but in opposite direction.
     if (t3_1)
     {
-        t3_1->position += movePerInverseMass * r3_1->getInverseMass();
+        t3_1->position += posCorrectVec * -r3_1->getInverseMass();
     }
 }
