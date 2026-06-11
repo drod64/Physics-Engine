@@ -8,9 +8,9 @@ void sge::Contact3::resolve(sm::real dt)
 
 sm::real sge::Contact3::getSeparatingVelocity() const
 {
-    sm::Vec3 relativeVel = this->entities[0]->getComponent<sge::CTransform3>().position;
+    sm::Vec3 relativeVel = this->entities[0]->getComponent<sge::CRigidBody3>().velocity;
 
-    if (entities[1]) relativeVel -= entities[1]->getComponent<sge::CTransform3>().position;
+    if (entities[1]) relativeVel -= entities[1]->getComponent<sge::CRigidBody3>().velocity;
 
     return relativeVel.dotProduct(contactNormal);
 }
