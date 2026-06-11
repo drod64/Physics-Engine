@@ -4,6 +4,10 @@
 #include <SGE/entities/Entity.h>
 
 namespace sge {
+    
+// Forward declaration of ContactResolver3 class.
+class ContactResolver3;
+
 class Contact3 {
 public:
     Entity *entities[2];
@@ -23,6 +27,8 @@ protected:
      * @return the coefficient of restitution
      */
     sm::real getSeparatingVelocity() const;
+
+    friend class ContactResolver3;
 
 private:
     /**

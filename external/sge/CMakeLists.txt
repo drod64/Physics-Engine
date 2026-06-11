@@ -25,6 +25,7 @@ set(SOURCE_FILES
     src/systems/physics/BungeeSpring3.cpp
     src/systems/physics/BuoyancyForce3.cpp
     src/systems/physics/Contact3.cpp
+    src/systems/physics/ContactResolver3.cpp
     src/systems/physics/DragForce3.cpp
     src/systems/physics/FakeStiffSpring3.cpp
     include/SGE/systems/physics/ForceGenerator3.h
