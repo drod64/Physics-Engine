@@ -34,27 +34,21 @@ void sge::Contact3::resolveVelocity(sm::real dt)
     auto &r3_0 = entities[0]->getComponent<sge::CRigidBody3>();
     sge::CRigidBody3 *r3_1 = (this->entities[1]) ? &this->entities[1]->getComponent<sge::CRigidBody3>() : nullptr;
 
-    // Get new separating velocity.
-    sm::real newSeparatingVel = -separatingVel * this->restitution;
-
-    // Check if velocity was caused solely by acceleration.
-    sm::Vec3 velByAcc = r3_0.accumulatedForce * r3_0.getInverseMass() * dt;
-
+    // Get relative acceleration of entity.
+    sm::Vec3 relAcc = r3_0.accumulatedForce * r3_0.getInverseMass();
+    
     // Subtract acceleration of second entity (if it exists).
     if (r3_1)
-        velByAcc -= r3_1->accumulatedForce * r3_1->getInverseMass() * dt;
+        relAcc -= r3_1->accumulatedForce * r3_1->getInverseMass();
+    
+    // Calculate separating velocity scalar along the contact normal, based on the current frame.
+    // Max cap of 0.
+    sm::real velByAccSepVel = std::min((sm::real)0, relAcc.dotProduct(this->contactNormal) * dt);
 
-    // Calculate separating velocity caused by acceleration.
-    sm::real velByAccSepVel = velByAcc.dotProduct(this->contactNormal) * dt;
-
-    // Remove closing velocity from new separating velocity IF it's due to acceleration build-up.
-    if (velByAccSepVel < 0.f)
-    {
-        newSeparatingVel += this->restitution * velByAccSepVel;
-
-        // Cap to 0.
-        if (newSeparatingVel < 0.f) newSeparatingVel = 0;
-    }
+    // Get new separating velocity.
+    sm::real newSeparatingVel = -separatingVel * this->restitution;
+    // Min cap of 0.
+    newSeparatingVel = std::max((sm::real)0, newSeparatingVel + velByAccSepVel);
 
     // Get delta velocity.
     sm::real deltaVel = newSeparatingVel - separatingVel;
@@ -69,17 +63,16 @@ void sge::Contact3::resolveVelocity(sm::real dt)
     // Both entities are static / infinite mass. Return.
     if (totalInverseMass <= 0.f) return;
 
-    // Calculate impulse.
-    sm::real impulse = deltaVel / totalInverseMass;
-    sm::Vec3 impulsePerMass = contactNormal * impulse;
+    // Calculate impulse velocity.
+    sm::Vec3 impulseVelocity = contactNormal * (deltaVel / totalInverseMass);
     
-    // Apply impulses to entity velocities.
-    r3_0.velocity += impulsePerMass * r3_0.getInverseMass();
+    // Apply impulses to entity velocities relative to their mass.
+    r3_0.velocity += impulseVelocity * r3_0.getInverseMass();
 
     // Apply impulse in opposite direction for other entity (if it exists).
     if (r3_1)
     {
-        r3_1->velocity += impulsePerMass * -r3_1->getInverseMass();
+        r3_1->velocity += impulseVelocity * -r3_1->getInverseMass();
     }
 }
 
