@@ -1,13 +1,12 @@
 #ifndef SGE_CBOUNDING_BOX
 #define SGE_CBOUNDING_BOX
-#include <sge/components/Component.h>
 #include <SM/Vec2.h>
 
 namespace sge {
 /**
  * Component that stores bounding box information such as its size (width and length).
  */
-class CBoundingBox : public Component {
+class CBoundingBox {
 private:
     sm::Vec2 m_size;
     sm::Vec2 m_halfSize;

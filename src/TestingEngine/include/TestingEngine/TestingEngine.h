@@ -1,7 +1,7 @@
 #ifndef TESTING_ENGINE_H
 #define TESTING_ENGINE_H
-#include <SGE/util/GameEngine.h>
-#include <TestingEngine/Scene_Play.h>
+#include <SGE/core/GameEngine.h>
+#include <TestingEngine/ScenePlay.h>
 #include <string>
 
 

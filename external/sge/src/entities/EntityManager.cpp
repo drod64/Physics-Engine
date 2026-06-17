@@ -1,63 +1,83 @@
 #include <SGE/entities/EntityManager.h>
 
-namespace sge {
+const uint32_t sge::EntityManager::INDEX_MASK = 0x000FFFFF;
+const uint32_t sge::EntityManager::MIN_GENERATION = 1;
 
-EntityManager::EntityManager() :
-m_entities(),
-m_entitiesToAdd(),
-m_entityMap(),
-m_totalEntities(0)
-{}
-
-void EntityManager::update()
+sge::EntityManager::EntityManager()
 {
-    // Entities queued from the last frame will be added to the current frame.
-    for (auto e : this->m_entitiesToAdd)
+    // Push a dummy slot which represents an invalid Entity ID index and generation.
+    this->m_generations.push_back(0);
+}
+
+sge::Entity sge::EntityManager::createEntityID(uint32_t index, uint32_t generation) const
+{
+    return static_cast<Entity>((generation << 20) | (index & sge::EntityManager::INDEX_MASK));
+}
+
+uint32_t sge::EntityManager::getIndex(sge::Entity e) const
+{
+    return static_cast<uint32_t>(e) & sge::EntityManager::INDEX_MASK;
+}
+
+uint32_t sge::EntityManager::getGeneration(sge::Entity e) const
+{
+    return static_cast<uint32_t>(e) >> 20;
+}
+
+sge::Entity sge::EntityManager::createEntity()
+{
+    uint32_t index;
+
+    if (!this->m_freeIndices.empty())
     {
-        this->m_entities.push_back(e);
-        this->m_entityMap[e->tag()].push_back(e);
+        index = this->m_freeIndices.front();
+        this->m_freeIndices.pop();
+    }
+    else
+    {
+        index = static_cast<uint32_t>(this->m_generations.size());
+        this->m_generations.push_back(sge::EntityManager::MIN_GENERATION);
     }
 
-    this->m_entitiesToAdd.clear();
+    return this->createEntityID(index, this->m_generations.at(index));
+}
 
-    // Remove dead entities from the vector of all entities
-    removeDeadEntities(this->m_entities);
+void sge::EntityManager::destroyEntity(Entity e)
+{
+    // Early exit if Entity ID does not exist anymore.
+    if (!isAlive(e)) return;
+    
+    // Get Entity index
+    uint32_t index = this->getIndex(e);
 
-    // Remove dead entities from each vector in the entity map.
-    for (auto &pair : this->m_entityMap)
+    // Increment generation count of this index.
+    ++this->m_generations.at(index);
+
+    // Wrap generation back to 1 if it is out of bounds.
+    if (this->m_generations.at(index) >= 4096 || this->m_generations.at(index) == 0)
     {
-        removeDeadEntities(pair.second);
+        this->m_generations.at(index) = sge::EntityManager::MIN_GENERATION;
     }
+
+    // Recycle index
+    this->m_freeIndices.push(index);
 }
 
-std::shared_ptr<Entity> EntityManager::addEntity(const std::string &tag)
+bool sge::EntityManager::isAlive(Entity e) const
 {
-    auto newEntity = std::shared_ptr<Entity>(new Entity(tag, this->m_totalEntities));
-    this->m_entitiesToAdd.push_back(newEntity);
-    ++this->m_totalEntities;
+    // If Entity is fake, exit
+    if (IsFakeEntity(e)) return false;
 
-    return newEntity;
+    uint32_t index = this->getIndex(e);
+    uint32_t generation = this->getGeneration(e);
+
+    // If generation is invalid, exit
+    if (generation == 0) return false;
+
+    // If index is out of bounds
+    if (index <= 0 || index >= this->m_generations.size()) return false;
+
+    // Check if calculated index holds the same generation value...
+    //...as the passed in Entity ID's generation.
+    return this->m_generations[index] == generation;
 }
-
-void EntityManager::removeDeadEntities(EntityVec &vector)
-{
-    auto it = std::remove_if(vector.begin(), vector.end(), [](std::shared_ptr<Entity> e) -> bool { return !e->isAlive(); });
-    vector.erase(it, vector.end());
-}
-
-const EntityVec& EntityManager::getEntities() const
-{
-    return this->m_entities;
-}
-
-const EntityVec* EntityManager::getEntities(const std::string &tag) const
-{
-    if (this->m_entityMap.find(tag) != this->m_entityMap.end())
-    {
-        return &this->m_entityMap.at(tag);
-    }
-    return nullptr;
-}
-
-
-} // namespace sge

@@ -3,11 +3,11 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include <map>
+#include <unordered_map>
 // Library includes
 #include <SGE/entities/EntityManager.h>
-#include <SGE/util/Scene.h>
-#include <SGE/util/InputSnapshot.h>
+#include <SGE/core/Scene.h>
+#include <SGE/core/InputSnapshot.h>
 #include <raylib.h>
 
 namespace sge {

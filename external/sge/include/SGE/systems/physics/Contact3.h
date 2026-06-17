@@ -1,6 +1,6 @@
 #ifndef SGE_CONTACT3_H
 #define SGE_CONTACT3_H
-#include <SM/Precision.h>
+#include <SM/Vec3.h>
 #include <SGE/entities/Entity.h>
 
 namespace sge {
@@ -10,7 +10,7 @@ class ContactResolver3;
 
 class Contact3 {
 public:
-    Entity *entities[2];
+    Entity entities[2];
     sm::real restitution;
     sm::Vec3 contactNormal;
     sm::real penetration;

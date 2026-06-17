@@ -1,12 +1,11 @@
 #ifndef SGE_CLIFESPAN_H
 #define SGE_CLIFESPAN_H
-#include <SGE/components/Component.h>
 
 namespace sge {
 /**
  * Component that stores lifespan data such as total and remaining time.
  */
-class CLifespan : public Component {
+class CLifespan {
 public:
     int remaining;
     int total;

@@ -1,14 +1,13 @@
 #ifndef SGE_CSHAPE_COMPONENT_H
 #define SGE_CSHAPE_COMPONENT_H
 #include <SM/Precision.h>
-#include <SGE/components/Component.h>
 
 namespace sge
 {
 /**
  * Component that stores shape data.
  */
-class CShape : public Component {
+class CShape {
 public:
     int radius;
     int points;

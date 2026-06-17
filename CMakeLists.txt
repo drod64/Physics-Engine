@@ -35,6 +35,7 @@ else ()
     add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 endif ()
 
+# Add raylib library
 target_link_libraries(${PROJECT_NAME} raylib)
 
 # Web Configurations

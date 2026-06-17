@@ -1,13 +1,12 @@
-#ifndef SGE_CIGID_BODY3_H
+#ifndef SGE_CRIGID_BODY3_H
 #define SGE_CRIGID_BODY3_H
 #include <SM/Vec3.h>
-#include <SGE/components/Component.h>
 
 namespace sge {
 /**
  * Component that stores rigid body data for a 3D environment.
  */
-class CRigidBody3 : public Component {
+class CRigidBody3 {
 public:
     sm::Vec3 velocity;
     sm::Vec3 accumulatedForce;

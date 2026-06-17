@@ -3,8 +3,10 @@ cmake_minimum_required(VERSION 3.27.3)
 project(TestingEngine)
 
 set(SOURCE_FILES
+    src/ScenePlay.cpp
+    src/ScenePlaySpawn.cpp
     src/TestingEngine.cpp
-    src/Scene_Play.cpp)
+    )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 

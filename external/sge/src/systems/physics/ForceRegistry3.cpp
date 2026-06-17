@@ -4,11 +4,6 @@ sge::ForceRegistry3::ForceRegistry3() :
 m_registrations()
 {}
 
-void sge::ForceRegistry3::add(sge::Entity *e, sge::ForceGenerator3 *fg)
-{
-    this->m_registrations.push_back({e, fg});
-}
-
 void sge::ForceRegistry3::remove(sge::Entity *e, sge::ForceGenerator3 *fg)
 {
     int index = 0;
@@ -60,10 +55,12 @@ void sge::ForceRegistry3::clear()
 
 void sge::ForceRegistry3::updateForces(sm::real dt)
 {
-    Registry3::iterator i = this->m_registrations.begin();
-
-    for (i; i != this->m_registrations.end(); ++i)
+    for (auto &[entityID, forces] : this->m_registrations)
     {
+        for (auto &force : forces)
+        {
+            force.get()->updateForce()
+        }
         i->fg->updateForce(i->e, dt);
     }
 }

@@ -1,5 +1,5 @@
-#include <SGE/util/Scene.h>
-#include <SGE/util/GameEngine.h>
+#include <SGE/core/Scene.h>
+#include <SGE/core/GameEngine.h>
 
 sge::Scene::Scene() :
 Scene(nullptr)

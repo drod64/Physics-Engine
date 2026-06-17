@@ -1,6 +1,5 @@
 #ifndef SGE_CINPUT_H
 #define SGE_CINPUT_H
-#include <SGE/components/Component.h>
 #include <SGE/util/Bitmask.h>
 #include <utility>
 #include <vector>
@@ -9,7 +8,7 @@ namespace sge {
 /**
  * Component that stores and updates input data.
  */
-class CInput : public Component {
+class CInput {
 private:
     std::vector<Bitmask> m_input_state;
     std::pair<int, int> getIndexes(int action);

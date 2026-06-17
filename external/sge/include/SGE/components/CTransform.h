@@ -1,7 +1,6 @@
 #ifndef SGE_CTRANSFORM_H
 #define SGE_CTRANSFORM_H
 #include <SM/Vec2.h>
-#include <SGE/components/Component.h>
 #include <initializer_list>
 
 namespace sge {
@@ -9,7 +8,7 @@ namespace sge {
  * NOTE: OUTDATED
  * Component that stores transform data for a 2D environment.
  */
-class CTransform : public Component {
+class CTransform {
 public:
     sm::Vec2 position;
     sm::Vec2 prevPosition;

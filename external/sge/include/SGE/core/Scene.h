@@ -2,9 +2,8 @@
 #define SGE_SCENE_H
 #include <map>
 #include <memory>
-#include <SGE/entities/EntityManager.h>
 #include <SGE/util/Action.h>
-#include <SGE/util/InputSnapshot.h>
+#include <SGE/core/InputSnapshot.h>
 #include <raylib.h>
 
 
@@ -19,7 +18,6 @@ class GameEngine;
 class Scene {
 protected:
     GameEngine* m_game;
-    sge::EntityManager m_entities;
     std::map<int, ActionID> m_actionMap;
     bool m_paused;
     bool m_hasEnded;

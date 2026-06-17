@@ -1,12 +1,11 @@
 #ifndef SGE_CCOLLISION_H
 #define SGE_CCOLLISION_H
-#include <SGE/components/Component.h>
 
 namespace sge {
 /**
  * Component that stores collision data (pending...)
  */
-class CCollision : public Component {
+class CCollision {
 public:
     float radius;
 

@@ -1,12 +1,11 @@
 #ifndef SGE_CSCORE_H
 #define SGE_CSCORE_H
-#include <SGE/components/Component.h>
 
 namespace sge {
 /**
  * Component that stores score information.
  */
-class CScore : public Component {
+class CScore {
 public:
     int score;
 

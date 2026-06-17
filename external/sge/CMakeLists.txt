@@ -4,42 +4,45 @@ project(SGE)
 
 set(SOURCE_FILES
     # Components
+    src/components/CAnchorBungee3.cpp
+    src/components/CAnchorSpring3.cpp
     src/components/CBoundingBox.cpp
+    src/components/CBungee3.cpp
+    src/components/CBuoyancy3.cpp
     src/components/CCollision.cpp
+    src/components/CDrag3.cpp
+    src/components/CFakeStiffSpring3.cpp
+    src/components/CGravity3.cpp
     src/components/CInput.cpp
     src/components/CLifespan.cpp
-    src/components/Component.cpp
     src/components/CRigidBody3.cpp
     src/components/CScore.cpp
     src/components/CShape.cpp
+    src/components/CSpring3.cpp
     src/components/CTransform.cpp
     src/components/CTransform3.cpp
 
+    # Core
+    src/core/GameEngine.cpp
+    src/core/InputSnapshot.cpp
+    src/core/Scene.cpp
+    src/core/World.cpp
+
     # Entities
-    src/entities/Entity.cpp
     src/entities/EntityManager.cpp
 
     # Systems
-    src/systems/physics/AnchorBungee3.cpp
-    src/systems/physics/AnchorSpring3.cpp
-    src/systems/physics/BungeeSpring3.cpp
-    src/systems/physics/BuoyancyForce3.cpp
-    src/systems/physics/Contact3.cpp
-    src/systems/physics/ContactResolver3.cpp
-    src/systems/physics/DragForce3.cpp
-    src/systems/physics/FakeStiffSpring3.cpp
-    include/SGE/systems/physics/ForceGenerator3.h
-    src/systems/physics/ForceRegistry3.cpp
-    src/systems/physics/GravityForce3.cpp
-    src/systems/physics/SpringForce3.cpp
+    # src/systems/physics/Cable3.cpp
+    # src/systems/physics/Contact3.cpp
+    # src/systems/physics/ContactResolver3.cpp
+    # src/systems/physics/Link3.cpp
+    # src/systems/physics/Rod3.cpp
+    src/systems/physics/PhysicsWorld3.cpp
 
     # Utility
     src/util/Action.cpp
-    include/SGE/util/ActionType.h
     src/util/Bitmask.cpp
-    src/util/GameEngine.cpp
-    src/util/InputSnapshot.cpp
-    src/util/Scene.cpp)
+    )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 

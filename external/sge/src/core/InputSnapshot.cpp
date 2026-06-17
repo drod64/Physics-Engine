@@ -1,4 +1,4 @@
-#include <SGE/util/InputSnapshot.h>
+#include <SGE/core/InputSnapshot.h>
 
 const int sge::InputSnapshot::INPUT_SIZE = 512;
 

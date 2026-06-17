@@ -1,59 +1,67 @@
 #ifndef SGE_ENTITY_MANAGER_H
 #define SGE_ENTITY_MANAGER_H
-#include <algorithm>
-#include <memory>
+#include <cstdint>
 #include <vector>
-#include <unordered_map>
+#include <queue>
 #include <SGE/entities/Entity.h>
 
 namespace sge {
-
-typedef std::vector<std::shared_ptr<Entity>> EntityVec;
-typedef std::unordered_map<std::string, EntityVec> EntityMap;
-
 /**
- * Manages the life-cycle and update of entities.
+ * Manages the life-cycle of Entity IDs.
  */
 class EntityManager {
 private:
-    EntityVec m_entities;
-    EntityVec m_entitiesToAdd; // a queue for the entites to be added in the next frame
-    EntityMap m_entityMap;
-    size_t m_totalEntities; // total number of entities spawned in the program.
-    void removeDeadEntities(EntityVec &vector);
+    static const uint32_t INDEX_MASK;
+    static const uint32_t MIN_GENERATION;
+
+    std::vector<uint32_t> m_generations;
+    std::queue<uint32_t> m_freeIndices;
+
+    /**
+     * Helper function that calculates a unique Entity ID based on given index and generation.
+     * @param index the index of the Entity ID
+     * @param generation the generation of the Entity ID.
+     */
+    Entity createEntityID(uint32_t index, uint32_t generation) const;
 
 public:
     /**
-     * Default Constructor. 
+     * Default Constructor.
      */
     EntityManager();
 
     /**
-     * Updates the sge::EntityManager instance.
-     * Make sure to put this function call somewhere in your game loop update()
+     * Gets the index of an Entity.
+     * @param e the Entity to get the index from
+     * @return a uint32_t representing the Entity's index
      */
-    void update();
+    uint32_t getIndex(sge::Entity e) const;
 
     /**
-     * Adds an entity to the manager.
-     * @param tag the tag of the entity
-     * @return a std::shared_ptr<Entity> to the newly added entity
+     * Gets the generation of an Entity.
+     * @param e the Entity to get the generation from
+     * @return a uint32_t representing the Entity's generation
      */
-    std::shared_ptr<Entity> addEntity(const std::string &tag);
+    uint32_t getGeneration(sge::Entity e) const;
 
     /**
-     * Retrives ALL entities stored in the manager.
-     * @return a const reference to the container with ALL entities
+     * Creates a brand new Entity.
+     * @return the ID of the new Entity
      */
-    const EntityVec& getEntities() const;
+    Entity createEntity();
 
     /**
-     * Retrives entities ONLY with a specific tag.
-     * @param tag the tag to search for
-     * @return a const reference to the container with entities
-     * ONLY with the specific tag
+     * Removes an Entity from the EntityManager.
+     * @param e the Entity to destroy
      */
-    const EntityVec* getEntities(const std::string &tag) const;
+    void destroyEntity(Entity e);
+
+    /**
+     * Checks if an Entity is still alive in the EntityManager.
+     * @param e the Entity to check
+     * @return true if still alive, false otherwise
+     */
+    bool isAlive(Entity e) const;
 };
 
 } // namespace sge

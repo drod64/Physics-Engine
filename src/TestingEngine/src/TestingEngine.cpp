@@ -10,7 +10,7 @@ sge::GameEngine()
     // TODO load level file stuff
     this->m_currentScene = "PLAY";
 
-    this->changeScene<Scene_Play>(this->m_currentScene, filePath, false);
+    this->changeScene<ScenePlay>(this->m_currentScene, filePath, false);
 
     InitWindow(800, 600, "Particle Physics Engine");
     ToggleFullscreen();

@@ -1,4 +1,4 @@
-#include <SGE/util/GameEngine.h>
+#include <SGE/core/GameEngine.h>
 
 namespace sge {
 
