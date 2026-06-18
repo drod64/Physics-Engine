@@ -37,6 +37,7 @@ void ScenePlaySpawn::spawnProjectile(sge::CommandBuffer &cmdBuffer, ProjectileTy
     cmdBuffer.addComponentDeferred(e, r3);
     cmdBuffer.addComponentDeferred(e, t3);
     cmdBuffer.addComponentDeferred(e, sge::CLifespan(600));
+    cmdBuffer.addComponentDeferred(e, sge::CGravity3({0, -9.81, 0}));
 }
 
 void ScenePlaySpawn::spawnFirework(sge::CommandBuffer &cmdBuffer, const std::string &tag)

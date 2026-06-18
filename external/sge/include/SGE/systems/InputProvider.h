@@ -8,7 +8,6 @@
 #include <SGE/core/InputActionSnapshot.h>
 #include <SGE/core/resources/PlayerInputResource.h>
 
-// TODO Add Action-map to InputSystem to feed PlayerInputResource with Actions.
 // 1. translation, intention, and execution pipeline
 // InputProvider -> PlayerActionSystem -> PlayerMovementSystem or any other system that depends on a specific action.
 namespace sge {

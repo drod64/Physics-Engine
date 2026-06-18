@@ -7,12 +7,17 @@
 #include <SGE/core/GameEngine.h>
 #include <TestingEngine/ScenePlaySpawn.h>
 #include <SGE/components/CCamera3.h>
+#include <raylib.h>
+
+// Testing systems.
+#include <SGE/systems/PhysicsSystem3.h>
 #include <SGE/systems/PlayerActionSystem.h>
 #include <TestingEngine/systems/TestSpawnSystem.h>
-#include <raylib.h>
 
 class ScenePlay : public sge::Scene {
 private:
+    sge::PhysicsSystem3 m_physics;
+    
     /////////////////////////////
     //   Overriden functions   //
     /////////////////////////////

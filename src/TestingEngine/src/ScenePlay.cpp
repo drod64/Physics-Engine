@@ -17,6 +17,7 @@ void ScenePlay::update(float dt)
         // TESTING ONLY.
         sge::PlayerActionSystem::update(this->getRegistry(), this->getCommandBuffer(), dt);
         TestSpawnSystem::update(this->getRegistry(), this->getCommandBuffer(), dt);
+        m_physics(this->getRegistry(), this->getCommandBuffer(), dt);
         this->m_world.update(dt);
     }
     

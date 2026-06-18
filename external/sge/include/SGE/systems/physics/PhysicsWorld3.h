@@ -7,6 +7,7 @@
 #include <SGE/components/CLifespan.h>
 #include <SGE/core/View.h>
 #include <SGE/core/CommandBuffer.h>
+#include <SGE/systems/PhysicsSystem3.h>
 
 namespace sge {
 class PhysicsWorld3 {
