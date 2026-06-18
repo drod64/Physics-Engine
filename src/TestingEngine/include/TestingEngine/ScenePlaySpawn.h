@@ -6,7 +6,6 @@
 #include <SGE/components/CRigidBody3.h>
 #include <SGE/components/CLifespan.h>
 #include <SGE/core/CommandBuffer.h>
-#include <TestingEngine/ActionScenePlay.h>
 #include <TestingEngine/ProjectileType.h>
 
 class ScenePlaySpawn {

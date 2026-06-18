@@ -1,57 +1,35 @@
 #ifndef SGE_ACTION_H
 #define SGE_ACTION_H
-#include <cstdint>
-#include <SGE/util/ActionType.h>
 
 namespace sge {
+enum class Action : uint8_t {
+    // Movement actions
+    MoveForward = 0,
+    MoveBackward,
+    MoveRight,
+    MoveLeft,
+    Sprint,
+    Crouch,
 
-using ActionID = uint32_t;
-/**
- * Stores data related to a specific action such as its ID and type.
- */
-class Action {
-private:
-    ActionID m_id;
-    ActionType m_type;
+    // Interaction actions
+    Jump,
+    Interact,
+    Cancel,
 
-public:
-    /**
-     * Default Constructor.
-     */
-    Action();
+    // Execution actions
+    PrimaryAction,
+    SecondaryAction,
+    Reload,
 
-    /**
-     * Parameterized Constructor.
-     * @param id the ID of the action
-     * @param type the type of action
-     */
-    Action(ActionID id, ActionType type);
+    // Global actions
+    Pause,
+    MenuToggle,
 
-    /**
-     * Retrieves the action ID.
-     * @return the ID of the action
-     */
-    ActionID getID() const;
+    // ADD DEBUG ACTIONS HERE
 
-    /**
-     * Retrives the action type.
-     * @return the type of action
-     */
-    ActionType getType() const;
-
-    /**
-     * Sets the action ID.
-     * @param id the ID of the action
-     */
-    void setID(ActionID id);
-
-    /**
-     * Sets the action type.
-     * @param type the type of action
-     */
-    void setType(ActionType type);
+    // Count of actions
+    MaxActions
 };
-
 } // namespace sge
 
 #endif // SGE_ACTION_H

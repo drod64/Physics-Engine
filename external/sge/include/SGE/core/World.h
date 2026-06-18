@@ -3,9 +3,9 @@
 #include <tuple>
 #include <vector>
 #include <type_traits>
+#include <raylib.h>
 #include <SM/Vec3.h>
 #include <SM/Precision.h>
-#include <SGE/systems/physics/PhysicsWorld3.h>
 #include <SGE/core/View.h>
 #include <SGE/core/CommandBuffer.h>
 
@@ -15,7 +15,7 @@ class World {
 protected:
     Registry                        m_registry;
     CommandBuffer                   m_cmdBuffer;
-    PhysicsWorld3                   m_physicsWorld;
+    Camera3D                        m_camera;
 
 public:
     /**
@@ -35,6 +35,8 @@ public:
     CommandBuffer& getCommandBuffer();
 
     Registry& getRegistry();
+
+    Camera3D& getCamera();
 
 };
 }

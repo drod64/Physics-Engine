@@ -17,7 +17,8 @@ static constexpr uint32_t REAL_ENTITY_MASK = 0x7FFFFFFF;
  * @return true if fake, false otherwise
  */
 inline bool IsFakeEntity(Entity e)
-{
+{   if (e == Entity::INVALID) return true;
+    
     return (static_cast<uint32_t>(e) & FAKE_ENTITY_FLAG);
 }
 

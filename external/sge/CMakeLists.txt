@@ -9,6 +9,7 @@ set(SOURCE_FILES
     src/components/CBoundingBox.cpp
     src/components/CBungee3.cpp
     src/components/CBuoyancy3.cpp
+    src/components/CCamera3.cpp
     src/components/CCollision.cpp
     src/components/CDrag3.cpp
     src/components/CFakeStiffSpring3.cpp
@@ -23,8 +24,9 @@ set(SOURCE_FILES
     src/components/CTransform3.cpp
 
     # Core
+    src/core/resources/PlayerInputResource.cpp
     src/core/GameEngine.cpp
-    src/core/InputSnapshot.cpp
+    src/core/InputActionSnapshot.cpp
     src/core/Scene.cpp
     src/core/World.cpp
 
@@ -38,9 +40,12 @@ set(SOURCE_FILES
     # src/systems/physics/Link3.cpp
     # src/systems/physics/Rod3.cpp
     src/systems/physics/PhysicsWorld3.cpp
+    src/systems/PlayerActionSystem.cpp
+    src/systems/InputProvider.cpp
+    src/systems/RenderingSystem3.cpp
+
 
     # Utility
-    src/util/Action.cpp
     src/util/Bitmask.cpp
     )
 

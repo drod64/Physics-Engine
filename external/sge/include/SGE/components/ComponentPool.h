@@ -1,6 +1,7 @@
 #ifndef SGE_COMPONENT_POOL
 #define SGE_COMPONENT_POOL
 #include <vector>
+#include <cassert>
 #include <SGE/entities/Entity.h>
 #include <SGE/components/IComponentPool.h>
 

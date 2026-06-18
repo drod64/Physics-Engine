@@ -1,5 +1,6 @@
 #ifndef SGE_CTRANSFORM3_H
 #define SGE_CTRANSFORM3_H
+#include <cmath>
 #include <sm/Vec3.h>
 
 namespace sge {
@@ -15,6 +16,8 @@ public:
      * Default Constructor.
      */
     CTransform3();
+
+    sm::Vec3 getForward() const;
 };
 } // namespace sge
 

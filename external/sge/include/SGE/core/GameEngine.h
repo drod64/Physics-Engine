@@ -1,14 +1,21 @@
 #ifndef SGE_GAME_ENGINE_H
 #define SGE_GAME_ENGINE_H
+// STD includes
 #include <iostream>
 #include <memory>
 #include <string>
 #include <unordered_map>
-// Library includes
-#include <SGE/entities/EntityManager.h>
-#include <SGE/core/Scene.h>
-#include <SGE/core/InputSnapshot.h>
+#include <functional>
+#include <vector>
 #include <raylib.h>
+
+// Custom library includes
+#include <SGE/core/Scene.h>
+#include <SGE/systems/InputProvider.h>
+
+// Necessary systems
+#include <SGE/systems/RenderingSystem3.h>
+#include <SGE/core/InputActionSnapshot.h>
 
 namespace sge {
 /**
@@ -20,8 +27,7 @@ protected:
     std::unordered_map<std::string, std::shared_ptr<sge::Scene>> m_scenes; 
     size_t m_simulationSpeed;
     bool m_running;
-    InputSnapshot m_curInput;
-    InputSnapshot m_prevInput;
+    InputProvider inputSystem;
 
     /**
      * Default Constructor.
@@ -33,19 +39,6 @@ protected:
      * @param dt the delta time between frames
      */
     void update(float dt);
-
-    /**
-     * Stores the previous input state while also updating the current input state.
-     * Also calls the current scene to handle the passed in previous input state and current input state.
-     */
-    void sUserInput();
-
-    /**
-     * Updates the input snapshot (state) of the game engine by reading directly
-     * from keyboard/mouse button presses/releases.
-     * @param input the InputSnapshot to update
-     */
-    void updateInputSnapshot(InputSnapshot &input);
 
     /**
      * Retrives the current scene the game engine is on.

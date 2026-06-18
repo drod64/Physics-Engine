@@ -2,6 +2,7 @@
 #define SGE_VIEW_H
 #include <vector>
 #include <limits>
+#include <array>
 #include <SGE/entities/Entity.h>
 #include <SGE/components/IComponentPool.h>
 

@@ -1,9 +1,8 @@
 #ifndef SGE_SCENE_H
 #define SGE_SCENE_H
-#include <map>
 #include <memory>
 #include <SGE/util/Action.h>
-#include <SGE/core/InputSnapshot.h>
+#include <SGE/core/World.h>
 #include <raylib.h>
 
 
@@ -18,7 +17,7 @@ class GameEngine;
 class Scene {
 protected:
     GameEngine* m_game;
-    std::map<int, ActionID> m_actionMap;
+    sge::World m_world;
     bool m_paused;
     bool m_hasEnded;
     size_t m_currentFrame;
@@ -54,40 +53,9 @@ public:
     virtual void update(float dt) = 0;
 
     /**
-     * Pure virtual function that must be implemented by a sub-class.
-     * @param action the action to perform
-     */
-    virtual void sDoAction(const sge::Action &action) = 0;
-
-    /**
-     * Pure virtual function that must be implemented by a sub-class.
-     */
-    virtual void sRender() = 0;
-
-    /**
-     * Pure virtual function that must be implemented by a sub-class.
-     * @param curInput the current input from the latest frame
-     * @param prevInput the previous input from the previous frame
-     */
-    virtual void handleInput(const InputSnapshot &curInput, const InputSnapshot &prevInput) = 0;
-
-    /**
-     * Virtual function. Simply calls the necessary function to handle the passed in action.
-     * @param action the action to perform
-     */
-    virtual void doAction(const Action &action);
-
-    /**
      * TODO
      */
     void simulate(const size_t frames);
-
-    /**
-     * Maps a specific action to a specific key.
-     * @param inputKey the key to map
-     * @param actionID the action ID to map
-     */
-    void registerAction(int inputKey, ActionID actionID);
     
     /**
      * Returns the width of the rendering window.
@@ -113,11 +81,9 @@ public:
      */
     bool hasEnded() const;
 
-    /**
-     * Retrives the action map of the scene.
-     * @param a const reference to the action map
-     */
-    const std::map<int, ActionID>& getActionMap() const;
+    virtual Registry& getRegistry();
+
+    virtual CommandBuffer& getCommandBuffer();
 };
 
 }

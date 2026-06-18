@@ -7,45 +7,19 @@ GameEngine::GameEngine()
 
 void GameEngine::update(float dt)
 {
-    sUserInput();
+    // Call input system.
+    inputSystem(currentScene()->getRegistry(), currentScene()->getCommandBuffer(), dt);
+
+    // Update current scene.
     currentScene()->update(dt);
-}
 
-void GameEngine::sUserInput()
-{
-    this->m_prevInput = this->m_curInput;
-    
-    updateInputSnapshot(this->m_curInput);
-
-    currentScene()->handleInput(this->m_curInput, this->m_prevInput);
+    // Render current frame.
+    sge::RenderingSystem3::update(currentScene()->getRegistry(), currentScene()->getCommandBuffer(), dt);
 
     if (WindowShouldClose())
     {
         quit();
     }
-
-}
-
-void sge::GameEngine::updateInputSnapshot(sge::InputSnapshot &input)
-{
-    // Check for keyboard input
-    for (int i = 0; i < sge::InputSnapshot::INPUT_SIZE; ++i)
-    {
-        if (IsKeyDown(i))               { input.setKeyButton(i, true); }
-        else if (IsKeyReleased(i))      { input.setKeyButton(i, false); }
-    }
-
-    // input.setKeyButton(KeyboardKey::KEY_P, IsKeyDown(KeyboardKey::KEY_P));
-
-    // Check for mouse input
-    for (int i = 0; i < sge::InputSnapshot::INPUT_SIZE; ++i)
-    {
-        input.setMouseButton(i, IsMouseButtonDown(i));
-    }
-
-    // Update mouse delta and position
-    input.mouseDelta = sm::Vec2(GetMouseDelta().x, GetMouseDelta().y);
-    input.mousePosition = sm::Vec2(GetMouseX(), GetMouseY());
 }
 
 std::shared_ptr<sge::Scene> GameEngine::currentScene()
