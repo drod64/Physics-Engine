@@ -29,7 +29,7 @@ public:
     T& getComponent(Entity e);
     
     template <typename T>
-    bool hasComponent(Entity e) const;
+    bool hasComponent(Entity e);
     
     // Entity 
     Entity createEntity();
@@ -82,7 +82,7 @@ inline T& sge::Registry::getComponent(Entity e)
 }
 
 template <typename T>
-inline bool sge::Registry::hasComponent(Entity e) const
+inline bool sge::Registry::hasComponent(Entity e)
 {
     return this->m_components.has<T>(e);
 }

@@ -23,14 +23,15 @@ private:
         void (*destructor) (uint8_t *payloadBuffer);
     };
 
+    size_t m_bufferSize;
+    uint32_t m_placerHolderIndex;
     std::vector<uint8_t> m_rawByteBuffer;
     std::vector<Entity> m_pendingDestructions;
     std::unordered_map<uint32_t, Entity> m_translationMap;
-    uint32_t m_placerHolderIndex;
 
 public:
-    CommandBuffer() = default;
-    ~CommandBuffer() = default;
+    CommandBuffer();
+    ~CommandBuffer();
 
     // Prevent copying.
     CommandBuffer(const CommandBuffer&) = delete;
@@ -54,10 +55,31 @@ public:
     void playBack(Registry &registry);
 
     void clear();
+
+    void abort();
 };
 } // namespace sge
 
 // Implementation
+
+inline sge::CommandBuffer::CommandBuffer()
+{
+    this->m_bufferSize = 0;
+    this->m_placerHolderIndex = 0;
+    // Other variables do not need initialization.
+    // std::vector<uint8_t> m_rawByteBuffer;
+    // std::vector<Entity> m_pendingDestructions;
+    // std::unordered_map<uint32_t, Entity> m_translationMap;
+}
+
+inline sge::CommandBuffer::~CommandBuffer()
+{
+    // Call destructors of structs/classes potentially stored in...
+    //...raw byte buffer.
+    this->abort();
+
+    this->m_rawByteBuffer.shrink_to_fit();
+}
 
 inline sge::Entity sge::CommandBuffer::createEntityDeferred()
 {
@@ -69,12 +91,12 @@ inline sge::Entity sge::CommandBuffer::createEntityDeferred()
 }
 
 inline void sge::CommandBuffer::destroyEntityDeferred(Entity e)
-{
-    // Do not destroy entities that do not exist.
-    if (sge::IsFakeEntity(e)) return;
-    
+{   
+    // Only destroy entities that are invalid. 
     if (e == sge::Entity::INVALID) return;
 
+    // Fake entities are allowed in order to support same frame creation and deletion.
+    // These are intercepted in playBack().
     this->m_pendingDestructions.push_back(e);
 }
 
@@ -127,7 +149,7 @@ inline sge::CommandBuffer& sge::CommandBuffer::addComponentDeferred(sge::Entity 
 
     // 2. 8 byte Data-Oriented alignment.
     constexpr size_t ALIGN_SIZE = 8;
-    size_t headerStart = this->m_rawByteBuffer.size();
+    size_t headerStart = this->m_bufferSize;
 
     // Calculate aligned space for the header data.
     size_t headerSize = sizeof(CommandHeader);
@@ -149,9 +171,16 @@ inline sge::CommandBuffer& sge::CommandBuffer::addComponentDeferred(sge::Entity 
     uint32_t playBackHopSize = static_cast<uint32_t>(nextBlockStart - headerStart);
 
     // 3. Expand byte buffer.
-    this->m_rawByteBuffer.resize(headerStart + totalAllocatedBytes);
+    size_t requiredCapacity = headerStart + totalAllocatedBytes;
+    if (this->m_rawByteBuffer.capacity() < requiredCapacity)
+    {
+        size_t newCapacity = (this->m_rawByteBuffer.capacity() == 0) ? 1024 : this->m_rawByteBuffer.capacity() * 2;
+        if (newCapacity < requiredCapacity) newCapacity = requiredCapacity;
+        this->m_rawByteBuffer.reserve(newCapacity);
+    }
+    this->m_bufferSize = requiredCapacity;
 
-    // Grab a safe/stable pointer to potentially new allocated heap block.
+    // Grab a safe/stable pointer.
     uint8_t *baseBufferPtr = this->m_rawByteBuffer.data();
 
     // 4. Write meta header data to its aligned block.
@@ -159,7 +188,7 @@ inline sge::CommandBuffer& sge::CommandBuffer::addComponentDeferred(sge::Entity 
     headerLocation->executor = staticExecutor;
     headerLocation->totalCommandSize = playBackHopSize;
     headerLocation->destructor = [](uint8_t *payloadBuffer) {
-        reinterpret_cast<ComponentType*>(payloadBuffer)->~ComponentType();
+        std::destroy_at(reinterpret_cast<ComponentType*>(payloadBuffer));
     };
 
     // 5. Write component data bytes using placement new on aligned pointer.
@@ -215,12 +244,7 @@ inline sge::CommandBuffer& sge::CommandBuffer::removeComponentDeferred(sge::Enti
 
     // 2. 8 byte Data-Oriented alignment
     constexpr size_t ALIGN_SIZE = 8;
-
-    size_t startOffset = this->m_rawByteBuffer.size();
-
-    // Align start position of new block.
-    size_t paddingBeforeHeader = (ALIGN_SIZE - (startOffset % ALIGN_SIZE)) % ALIGN_SIZE;
-    size_t headerStart = startOffset + paddingBeforeHeader;
+    size_t headerStart = this->m_bufferSize;
 
     // Calculate aligned space for the header.
     size_t headerSize = sizeof(CommandHeader);
@@ -233,13 +257,20 @@ inline sge::CommandBuffer& sge::CommandBuffer::removeComponentDeferred(sge::Enti
     size_t nextBlockStart = payloadStart + entitySize + paddingAfterEntity;
 
     // Calculate total footprint from initial allocation boundary.
-    size_t totalAllocatedBytes = nextBlockStart - startOffset;
+    size_t totalAllocatedBytes = nextBlockStart - headerStart;
 
     // Distance playBack() must traverse to reach the next header slot.
-    uint32_t playBackHopSize = static_cast<uint32_t>(nextBlockStart - headerStart);
+    uint32_t playBackHopSize = static_cast<uint32_t>(totalAllocatedBytes);
 
     // 3. Expand byte buffer.
-    this->m_rawByteBuffer.resize(startOffset + totalAllocatedBytes);
+    size_t requiredCapacity = headerStart + totalAllocatedBytes;
+    if (this->m_rawByteBuffer.capacity() < requiredCapacity)
+    {
+        size_t newCapacity = (this->m_rawByteBuffer.capacity() == 0) ? 1024 : this->m_rawByteBuffer.capacity() * 2;
+        if (newCapacity < requiredCapacity) newCapacity = requiredCapacity;
+        this->m_rawByteBuffer.reserve(newCapacity);
+    }
+    this->m_bufferSize = requiredCapacity;
 
     // Grab a stable/safe pointer to potential new heap block.
     uint8_t *baseBufferPtr = this->m_rawByteBuffer.data();
@@ -260,10 +291,23 @@ inline sge::CommandBuffer& sge::CommandBuffer::removeComponentDeferred(sge::Enti
 
 inline void sge::CommandBuffer::playBack(sge::Registry &registry)
 {
+    // Sort and deduplicate pending destructions vector.
+    std::sort(this->m_pendingDestructions.begin(), this->m_pendingDestructions.end());
+    auto last = std::unique(this->m_pendingDestructions.begin(), this->m_pendingDestructions.end());
+    this->m_pendingDestructions.erase(last, this->m_pendingDestructions.end());
+
     // 1. Map out real IDs for Entities.
     for (uint32_t i = 0; i < this->m_placerHolderIndex; ++i)
     {
         uint32_t fakeID = i | sge::FAKE_ENTITY_FLAG;
+        sge::Entity fakeHandle = static_cast<sge::Entity>(fakeID);
+
+        // Ignore fake entities that are pending destruction.
+        // This saves us from unnecessary creation because of immediate deletion.
+        if (std::binary_search(this->m_pendingDestructions.begin(), this->m_pendingDestructions.end(), fakeHandle))
+        {
+            continue;
+        }
 
         // Request a permanent ID for the Entity.
         sge::Entity realID = registry.createEntity();
@@ -272,11 +316,79 @@ inline void sge::CommandBuffer::playBack(sge::Registry &registry)
         this->m_translationMap[fakeID] = realID;
     }
     this->m_placerHolderIndex = 0;
-
+    
     // 2. Stream through the raw byte commands.
     // This mutates their components (adding or removing).
     size_t byteIterator = 0;
-    size_t totalBytes = this->m_rawByteBuffer.size();
+    size_t totalBytes = this->m_bufferSize;
+    
+    if (totalBytes > 0)
+    {
+        const uint8_t *baseBufferPtr = this->m_rawByteBuffer.data();
+        
+        while (byteIterator < totalBytes)
+        {
+            constexpr size_t ALIGN_SIZE = 8;
+            size_t headerSize = sizeof(CommandHeader);
+            size_t paddingAfterHeader = (ALIGN_SIZE - (headerSize % ALIGN_SIZE)) % ALIGN_SIZE;
+            
+            // Read meta header.
+            const CommandHeader *header = reinterpret_cast<const CommandHeader*>(baseBufferPtr + byteIterator);
+            
+            // Calculate where payload data is (taking into account the padding).
+            const uint8_t *payloadPtr = baseBufferPtr + byteIterator + headerSize + paddingAfterHeader;
+            
+            // Invoke the type-erased lambda function to add/remove components in live registry.
+            header->executor(registry, this->m_translationMap, payloadPtr);
+            
+            // Invoke destructor (if it exists) after payload has been delivered.
+            if (header->destructor)
+            {
+                header->destructor(const_cast<uint8_t*>(payloadPtr));
+            }
+            
+            // Advance to next block.
+            byteIterator += header->totalCommandSize;
+        }
+    }
+    
+    // 3. Process destructions.
+    for (const Entity &e : this->m_pendingDestructions)
+    {
+        // Skip fake entities. These were intercepted and...
+        //...never created in the registry.
+        if (sge::IsFakeEntity(e))
+        {
+            continue;
+        }
+        
+        // Final check. See if Entity is still alive before destroying.
+        if (registry.isAlive(e))
+        {
+            registry.destroyEntity(e);
+        }
+    }
+    this->m_pendingDestructions.clear();
+
+    this->clear();
+}
+
+inline void sge::CommandBuffer::clear()
+{
+    // Heap allocated payloads have already been account for in playBack().
+    // Simply clear primitive state of CommandBuffer for this frame.
+    // TIP: use abort() if you want to manually call destructors in payload.
+    this->m_bufferSize = 0;
+    this->m_pendingDestructions.clear();
+    this->m_translationMap.clear();
+    this->m_placerHolderIndex = 0;
+}
+
+inline void sge::CommandBuffer::abort()
+{
+    // Manually calls the destructors of any structs/classes in the active raw byte buffer.
+    size_t byteIterator = 0;
+    size_t totalBytes = this->m_bufferSize;
     
     if (totalBytes > 0)
     {
@@ -293,58 +405,19 @@ inline void sge::CommandBuffer::playBack(sge::Registry &registry)
     
             // Calculate where payload data is (taking into account the padding).
             const uint8_t *payloadPtr = baseBufferPtr + byteIterator + headerSize + paddingAfterHeader;
-            
-            // Invoke the type-erased lambda function to add/remove components from live registry.
-            header->executor(registry, this->m_translationMap, payloadPtr);
+
+            // Invoke destructor (if it exists) after payload has been delivered.
+            if (header->destructor)
+            {
+                header->destructor(const_cast<uint8_t*>(payloadPtr));
+            }
     
             // Advance to next block.
             byteIterator += header->totalCommandSize;
         }
     }
-    
-    // Before destruction phase...
-    // ...perform a deduplication on the soon to be destroyed IDs.
-    // (rare cases where an entity is created and destroyed in the same frame)
-    std::sort(this->m_pendingDestructions.begin(), this->m_pendingDestructions.end());
-    auto last = std::unique(this->m_pendingDestructions.begin(), this->m_pendingDestructions.end());
-    this->m_pendingDestructions.erase(last, this->m_pendingDestructions.end());
-
-    // 3. Process destructions.
-    for (const Entity &e : this->m_pendingDestructions)
-    {
-        Entity targetID = e;
-
-        // Find real ID if a fake ID managed to sneak it's way into the destruction queue.
-        if (sge::IsFakeEntity(targetID))
-        {
-            auto it = this->m_translationMap.find(static_cast<uint32_t>(targetID));
-            if (it != this->m_translationMap.end())
-            {
-                targetID = it->second;
-            }
-            else
-            {
-                continue;
-            }
-        }
-        
-        // Final check. See if Entity is still alive before destroying.
-        if (registry.isAlive(targetID))
-        {
-            registry.destroyEntity(targetID);
-        }
-    }
-    this->m_pendingDestructions.clear();
 
     this->clear();
-}
-
-inline void sge::CommandBuffer::clear()
-{
-    this->m_rawByteBuffer.clear();
-    this->m_pendingDestructions.clear();
-    this->m_translationMap.clear();
-    this->m_placerHolderIndex = 0;
 }
 
 #endif // SGE_COMMAND_BUFFER_H
