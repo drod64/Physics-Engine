@@ -71,6 +71,14 @@ public:
     T& get(Entity e);
 
     /**
+     * Retrives the component from the specific entity.
+     * @tparam T the component type (sge::CTransform, sge::CRigidBody, etc...)
+     * @param e the entity to get the component from
+     * @return a reference to the component
+     */
+    const T& get(Entity e) const;
+
+    /**
      * Checks if an entity has a specific component.
      * @tparam T the component type (sge::CTransform, sge::CRigidBody, etc...)
      * @param e the entity to check
@@ -83,6 +91,8 @@ public:
     Entity getEntityAt(size_t index) const override;
 
     std::vector<T>& getDenseComponents();
+
+    const std::vector<T>& getDenseComponents() const;
 };
 } // namespace sge
 
@@ -146,6 +156,14 @@ inline T& sge::ComponentPool<T>::get(sge::Entity e)
 }
 
 template <typename T>
+inline const T& sge::ComponentPool<T>::get(sge::Entity e) const
+{
+    assert(has(e) && "Entity does not have this component type!");
+    
+    return this->m_dense.at(this->m_sparse.at((uint32_t)e));
+}
+
+template <typename T>
 inline bool sge::ComponentPool<T>::has(sge::Entity e) const
 {
     uint32_t e_int = static_cast<uint32_t>(e);
@@ -169,6 +187,12 @@ inline sge::Entity sge::ComponentPool<T>::getEntityAt(size_t index) const
 
 template <typename T>
 inline std::vector<T>& sge::ComponentPool<T>::getDenseComponents()
+{
+    return this->m_dense;
+}
+
+template <typename T>
+inline const std::vector<T>& sge::ComponentPool<T>::getDenseComponents() const
 {
     return this->m_dense;
 }

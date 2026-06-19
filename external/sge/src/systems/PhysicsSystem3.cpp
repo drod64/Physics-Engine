@@ -11,9 +11,9 @@ void sge::PhysicsSystem3::operator()(sge::Registry &registry, sge::CommandBuffer
     for (const Entity &e : anchorBungee3View)
     {
         // Retrieve necessary components from entity.
-        auto &r3 = registry.getComponent<sge::CRigidBody3>(e);
-        auto &t3 = registry.getComponent<sge::CTransform3>(e);
-        const auto &ab3 = registry.getComponent<sge::CAnchorBungee3>(e);
+        auto &r3 = anchorBungee3View.get<sge::CRigidBody3>(e);
+        const auto &t3 = anchorBungee3View.get<sge::CTransform3>(e);
+        const auto &ab3 = anchorBungee3View.get<sge::CAnchorBungee3>(e);
 
         // Get displacement between both entities.
         sm::Vec3 displacement = t3.position - ab3.anchorPosition;
@@ -50,8 +50,8 @@ void sge::PhysicsSystem3::operator()(sge::Registry &registry, sge::CommandBuffer
 
     for (const Entity &e : gravity3View)
     {
-        auto &r3 = registry.getComponent<sge::CRigidBody3>(e);
-        const auto &g3 = registry.getComponent<sge::CGravity3>(e);
+        auto &r3 = gravity3View.get<sge::CRigidBody3>(e);
+        const auto &g3 = gravity3View.get<sge::CGravity3>(e);
 
         r3.addForce(g3.gravity * r3.getMass());
     }
@@ -62,7 +62,7 @@ void sge::PhysicsSystem3::operator()(sge::Registry &registry, sge::CommandBuffer
 
 void sge::PhysicsSystem3::startFrame(Registry &registry)
 {
-    auto pool = registry.getPool<sge::CRigidBody3>();
+    auto pool = registry.getOrCreatePool<sge::CRigidBody3>();
     auto &components = pool->getDenseComponents();
     
     for (auto &r3 : components)

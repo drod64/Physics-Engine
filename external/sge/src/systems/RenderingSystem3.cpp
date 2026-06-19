@@ -1,6 +1,6 @@
 #include <SGE/systems/RenderingSystem3.h>
 
-void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer, sm::real dt)
+void sge::RenderingSystem3::update(const Registry &registry, const CommandBuffer &cmdBuffer, sm::real dt)
 {
     BeginDrawing();
     ClearBackground(WHITE);
@@ -11,7 +11,7 @@ void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer,
     sge::CTransform3 t3;
     sge::CCamera3 c3(true, CAMERA_PERSPECTIVE);
     bool cameraFound = false;
-
+    
     for (Entity e : cameraView)
     {
         auto &camera = cameraView.get<sge::CCamera3>(e);
@@ -44,7 +44,7 @@ void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer,
     rayCam.fovy = c3.fov;
     rayCam.projection = c3.projection;
     // End of camera setup. Begin drawing entities.
-    
+
     BeginMode3D(rayCam);
 
     // Component pool of sge::CTransform3

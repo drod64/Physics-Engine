@@ -9,7 +9,7 @@
 
 namespace sge {
     namespace RenderingSystem3 {
-        void update(Registry &registry, CommandBuffer &cmdBuffer, sm::real dt);
+        void update(const Registry &registry, const CommandBuffer &cmdBuffer, sm::real dt);
     };
 } // namespace sge
 

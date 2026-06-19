@@ -21,7 +21,7 @@ void sge::PhysicsWorld3::setGravity(const sm::Vec3 &gravity)
 
 void sge::PhysicsWorld3::startFrame(sge::Registry &registry)
 {
-    auto pool = registry.getPool<sge::CRigidBody3>();
+    auto pool = registry.getOrCreatePool<sge::CRigidBody3>();
     auto &components = pool->getDenseComponents();
 
     for (auto &r3 : components)
