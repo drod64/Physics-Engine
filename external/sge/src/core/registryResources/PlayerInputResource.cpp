@@ -1,4 +1,4 @@
-#include <SGE/core/resources/PlayerInputResource.h>
+#include <SGE/core/registryResources/PlayerInputResource.h>
 
 void sge::PlayerInputResource::updateCurrent(const sge::InputActionSnapshot &current)
 {

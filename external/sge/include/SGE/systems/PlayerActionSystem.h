@@ -4,7 +4,7 @@
 #include <SGE/core/CommandBuffer.h>
 #include <SM/Precision.h>
 #include <SGE/components/CPlayer.h>
-#include <SGE/core/resources/PlayerInputResource.h>
+#include <SGE/core/registryResources/PlayerInputResource.h>
 #include <SGE/components/CTransform3.h>
 #include <SGE/components/CCamera3.h>
 #include <raylib.h>

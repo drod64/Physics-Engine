@@ -4,7 +4,7 @@
 #include <cassert>
 #include <SGE/entities/EntityManager.h>
 #include <SGE/components/ComponentManager.h>
-#include <SGE/core/resources/ResourceRegistry.h>
+#include <SGE/core/registryResources/ResourceRegistry.h>
 
 namespace sge {
 

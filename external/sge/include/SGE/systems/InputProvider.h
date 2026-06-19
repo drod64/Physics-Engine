@@ -6,7 +6,7 @@
 #include <SGE/core/View.h>
 #include <SGE/core/CommandBuffer.h>
 #include <SGE/core/InputActionSnapshot.h>
-#include <SGE/core/resources/PlayerInputResource.h>
+#include <SGE/core/registryResources/PlayerInputResource.h>
 
 // 1. translation, intention, and execution pipeline
 // InputProvider -> PlayerActionSystem -> PlayerMovementSystem or any other system that depends on a specific action.

@@ -24,7 +24,7 @@ set(SOURCE_FILES
     src/components/CTransform3.cpp
 
     # Core
-    src/core/resources/PlayerInputResource.cpp
+    src/core/registryResources/PlayerInputResource.cpp
     src/core/GameEngine.cpp
     src/core/InputActionSnapshot.cpp
     src/core/Scene.cpp

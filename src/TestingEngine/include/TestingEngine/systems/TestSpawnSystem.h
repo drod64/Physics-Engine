@@ -3,7 +3,7 @@
 #include <SGE/core/View.h>
 #include <SGE/core/CommandBuffer.h>
 #include <SM/Precision.h>
-#include <SGE/core/resources/PlayerInputResource.h>
+#include <SGE/core/registryResources/PlayerInputResource.h>
 #include <TestingEngine/ScenePlaySpawn.h>
 
 namespace TestSpawnSystem {
