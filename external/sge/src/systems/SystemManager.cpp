@@ -15,14 +15,15 @@ void sge::SystemManager::registerSystem(SystemDescriptor desc)
     this->m_rawSystems.push_back(std::move(desc));
 }
 
-void sge::SystemManager::registerSystem(SystemFn functionPtr, ComponentMask reads, ComponentMask writes, std::string name)
+void sge::SystemManager::registerSystem(SystemFn functionPtr, ComponentMask componentReads, ComponentMask componentWrites,
+                                        ResourceMask resourceReads, ResourceMask resourceWrites, std::string name)
 {
     if (this->m_isCompiled)
     {
         throw std::runtime_error("[SystemManager]: Cannot register new systems after compile() has been called!");
     }
 
-    this->registerSystem(SystemDescriptor(functionPtr, reads, writes, name));
+    this->registerSystem(SystemDescriptor(functionPtr, componentReads, componentWrites, resourceReads, resourceWrites, name));
 }
 
 void sge::SystemManager::compile()
@@ -47,8 +48,10 @@ void sge::SystemManager::compile()
 
             // Check if System A writes to anything that System B reads or writes to.
             // If so, System A must execute first.
-            bool hasDependency = (sysA.writes & sysB.reads).any() ||
-                                (sysA.writes & sysB.writes).any();
+            bool hasDependency = (sysA.componentWrites & sysB.componentReads).any() ||
+                                (sysA.componentWrites & sysB.componentWrites).any() ||
+                                (sysA.resourceWrites & sysB.resourceReads).any()    ||
+                                (sysA.resourceWrites & sysB.resourceWrites).any();
 
             if (hasDependency)
             {

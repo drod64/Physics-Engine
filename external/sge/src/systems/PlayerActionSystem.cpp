@@ -40,3 +40,28 @@ void sge::PlayerActionSystem::update(Registry &registry, CommandBuffer &cmd, sm:
         }
     }
 }
+
+sge::SystemDescriptor sge::PlayerActionSystem::getSystemDescription()
+{
+    SystemDescriptor desc;
+
+    // System functor.
+    desc.functionPtr = &sge::PlayerActionSystem::update;
+    
+    // System component reads.
+    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CTransform3>());
+    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CCamera3>());
+
+    // System component writes.
+    desc.componentWrites.set(sge::ComponentIDCounter::get<sge::CTransform3>());
+
+    // System resource reads
+    desc.resourceReads.set(sge::ResourceIDCounter::get<sge::PlayerInputResource>());
+
+    // No system resource writes.
+    
+    // System name.
+    desc.name = "PlayerActionSystem";
+
+    return desc;
+}

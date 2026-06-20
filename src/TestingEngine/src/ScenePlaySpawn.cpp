@@ -103,12 +103,14 @@ void ScenePlaySpawn::spawnBungeeSpring(sge::CommandBuffer &cmdBuffer)
     sge::CTransform3 t3;
     t3.position = {0, 5, 0};
     sge::CRigidBody3 r3;
-    r3.addForce({0, 0, 10});
+    r3.addForce({0, 0, 100});
     r3.setMass(10);
-    
+
     cmdBuffer.addComponentDeferred(e1, ls);
     cmdBuffer.addComponentDeferred(e1, t3);
     cmdBuffer.addComponentDeferred(e1, r3);
+    cmdBuffer.addComponentDeferred(e1, sge::CAnchorBungee3({0, 10, 0}, 40, 15));
+    cmdBuffer.addComponentDeferred(e1, sge::CGravity3({0, -9.81, 0}));
 }
 
 void ScenePlaySpawn::spawnBuoyancySpring(sge::CommandBuffer &cmdBuffer)

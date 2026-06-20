@@ -5,6 +5,7 @@
 #include <SGE/components/CTransform3.h>
 #include <SGE/components/CRigidBody3.h>
 #include <SGE/components/CGravity3.h>
+#include <SGE/components/CAnchorBungee3.h>
 #include <SGE/components/CLifespan.h>
 #include <SGE/core/CommandBuffer.h>
 #include <TestingEngine/ProjectileType.h>

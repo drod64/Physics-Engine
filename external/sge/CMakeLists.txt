@@ -39,10 +39,11 @@ set(SOURCE_FILES
     # src/systems/physics/ContactResolver3.cpp
     # src/systems/physics/Link3.cpp
     # src/systems/physics/Rod3.cpp
+    src/systems/InputProvider.cpp
     src/systems/PhysicsSystem3.cpp
     src/systems/PlayerActionSystem.cpp
-    src/systems/InputProvider.cpp
     src/systems/RenderingSystem3.cpp
+    src/systems/SystemManager.cpp
 
 
     # Utility

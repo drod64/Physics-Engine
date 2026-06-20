@@ -1,6 +1,6 @@
 #include <SGE/systems/RenderingSystem3.h>
 
-void sge::RenderingSystem3::update(const Registry &registry, const CommandBuffer &cmdBuffer, sm::real dt)
+void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer, sm::real dt)
 {
     BeginDrawing();
     ClearBackground(WHITE);
@@ -14,7 +14,7 @@ void sge::RenderingSystem3::update(const Registry &registry, const CommandBuffer
     
     for (Entity e : cameraView)
     {
-        auto &camera = cameraView.get<sge::CCamera3>(e);
+        const auto &camera = cameraView.get<sge::CCamera3>(e);
 
         if (camera.isActive)
         {
@@ -48,7 +48,7 @@ void sge::RenderingSystem3::update(const Registry &registry, const CommandBuffer
     BeginMode3D(rayCam);
 
     // Component pool of sge::CTransform3
-    auto &t3Components = registry.getPool<sge::CTransform3>()->getDenseComponents();
+    const auto &t3Components = registry.getPool<sge::CTransform3>()->getDenseComponents();
 
     for (const auto &t3 : t3Components)
     {
@@ -58,4 +58,27 @@ void sge::RenderingSystem3::update(const Registry &registry, const CommandBuffer
     EndMode3D();
 
     EndDrawing();
+}
+
+sge::SystemDescriptor sge::RenderingSystem3::getSystemDescription()
+{
+    SystemDescriptor desc;
+
+    // System functor.
+    desc.functionPtr = &sge::RenderingSystem3::update;
+
+    // System component reads.
+    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CTransform3>());
+    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CCamera3>());
+
+    // No system component writes.
+
+    // Np system resource reads.
+
+    // No system resource writes.
+
+    // System name.
+    desc.name = "RenderingSystem3";
+
+    return desc;
 }

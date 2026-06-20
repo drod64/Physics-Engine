@@ -6,10 +6,13 @@
 #include <SM/Precision.h>
 #include <SGE/components/CTransform3.h>
 #include <SGE/components/CCamera3.h>
+#include <SGE/systems/SystemDescriptor.h>
 
 namespace sge {
     namespace RenderingSystem3 {
-        void update(const Registry &registry, const CommandBuffer &cmdBuffer, sm::real dt);
+        void update(Registry &registry, CommandBuffer &cmdBuffer, sm::real dt);
+
+        SystemDescriptor getSystemDescription();
     };
 } // namespace sge
 

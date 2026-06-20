@@ -3,6 +3,7 @@
 #include <SM/Vec3.h>
 #include <SGE/core/View.h>
 #include <SGE/core/CommandBuffer.h>
+#include <SGE/systems/SystemDescriptor.h>
 
 // Necessary physics components
 #include <SGE/components/CAnchorBungee3.h>
@@ -17,21 +18,22 @@
 #include <sge/components/CTransform3.h>
 
 namespace sge {
-class PhysicsSystem3 {
-public:
-    void operator () (Registry &registry, CommandBuffer &, sm::real dt);
+    namespace PhysicsSystem3 {
+        
+        void update (Registry &registry, CommandBuffer &, sm::real dt);
+
+        SystemDescriptor getSystemDescription();
+
+        /**
+         * Resets force accumulators of all Entity objects. 
+         */
+        void startFrame(Registry &registry);
     
-private:
-    /**
-     * Resets force accumulators of all Entity objects. 
-     */
-    void startFrame(Registry &registry);
-    
-    /**
-     * Integrates all the entities in this world by the given delta time.
-     * @param dt the delta time between frames
-     */
-    void integrate(Registry &registry, sm::real dt);
+        /**
+         * Integrates all the entities in this world by the given delta time.
+         * @param dt the delta time between frames
+         */
+        void integrate(Registry &registry, sm::real dt);
 };
 }
 

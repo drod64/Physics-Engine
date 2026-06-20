@@ -2,12 +2,12 @@
 
 void TestSpawnSystem::update(sge::Registry &registry, sge::CommandBuffer &cmdBuffer, sm::real dt)
 {
-    auto &playerInput = registry.getResource<sge::PlayerInputResource>();
+    const auto &playerInput = registry.getResource<sge::PlayerInputResource>();
 
     // Testing creation of entities and addition of components.
     if (playerInput.isActionPressed(sge::Action::PrimaryAction)) // Left mouse click
     {
-        ScenePlaySpawn::spawnProjectile(cmdBuffer, ProjectileType::PISTOL);
+        ScenePlaySpawn::spawnBungeeSpring(cmdBuffer);
     }
 
 
@@ -32,4 +32,28 @@ void TestSpawnSystem::update(sge::Registry &registry, sge::CommandBuffer &cmdBuf
             cmdBuffer.destroyEntityDeferred(e);
         }
     }
+}
+
+sge::SystemDescriptor TestSpawnSystem::getSystemDescriptor()
+{
+    sge::SystemDescriptor desc;
+
+    // System functor.
+    desc.functionPtr = &TestSpawnSystem::update;
+
+    // System component reads.
+    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CGravity3>());
+    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CRigidBody3>());
+
+    // No system component writes.
+
+    // System resource reads.
+    desc.resourceReads.set(sge::ResourceIDCounter::get<sge::PlayerInputResource>());
+
+    // No system resource writes.
+
+    // System name.
+    desc.name = "TestSpawnSystem";
+
+    return desc;
 }

@@ -164,7 +164,7 @@ inline sge::ConstView<Components...> sge::Registry::viewAll() const
 template <typename T, typename... Args>
 T& sge::Registry::getOrCreateResource(Args&&... args)
 {
-    size_t id = sge::ResourceIDCounter::get<T>();
+    size_t id = static_cast<size_t>(sge::ResourceIDCounter::get<T>());
 
     if (id >= this->m_resources.size())
     {
@@ -196,7 +196,7 @@ T& sge::Registry::getResource()
 {
     assert(this->hasResource<T>() && "Resource does not exist in Registry!");
 
-    size_t id = sge::ResourceIDCounter::get<T>();
+    size_t id = static_cast<size_t>(sge::ResourceIDCounter::get<T>());
 
     // Get raw pointer to cast it to its type
     auto *concrete = static_cast<sge::ConcreteResourceStorage<T>*>(this->m_resources.at(id).get());
@@ -210,7 +210,7 @@ const T& sge::Registry::getResource() const
 {
     assert(this->hasResource<T>() && "Const resource does not exist in Registry!");
 
-    size_t id = sge::ResourceIDCounter::get<T>();
+    size_t id = static_cast<size_t>(sge::ResourceIDCounter::get<T>());
 
     // Get raw pointer to cast it to its type
     auto *concrete = static_cast<sge::ConcreteResourceStorage<T>*>(this->m_resources.at(id).get());
@@ -222,7 +222,7 @@ const T& sge::Registry::getResource() const
 template <typename T>
 bool sge::Registry::hasResource() const
 {
-    size_t id = sge::ResourceIDCounter::get<T>();
+    size_t id = static_cast<size_t>(sge::ResourceIDCounter::get<T>());
 
     return (id < this->m_resources.size() && this->m_resources.at(id));
 }

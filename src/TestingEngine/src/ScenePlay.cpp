@@ -14,10 +14,6 @@ void ScenePlay::update(float dt)
 {
     if (!this->m_paused)
     {
-        // TESTING ONLY.
-        sge::PlayerActionSystem::update(this->getRegistry(), this->getCommandBuffer(), dt);
-        TestSpawnSystem::update(this->getRegistry(), this->getCommandBuffer(), dt);
-        m_physics(this->getRegistry(), this->getCommandBuffer(), dt);
         this->m_world.update(dt);
     }
     
@@ -31,11 +27,18 @@ void ScenePlay::onEnd()
 
 void ScenePlay::init()
 {
+    // Register required systems for World instance.
+    auto &systemManager = this->m_world.getSystemManager();
+    systemManager.registerSystem(sge::PhysicsSystem3::getSystemDescription());
+    systemManager.registerSystem(sge::PlayerActionSystem::getSystemDescription());
+    systemManager.registerSystem(TestSpawnSystem::getSystemDescriptor());
+    // Compile systems.
+    systemManager.compile();
+
     // Create camera entity.
     sge::Entity camera = this->getCommandBuffer().createEntityDeferred();
     sge::CTransform3 t3;
     sge::CCamera3 c3(true, CAMERA_PERSPECTIVE);
-    
     // Add camera components to entity.
     this->getCommandBuffer().addComponentDeferred(camera, t3);
     this->getCommandBuffer().addComponentDeferred(camera, c3);

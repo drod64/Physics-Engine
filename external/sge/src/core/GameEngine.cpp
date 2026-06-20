@@ -11,9 +11,10 @@ void GameEngine::update(float dt)
     inputSystem(currentScene()->getRegistry(), currentScene()->getCommandBuffer(), dt);
 
     // Update current scene.
+    // All registered systems pertaining to the current scene will be invoked.
     currentScene()->update(dt);
 
-    // Render current frame.
+    // Finally, render current frame.
     sge::RenderingSystem3::update(currentScene()->getRegistry(), currentScene()->getCommandBuffer(), dt);
 
     if (WindowShouldClose())

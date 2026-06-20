@@ -5,9 +5,12 @@
 #include <SM/Precision.h>
 #include <SGE/core/registryResources/PlayerInputResource.h>
 #include <TestingEngine/ScenePlaySpawn.h>
+#include <SGE/systems/SystemDescriptor.h>
 
 namespace TestSpawnSystem {
     void update(sge::Registry &registry, sge::CommandBuffer &cmdBuffer, sm::real dt);
+
+    sge::SystemDescriptor getSystemDescriptor();
 }
 
 #endif // TEST_SPAWN_SYSTEM_H

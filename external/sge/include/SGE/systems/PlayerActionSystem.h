@@ -7,11 +7,14 @@
 #include <SGE/core/registryResources/PlayerInputResource.h>
 #include <SGE/components/CTransform3.h>
 #include <SGE/components/CCamera3.h>
+#include <SGE/systems/SystemDescriptor.h>
 #include <raylib.h>
 
 namespace sge {
     namespace PlayerActionSystem {
         void update(Registry &registry, CommandBuffer &cmd, sm::real);
+
+        SystemDescriptor getSystemDescription();
     };
 }
 

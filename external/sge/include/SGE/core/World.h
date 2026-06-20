@@ -8,6 +8,7 @@
 #include <SM/Precision.h>
 #include <SGE/core/View.h>
 #include <SGE/core/CommandBuffer.h>
+#include <SGE/systems/SystemManager.h>
 
 namespace sge {
 
@@ -15,6 +16,7 @@ class World {
 protected:
     Registry                        m_registry;
     CommandBuffer                   m_cmdBuffer;
+    SystemManager                   m_systemManager;
     Camera3D                        m_camera;
 
 public:
@@ -36,8 +38,9 @@ public:
 
     Registry& getRegistry();
 
-    Camera3D& getCamera();
+    SystemManager& getSystemManager();
 
+    Camera3D& getCamera();
 };
 }
 

@@ -1,25 +1,31 @@
 #ifndef SGE_RESOURCE_REGISTRY_H
 #define SGE_RESOURCE_REGISTRY_H
 #include <cstdint>
+#include <bitset>
 
 namespace sge {
-    
+
+using ResourceID = uint32_t;
 // Creates a unique ID for every different class/struct type.
 class ResourceIDCounter {
 private:
-    static inline size_t m_nextID = 0;
+    static inline ResourceID nextID()
+    {
+        static ResourceID counter = 0;
+        return counter++;
+    }
 
 public:
     template <typename T>
-    static size_t get()
+    static ResourceID get()
     {
-        static const size_t ID = m_nextID++;
+        static const ResourceID ID = nextID();
         return ID;
     }
 
 }; // class ResourceIDCounter
-
-
+constexpr size_t MAX_RESOURCES = 64;
+using ResourceMask = std::bitset<MAX_RESOURCES>;
 
 
 

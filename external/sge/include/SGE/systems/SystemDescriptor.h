@@ -4,6 +4,7 @@
 #include <bitset>
 #include <string>
 #include <SM/Precision.h>
+#include <SGE/core/registryResources/ResourceRegistry.h>
 
 namespace sge {
     // Forwarded classes.
@@ -45,15 +46,25 @@ namespace sge {
     // 2. Struct that holds the description of a System.
     struct SystemDescriptor {
         SystemFn functionPtr;
-        ComponentMask reads;
-        ComponentMask writes;
+        ComponentMask componentReads;
+        ComponentMask componentWrites;
+        ResourceMask resourceReads;
+        ResourceMask resourceWrites;
         std::string name;
 
-        SystemDescriptor(SystemFn functionPtr, ComponentMask reads, ComponentMask writes, const std::string &name)
+        SystemDescriptor()
+        {
+            this->functionPtr = nullptr;
+        }
+
+        SystemDescriptor(SystemFn functionPtr, ComponentMask componentReads, ComponentMask componentWrites,
+                        ResourceMask resourceReads, ResourceMask resourceWrites, const std::string &name)
         {
             this->functionPtr = functionPtr;
-            this->reads = reads;
-            this->writes = writes;
+            this->componentReads = componentReads;
+            this->componentWrites = componentWrites;
+            this->resourceReads = resourceReads;
+            this->resourceWrites = resourceWrites;
             this->name = std::move(name);
         }
     }; // struct SystemDescriptor
