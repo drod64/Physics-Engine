@@ -43,8 +43,19 @@ namespace sge {
     constexpr size_t MAX_COMPONENTS = 100;
     using ComponentMask = std::bitset<MAX_COMPONENTS>;
 
-    // 2. Struct that holds the description of a System.
+    // 2. Execution phase of systems. Will be used to sort them.
+    enum class ExecutionPhase : uint32_t {
+        PreUpdate = 0,      
+        Gameplay,           // Gameplay systems
+        PhysicsClear,       // Clear force accumulation
+        PhysicsForceGen,    // Physics force generation
+        PhysicsIntegrate,   // Physics integration 
+        PostUpdate          // Rendering.
+    };
+
+    // 3. Struct that holds the description of a System.
     struct SystemDescriptor {
+        ExecutionPhase phase;
         SystemFn functionPtr;
         ComponentMask componentReads;
         ComponentMask componentWrites;
@@ -54,12 +65,22 @@ namespace sge {
 
         SystemDescriptor()
         {
+            // Fallback phase.
+            this->phase = ExecutionPhase::Gameplay;
             this->functionPtr = nullptr;
+
+            // No initialization needed for these.
+            // ComponentMask componentReads;
+            // ComponentMask componentWrites;
+            // ResourceMask resourceReads;
+            // ResourceMask resourceWrites;
+            // std::string name;
         }
 
-        SystemDescriptor(SystemFn functionPtr, ComponentMask componentReads, ComponentMask componentWrites,
+        SystemDescriptor(ExecutionPhase phase, SystemFn functionPtr, ComponentMask componentReads, ComponentMask componentWrites,
                         ResourceMask resourceReads, ResourceMask resourceWrites, const std::string &name)
         {
+            this->phase = phase;
             this->functionPtr = functionPtr;
             this->componentReads = componentReads;
             this->componentWrites = componentWrites;

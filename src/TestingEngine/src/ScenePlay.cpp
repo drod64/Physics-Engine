@@ -32,6 +32,7 @@ void ScenePlay::init()
     systemManager.registerSystem(sge::PhysicsSystem3::getSystemDescription());
     systemManager.registerSystem(sge::PlayerActionSystem::getSystemDescription());
     systemManager.registerSystem(TestSpawnSystem::getSystemDescriptor());
+    systemManager.registerSystem(sge::AnchorBungeeSystem3::getSystemDescriptor());
     // Compile systems.
     systemManager.compile();
 

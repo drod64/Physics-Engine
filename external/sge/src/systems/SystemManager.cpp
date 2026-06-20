@@ -15,15 +15,16 @@ void sge::SystemManager::registerSystem(SystemDescriptor desc)
     this->m_rawSystems.push_back(std::move(desc));
 }
 
-void sge::SystemManager::registerSystem(SystemFn functionPtr, ComponentMask componentReads, ComponentMask componentWrites,
-                                        ResourceMask resourceReads, ResourceMask resourceWrites, std::string name)
+void sge::SystemManager::registerSystem(ExecutionPhase phase, SystemFn functionPtr, ComponentMask componentReads,
+                                    ComponentMask componentWrites,ResourceMask resourceReads, ResourceMask resourceWrites,
+                                    std::string name)
 {
     if (this->m_isCompiled)
     {
         throw std::runtime_error("[SystemManager]: Cannot register new systems after compile() has been called!");
     }
 
-    this->registerSystem(SystemDescriptor(functionPtr, componentReads, componentWrites, resourceReads, resourceWrites, name));
+    this->registerSystem(SystemDescriptor(phase, functionPtr, componentReads, componentWrites, resourceReads, resourceWrites, name));
 }
 
 void sge::SystemManager::compile()
@@ -46,12 +47,20 @@ void sge::SystemManager::compile()
             const auto &sysA = this->m_rawSystems.at(i);
             const auto &sysB = this->m_rawSystems.at(j);
 
+            // System A belongs in a later phase. Cannot go before System B.
+            if (sysA.phase > sysB.phase) continue;
+
+            // Systems A and B belong in same phase. Allow first registered system to be parent.
+            if (sysA.phase == sysB.phase && i > j) continue;
+
             // Check if System A writes to anything that System B reads or writes to.
             // If so, System A must execute first.
             bool hasDependency = (sysA.componentWrites & sysB.componentReads).any() ||
                                 (sysA.componentWrites & sysB.componentWrites).any() ||
+                                (sysA.componentReads & sysB.componentWrites).any()  ||
                                 (sysA.resourceWrites & sysB.resourceReads).any()    ||
-                                (sysA.resourceWrites & sysB.resourceWrites).any();
+                                (sysA.resourceWrites & sysB.resourceWrites).any()   ||
+                                (sysA.resourceReads & sysB.resourceWrites).any();
 
             if (hasDependency)
             {
@@ -101,7 +110,19 @@ void sge::SystemManager::compile()
     // 4. Check if no cycle was detected.
     if (this->m_executionOrder.size() != NUM_SYSTEMS)
     {
-        throw std::runtime_error("[SystemManager]: Circular dependency detected. Ensure no two Systems depend on each other!");
+        std::string dependentSystems;
+
+        for (size_t i = 0; i < dependentDegrees.size(); ++i)
+        {
+
+            if (dependentDegrees.at(i) != 0)
+            {
+                if (i != 0 && i != dependentDegrees.size() - 1) dependentSystems += ", ";
+                dependentSystems += this->m_rawSystems.at(i).name;
+            }
+        }
+
+        throw std::runtime_error("[SystemManager]: Circular dependency detected in " + dependentSystems +". Ensure no two Systems depend on each other!");
     }
 
     this->m_isCompiled = true;

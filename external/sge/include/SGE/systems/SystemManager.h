@@ -24,8 +24,9 @@ public:
     
     void registerSystem(SystemDescriptor desc);
 
-    void registerSystem(SystemFn functionPtr, ComponentMask componentReads, ComponentMask componentWrites,
-                        ResourceMask resourceReads, ResourceMask resourceWrites, std::string name);
+    void registerSystem(ExecutionPhase phase, SystemFn functionPtr, ComponentMask componentReads,
+                        ComponentMask componentWrites,ResourceMask resourceReads, ResourceMask resourceWrites,
+                        std::string name);
 
     void compile();
 

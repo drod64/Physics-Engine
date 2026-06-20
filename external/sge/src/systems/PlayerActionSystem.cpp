@@ -45,11 +45,13 @@ sge::SystemDescriptor sge::PlayerActionSystem::getSystemDescription()
 {
     SystemDescriptor desc;
 
+    // System phase.
+    desc.phase = sge::ExecutionPhase::Gameplay;
+
     // System functor.
     desc.functionPtr = &sge::PlayerActionSystem::update;
     
     // System component reads.
-    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CTransform3>());
     desc.componentReads.set(sge::ComponentIDCounter::get<sge::CCamera3>());
 
     // System component writes.

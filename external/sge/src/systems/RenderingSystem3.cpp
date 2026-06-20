@@ -64,6 +64,9 @@ sge::SystemDescriptor sge::RenderingSystem3::getSystemDescription()
 {
     SystemDescriptor desc;
 
+    // System phase.
+    desc.phase = sge::ExecutionPhase::PostUpdate;
+
     // System functor.
     desc.functionPtr = &sge::RenderingSystem3::update;
 

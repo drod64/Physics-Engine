@@ -1,6 +1,6 @@
 #ifndef SGE_PLAYER_MOVEMENT_SYSTEM_H
 #define SGE_PLAYER_MOVEMENT_SYSTEM_H
-#include <SGE/core/resources/PlayerInputResource.h>
+#include <SGE/core/registryResources/PlayerInputResource.h>
 #include <SGE/core/View.h>
 #include <SGE/core/CommandBuffer.h>
 #include <SM/Vec3.h>

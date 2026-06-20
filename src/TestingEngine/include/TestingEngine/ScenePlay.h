@@ -11,6 +11,7 @@
 
 // Testing systems with SystemManager implementation.
 #include <SGE/systems/PhysicsSystem3.h>
+#include <SGE/systems/physics/AnchorBungeeSystem3.h>
 #include <SGE/systems/PlayerActionSystem.h>
 #include <TestingEngine/systems/TestSpawnSystem.h>
 
