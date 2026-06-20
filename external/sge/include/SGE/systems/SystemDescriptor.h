@@ -1,0 +1,62 @@
+#ifndef SGE_SYSTEM_DESCRIPTOR_H
+#define SGE_SYSTEM_DESCRIPTOR_H
+#include <cstdint>
+#include <bitset>
+#include <string>
+#include <SM/Precision.h>
+
+namespace sge {
+    // Forwarded classes.
+    class Registry;
+    class CommandBuffer;
+
+    // 1. Unique IDs for every Component type.
+    using ComponentID = uint32_t;
+    struct ComponentIDCounter {
+    private:
+        /**
+         * Helper function to keep IDs unique.
+         * For every different Component type, this function will be called.
+         */
+        static inline ComponentID nextID()
+        {
+            static ComponentID counter = 0;
+            return counter++;
+        }
+
+    public:
+        /**
+         * Fetches a unique ID based on T.
+         * @tparam the Component data type
+         * @return a unique ID based on the Component data type. Will return the same unique ID for Components of the same type
+         */
+        template <typename T>
+        static ComponentID get()
+        {
+            static const ComponentID ID = nextID();
+            return ID;
+        }
+    }; // class ComponentIDCounter
+
+    using SystemFn = void(*)(Registry &, CommandBuffer &, sm::real);
+    constexpr size_t MAX_COMPONENTS = 100;
+    using ComponentMask = std::bitset<MAX_COMPONENTS>;
+
+    // 2. Struct that holds the description of a System.
+    struct SystemDescriptor {
+        SystemFn functionPtr;
+        ComponentMask reads;
+        ComponentMask writes;
+        std::string name;
+
+        SystemDescriptor(SystemFn functionPtr, ComponentMask reads, ComponentMask writes, const std::string &name)
+        {
+            this->functionPtr = functionPtr;
+            this->reads = reads;
+            this->writes = writes;
+            this->name = std::move(name);
+        }
+    }; // struct SystemDescriptor
+}
+
+#endif // SGE_SYSTEM_DESCRIPTOR_H
