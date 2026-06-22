@@ -16,8 +16,13 @@ void ScenePlay::update(float dt)
     {
         this->m_world.update(dt);
     }
+
+    auto &systemOrder = this->m_world.getSystemManager().getExecutionOrder();
     
-    if (this->hasEnded()) this->m_game->quit();
+    if (this->hasEnded())
+    {
+        this->m_game->quit();
+    }
 }
 
 void ScenePlay::onEnd()
@@ -29,10 +34,8 @@ void ScenePlay::init()
 {
     // Register required systems for World instance.
     auto &systemManager = this->m_world.getSystemManager();
-    systemManager.registerSystem(sge::PhysicsSystem3::getSystemDescription());
-    systemManager.registerSystem(sge::PlayerActionSystem::getSystemDescription());
+    systemManager.registerSystem(PlayerActionSystem::getSystemDescription());
     systemManager.registerSystem(TestSpawnSystem::getSystemDescriptor());
-    systemManager.registerSystem(sge::AnchorBungeeSystem3::getSystemDescriptor());
     // Compile systems.
     systemManager.compile();
 

@@ -3,49 +3,55 @@ cmake_minimum_required(VERSION 3.27.3)
 project(SGE)
 
 set(SOURCE_FILES
-    # Components
-    src/components/CAnchorBungee3.cpp
-    src/components/CAnchorSpring3.cpp
-    src/components/CBoundingBox.cpp
-    src/components/CBungee3.cpp
-    src/components/CBuoyancy3.cpp
-    src/components/CCamera3.cpp
-    src/components/CCollision.cpp
-    src/components/CDrag3.cpp
-    src/components/CFakeStiffSpring3.cpp
-    src/components/CGravity3.cpp
-    src/components/CInput.cpp
-    src/components/CLifespan.cpp
-    src/components/CRigidBody3.cpp
-    src/components/CScore.cpp
-    src/components/CShape.cpp
-    src/components/CSpring3.cpp
-    src/components/CTransform.cpp
-    src/components/CTransform3.cpp
+    # core/ecs/components
+    src/core/ecs/components/CCamera3.cpp
+    src/core/ecs/components/CInput.cpp
+    src/core/ecs/components/CLifespan.cpp
+    src/core/ecs/components/CScore.cpp
+    src/core/ecs/components/CShape.cpp
+    src/core/ecs/components/CTransform.cpp
+    src/core/ecs/components/CTransform3.cpp
 
-    # Core
-    src/core/registryResources/PlayerInputResource.cpp
+    # core
     src/core/GameEngine.cpp
-    src/core/InputActionSnapshot.cpp
     src/core/Scene.cpp
     src/core/World.cpp
 
-    # Entities
-    src/entities/EntityManager.cpp
+    # managers/registryResouces
+    src/managers/registryResources/InputMappingResource.cpp
 
-    # Systems
-    # src/systems/physics/Cable3.cpp
-    # src/systems/physics/Contact3.cpp
-    # src/systems/physics/ContactResolver3.cpp
-    # src/systems/physics/Link3.cpp
-    # src/systems/physics/Rod3.cpp
+    # managers
+    src/managers/EntityManager.cpp
+    src/managers/InputActionSnapshot.cpp
+
+    # physics/forceComponents
+    src/physics/forceComponents/CAnchorBungee3.cpp
+    src/physics/forceComponents/CAnchorSpring3.cpp
+    src/physics/forceComponents/CBungee3.cpp
+    src/physics/forceComponents/CBuoyancy3.cpp
+    src/physics/forceComponents/CDrag3.cpp
+    src/physics/forceComponents/CFakeStiffSpring3.cpp
+    src/physics/forceComponents/CGravity3.cpp
+    src/physics/forceComponents/CRigidBody3.cpp
+    src/physics/forceComponents/CSpring3.cpp
+
+
+    # systems/physics
     src/systems/physics/AnchorBungeeSystem3.cpp
-    src/systems/InputProvider.cpp
-    src/systems/PhysicsSystem3.cpp
-    src/systems/PlayerActionSystem.cpp
+    src/systems/physics/AnchorSpringSystem3.cpp
+    src/systems/physics/BungeeSpringSystem3.cpp
+    src/systems/physics/BuoyancySystem3.cpp
+    src/systems/physics/ClearAccumulatorsSystem3.cpp
+    src/systems/physics/DragSystem3.cpp
+    src/systems/physics/FakeStiffSpringSystem3.cpp
+    src/systems/physics/GravitySystem3.cpp
+    src/systems/physics/IntegrationSystem3.cpp
+    src/systems/physics/SpringSystem3.cpp
+
+    # systems
+    src/systems/PollInputSystem.cpp
     src/systems/RenderingSystem3.cpp
     src/systems/SystemManager.cpp
-
 
     # Utility
     src/util/Bitmask.cpp

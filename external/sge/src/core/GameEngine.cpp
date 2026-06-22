@@ -8,7 +8,7 @@ GameEngine::GameEngine()
 void GameEngine::update(float dt)
 {
     // Call input system.
-    inputSystem(currentScene()->getRegistry(), currentScene()->getCommandBuffer(), dt);
+    sge::PollInputSystem::update(currentScene()->getRegistry(), currentScene()->getCommandBuffer(), dt);
 
     // Update current scene.
     // All registered systems pertaining to the current scene will be invoked.

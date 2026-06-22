@@ -15,18 +15,6 @@ void sge::SystemManager::registerSystem(SystemDescriptor desc)
     this->m_rawSystems.push_back(std::move(desc));
 }
 
-void sge::SystemManager::registerSystem(ExecutionPhase phase, SystemFn functionPtr, ComponentMask componentReads,
-                                    ComponentMask componentWrites,ResourceMask resourceReads, ResourceMask resourceWrites,
-                                    std::string name)
-{
-    if (this->m_isCompiled)
-    {
-        throw std::runtime_error("[SystemManager]: Cannot register new systems after compile() has been called!");
-    }
-
-    this->registerSystem(SystemDescriptor(phase, functionPtr, componentReads, componentWrites, resourceReads, resourceWrites, name));
-}
-
 void sge::SystemManager::compile()
 {   
     // Prevent double compilation.
@@ -46,23 +34,57 @@ void sge::SystemManager::compile()
 
             const auto &sysA = this->m_rawSystems.at(i);
             const auto &sysB = this->m_rawSystems.at(j);
+            
+            bool sysBhasDependency = false;
 
-            // System A belongs in a later phase. Cannot go before System B.
-            if (sysA.phase > sysB.phase) continue;
+            // System B belongs in a later phase. Cannot go before System A.
+            if (sysA.phase < sysB.phase)
+            {
+                sysBhasDependency = true;
+            }
+            // Same phase data dependency.
+            else if (sysA.phase == sysB.phase)
+            {
+                // Component dependency check.
+                // WAR, RAW, and WAW 
+                bool componentReadWriteHazard = (sysA.componentWrites & sysB.componentReads).any()  ||
+                                                (sysA.componentReads & sysB.componentWrites).any() ||
+                                                (sysA.componentWrites & sysB.componentWrites).any();
 
-            // Systems A and B belong in same phase. Allow first registered system to be parent.
-            if (sysA.phase == sysB.phase && i > j) continue;
 
-            // Check if System A writes to anything that System B reads or writes to.
-            // If so, System A must execute first.
-            bool hasDependency = (sysA.componentWrites & sysB.componentReads).any() ||
-                                (sysA.componentWrites & sysB.componentWrites).any() ||
-                                (sysA.componentReads & sysB.componentWrites).any()  ||
-                                (sysA.resourceWrites & sysB.resourceReads).any()    ||
-                                (sysA.resourceWrites & sysB.resourceWrites).any()   ||
-                                (sysA.resourceReads & sysB.resourceWrites).any();
+                bool componentAccumulationHazard = (sysA.componentAccumulates & sysB.componentReads).any()      ||
+                                                    (sysA.componentReads & sysB.componentAccumulates).any()     ||
+                                                    (sysA.componentAccumulates & sysB.componentWrites).any()    ||
+                                                    (sysA.componentWrites & sysB.componentAccumulates).any();
 
-            if (hasDependency)
+                // WAR, RAW, WAW
+                bool resourceReadWriteHazard = (sysA.resourceWrites & sysB.resourceReads).any()     ||
+                                                (sysA.resourceReads & sysB.resourceWrites).any()    ||
+                                                (sysA.resourceWrites & sysB.resourceWrites).any();
+
+                bool resourceAccumulateHazard = (sysA.resourceAccumulates & sysB.resourceReads).any()   ||
+                                                (sysA.resourceReads & sysB.resourceAccumulates).any()   ||
+                                                (sysA.resourceAccumulates & sysB.resourceWrites).any()  ||
+                                                (sysA.resourceWrites & sysB.resourceAccumulates).any();
+
+
+                bool hasDataHazard = componentReadWriteHazard || componentAccumulationHazard ||
+                                    resourceReadWriteHazard || resourceAccumulateHazard;
+                
+                if (hasDataHazard)
+                {
+                    sysBhasDependency = true;
+                }
+                // Sequential Tie-breaker
+                // If two systems from the same phase have no data dependencies...
+                // ...ensure only one edge is marked (to avoid circular dependcies).
+                else if (i < j)
+                {
+                    sysBhasDependency = true;
+                }
+            }
+
+            if (sysBhasDependency)
             {
                 dependents.at(i).push_back(j);
                 ++dependentDegrees.at(j);
@@ -155,4 +177,9 @@ bool sge::SystemManager::isCompiled() const noexcept
 size_t sge::SystemManager::getSystemCount() const noexcept
 {
     return this->m_rawSystems.size();
+}
+
+const std::vector<sge::SystemDescriptor>& sge::SystemManager::getExecutionOrder() const
+{
+    return this->m_executionOrder;
 }

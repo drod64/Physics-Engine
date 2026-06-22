@@ -4,7 +4,7 @@
 #include <bitset>
 #include <string>
 #include <SM/Precision.h>
-#include <SGE/core/registryResources/ResourceRegistry.h>
+#include <SGE/managers/registryResources/ResourceRegistry.h>
 
 namespace sge {
     // Forwarded classes.
@@ -59,8 +59,10 @@ namespace sge {
         SystemFn functionPtr;
         ComponentMask componentReads;
         ComponentMask componentWrites;
+        ComponentMask componentAccumulates;
         ResourceMask resourceReads;
         ResourceMask resourceWrites;
+        ResourceMask resourceAccumulates;
         std::string name;
 
         SystemDescriptor()
@@ -72,21 +74,11 @@ namespace sge {
             // No initialization needed for these.
             // ComponentMask componentReads;
             // ComponentMask componentWrites;
+            // ComponentMask componentAccumulates;
             // ResourceMask resourceReads;
             // ResourceMask resourceWrites;
+            // ResourceMask resourceAccumulates;
             // std::string name;
-        }
-
-        SystemDescriptor(ExecutionPhase phase, SystemFn functionPtr, ComponentMask componentReads, ComponentMask componentWrites,
-                        ResourceMask resourceReads, ResourceMask resourceWrites, const std::string &name)
-        {
-            this->phase = phase;
-            this->functionPtr = functionPtr;
-            this->componentReads = componentReads;
-            this->componentWrites = componentWrites;
-            this->resourceReads = resourceReads;
-            this->resourceWrites = resourceWrites;
-            this->name = std::move(name);
         }
     }; // struct SystemDescriptor
 }

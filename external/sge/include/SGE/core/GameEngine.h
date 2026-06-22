@@ -11,11 +11,11 @@
 
 // Custom library includes
 #include <SGE/core/Scene.h>
-#include <SGE/systems/InputProvider.h>
+#include <SGE/systems/PollInputSystem.h>
 
 // Necessary systems
 #include <SGE/systems/RenderingSystem3.h>
-#include <SGE/core/InputActionSnapshot.h>
+#include <SGE/managers/InputActionSnapshot.h>
 
 namespace sge {
 /**
@@ -27,7 +27,6 @@ protected:
     std::unordered_map<std::string, std::shared_ptr<sge::Scene>> m_scenes; 
     size_t m_simulationSpeed;
     bool m_running;
-    InputProvider inputSystem;
 
     /**
      * Default Constructor.

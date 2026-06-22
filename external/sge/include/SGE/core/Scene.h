@@ -1,10 +1,20 @@
 #ifndef SGE_SCENE_H
 #define SGE_SCENE_H
 #include <memory>
-#include <SGE/util/Action.h>
-#include <SGE/core/World.h>
 #include <raylib.h>
+#include <SGE/core/World.h>
 
+// Core physic systems.
+#include <SGE/systems/physics/AnchorBungeeSystem3.h>
+#include <SGE/systems/physics/AnchorSpringSystem3.h>
+#include <SGE/systems/physics/BungeeSpringSystem3.h>
+#include <SGE/systems/physics/BuoyancySystem3.h>
+#include <SGE/systems/physics/ClearAccumulatorsSystem3.h>
+#include <SGE/systems/physics/DragSystem3.h>
+#include <SGE/systems/physics/FakeStiffSpringSystem3.h>
+#include <SGE/systems/physics/GravitySystem3.h>
+#include <SGE/systems/physics/IntegrationSystem3.h>
+#include <SGE/systems/physics/SpringSystem3.h>
 
 namespace sge {
 // Forward declaration of GameEngine class.
@@ -37,6 +47,8 @@ protected:
      * Private Default Constructor.
      */
     Scene();
+
+    void init();
 
 public:
     /**

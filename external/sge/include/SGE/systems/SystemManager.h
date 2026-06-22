@@ -24,10 +24,6 @@ public:
     
     void registerSystem(SystemDescriptor desc);
 
-    void registerSystem(ExecutionPhase phase, SystemFn functionPtr, ComponentMask componentReads,
-                        ComponentMask componentWrites,ResourceMask resourceReads, ResourceMask resourceWrites,
-                        std::string name);
-
     void compile();
 
     void update(Registry &registry, CommandBuffer &cmdBuffer, sm::real dt);
@@ -37,6 +33,8 @@ public:
     bool isCompiled() const noexcept;
 
     size_t getSystemCount() const noexcept;
+
+    const std::vector<SystemDescriptor>& getExecutionOrder() const;
 };
 }
 

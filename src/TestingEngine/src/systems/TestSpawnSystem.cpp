@@ -2,28 +2,52 @@
 
 void TestSpawnSystem::update(sge::Registry &registry, sge::CommandBuffer &cmdBuffer, sm::real dt)
 {
-    const auto &playerInput = registry.getResource<sge::PlayerInputResource>();
-
+    const auto &playerInput = registry.getOrCreateResource<sge::PlayerInputResource>();
+    
     // Testing creation of entities and addition of components.
-    if (playerInput.isActionPressed(sge::Action::PrimaryAction)) // Left mouse click
+    if (playerInput.isActionPressed(ScenePlayAction::SpawnAnchorBungee)) // Z key
     {
-        ScenePlaySpawn::spawnBungeeSpring(cmdBuffer);
+        ScenePlaySpawn::spawnAnchorBungee(cmdBuffer, {0,10.5,0});
     }
 
+    if (playerInput.isActionPressed(ScenePlayAction::SpawnAnchorSpring))
+    {
+        ScenePlaySpawn::spawnAnchorSpring(cmdBuffer, {10, 10, 0});
+    }
+
+    // if (playerInput.isActionPressed(ScenePlayAction::SpawnBungeeSpring))
+    // {
+    //     ScenePlaySpawn::spawnBungeeSpring(cmdBuffer);
+    // }
+
+    if (playerInput.isActionPressed(ScenePlayAction::SpawnBuoyant))
+    {
+        ScenePlaySpawn::spawnBuoyancySpring(cmdBuffer);
+    }
+
+    if (playerInput.isActionPressed(ScenePlayAction::SpawnFakeStiffSpring))
+    {
+        ScenePlaySpawn::spawnFakeSpring(cmdBuffer);
+    }
+
+    // if (playerInput.isActionPressed(ScenePlayAction::SpawnSpring))
+    // {
+    //     ScenePlaySpawn::spawnSpringConnection(cmdBuffer);
+    // }
 
     // Testing removal of components.
-    if (playerInput.isActionPressed(sge::Action::SecondaryAction)) // Right mouse click
+    if (playerInput.isActionPressed(ScenePlayAction::RemoveGravity)) // Left mouse click
     {
         auto gravity3View = registry.viewAll<sge::CGravity3>();
-
+        
         for (sge::Entity e : gravity3View)
         {
             cmdBuffer.removeComponentDeferred<sge::CGravity3>(e);
         }
     }
-
+    
     // Testing destruction of entities.
-    if (playerInput.isActionPressed(sge::Action::Cancel)) // Backspace key
+    if (playerInput.isActionPressed(ScenePlayAction::DeleteEntities)) // Backspace key
     {
         auto t3View = registry.viewAll<sge::CRigidBody3>();
 
@@ -37,6 +61,9 @@ void TestSpawnSystem::update(sge::Registry &registry, sge::CommandBuffer &cmdBuf
 sge::SystemDescriptor TestSpawnSystem::getSystemDescriptor()
 {
     sge::SystemDescriptor desc;
+    
+    // System functor.
+    desc.phase = sge::ExecutionPhase::PreUpdate;
 
     // System functor.
     desc.functionPtr = &TestSpawnSystem::update;

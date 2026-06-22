@@ -6,8 +6,8 @@
 #include <raylib.h>
 #include <SM/Vec3.h>
 #include <SM/Precision.h>
-#include <SGE/core/View.h>
-#include <SGE/core/CommandBuffer.h>
+#include <SGE/managers/View.h>
+#include <SGE/managers/CommandBuffer.h>
 #include <SGE/systems/SystemManager.h>
 
 namespace sge {

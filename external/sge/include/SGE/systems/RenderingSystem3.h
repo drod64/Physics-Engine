@@ -1,12 +1,14 @@
 #ifndef SGE_RENDERING_SYSTEM
 #define SGE_RENDERING_SYSTEM
 #include <raylib.h>
-#include <SGE/core/View.h>
-#include <SGE/core/CommandBuffer.h>
 #include <SM/Precision.h>
-#include <SGE/components/CTransform3.h>
-#include <SGE/components/CCamera3.h>
+#include <SGE/managers/View.h>
+#include <SGE/managers/CommandBuffer.h>
 #include <SGE/systems/SystemDescriptor.h>
+
+// Reads.
+#include <SGE/core/ecs/components/CCamera3.h>
+#include <SGE/core/ecs/components/CTransform3.h>
 
 namespace sge {
     namespace RenderingSystem3 {

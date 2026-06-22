@@ -94,23 +94,57 @@ void ScenePlaySpawn::spawnAnchorSpring(sge::CommandBuffer &cmdBuffer, const sm::
     cmdBuffer.addComponentDeferred(e, ls);
     cmdBuffer.addComponentDeferred(e, t3);
     cmdBuffer.addComponentDeferred(e, r3);
+    cmdBuffer.addComponentDeferred(e, sge::CGravity3({0, -9.81, 0}));
+    cmdBuffer.addComponentDeferred(e, sge::CDrag3(0.9, 0.5));
+    cmdBuffer.addComponentDeferred(e, sge::CAnchorSpring3(position, 45, 10));
+}
+
+void ScenePlaySpawn::spawnAnchorBungee(sge::CommandBuffer &cmdBuffer, const sm::Vec3 &position)
+{
+    sge::Entity e = cmdBuffer.createEntityDeferred();
+    sge::CLifespan ls(600);
+    sge::CTransform3 t3;
+    t3.position = {0, 0, 0};
+    sge::CRigidBody3 r3;
+    r3.setMass(5);
+
+    cmdBuffer.addComponentDeferred(e, sge::CAnchorBungee3(position, 45, 10));
+    cmdBuffer.addComponentDeferred(e, sge::CGravity3({0, -9.81, 0}));
+    cmdBuffer.addComponentDeferred(e, sge::CDrag3(0.9, 0.5));
+    cmdBuffer.addComponentDeferred(e, ls);
+    cmdBuffer.addComponentDeferred(e, t3);
+    cmdBuffer.addComponentDeferred(e, r3);
 }
 
 void ScenePlaySpawn::spawnBungeeSpring(sge::CommandBuffer &cmdBuffer)
 {
     sge::Entity e1 = cmdBuffer.createEntityDeferred();
-    sge::CLifespan ls(600);
-    sge::CTransform3 t3;
-    t3.position = {0, 5, 0};
-    sge::CRigidBody3 r3;
-    r3.addForce({0, 0, 100});
-    r3.setMass(10);
+    sge::CLifespan ls_e1(600);
+    sge::CTransform3 t3_e1;
+    t3_e1.position = {0, 5, 0};
+    sge::CRigidBody3 r3_e1;
+    r3_e1.addForce({0, 0, 100});
+    r3_e1.setMass(10);
 
-    cmdBuffer.addComponentDeferred(e1, ls);
-    cmdBuffer.addComponentDeferred(e1, t3);
-    cmdBuffer.addComponentDeferred(e1, r3);
-    cmdBuffer.addComponentDeferred(e1, sge::CAnchorBungee3({0, 10, 0}, 40, 15));
+    sge::Entity e2 = cmdBuffer.createEntityDeferred();
+    sge::CLifespan ls_e2(600);
+    sge::CTransform3 t3_e2;
+    t3_e2.position = {0, 30, 0};
+    sge::CRigidBody3 r3_e2;
+    r3_e2.addForce({0, 0, 100});
+    r3_e2.setMass(10);
+
+    cmdBuffer.addComponentDeferred(e1, ls_e1);
+    cmdBuffer.addComponentDeferred(e1, t3_e1);
+    cmdBuffer.addComponentDeferred(e1, r3_e1);
+    cmdBuffer.addComponentDeferred(e1, sge::CBungee3(e2, 40, 15));
     cmdBuffer.addComponentDeferred(e1, sge::CGravity3({0, -9.81, 0}));
+
+    cmdBuffer.addComponentDeferred(e2, ls_e2);
+    cmdBuffer.addComponentDeferred(e2, t3_e2);
+    cmdBuffer.addComponentDeferred(e2, r3_e2);
+    cmdBuffer.addComponentDeferred(e2, sge::CBungee3(e1, 40, 15));
+    cmdBuffer.addComponentDeferred(e2, sge::CGravity3({0, -9.81, 0}));
 }
 
 void ScenePlaySpawn::spawnBuoyancySpring(sge::CommandBuffer &cmdBuffer)
@@ -125,6 +159,9 @@ void ScenePlaySpawn::spawnBuoyancySpring(sge::CommandBuffer &cmdBuffer)
     cmdBuffer.addComponentDeferred(e, ls);
     cmdBuffer.addComponentDeferred(e, t3);
     cmdBuffer.addComponentDeferred(e, r3);
+    cmdBuffer.addComponentDeferred(e, sge::CDrag3(0.9, 0.5));
+    cmdBuffer.addComponentDeferred(e, sge::CGravity3({0, -9.81, 0}));
+    cmdBuffer.addComponentDeferred(e, sge::CBuoyancy3(-50, 100, -10, 100));
 }
 
 void ScenePlaySpawn::spawnFakeSpring(sge::CommandBuffer &cmdBuffer)
@@ -132,11 +169,14 @@ void ScenePlaySpawn::spawnFakeSpring(sge::CommandBuffer &cmdBuffer)
     sge::Entity e = cmdBuffer.createEntityDeferred();
     sge::CLifespan ls(600);
     sge::CTransform3 t3;
-    t3.position = {0, 4, 0};
+    t3.position = {0, 10, 0};
     sge::CRigidBody3 r3;
     r3.setMass(10);
 
     cmdBuffer.addComponentDeferred(e, ls);
     cmdBuffer.addComponentDeferred(e, t3);
     cmdBuffer.addComponentDeferred(e, r3);
+    cmdBuffer.addComponentDeferred(e, sge::CDrag3(0.9, 0.5));
+    cmdBuffer.addComponentDeferred(e, sge::CGravity3({0, -9.81, 0}));
+    cmdBuffer.addComponentDeferred(e, sge::CFakeStiffSpring3({0,0,0}, 100, 0.6));
 }

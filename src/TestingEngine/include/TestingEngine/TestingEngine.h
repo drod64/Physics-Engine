@@ -1,8 +1,9 @@
 #ifndef TESTING_ENGINE_H
 #define TESTING_ENGINE_H
+#include <string>
 #include <SGE/core/GameEngine.h>
 #include <TestingEngine/ScenePlay.h>
-#include <string>
+#include <TestingEngine/ScenePlayActions.h>
 
 
 // TODO: Will need to focus on implementing Physics, Animation, Scene, and Action classes in the game engine.
@@ -10,9 +11,11 @@
 class TestingEngine : public sge::GameEngine {
 private:
     TestingEngine();
+    void init();
 
 public:
     TestingEngine(const std::string &path);
+
 
 };
 

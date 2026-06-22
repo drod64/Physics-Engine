@@ -2,17 +2,15 @@
 #define SCENE_PLAY_H
 #include <assert.h>
 #include <string>
-#include <SGE/entities/Entity.h>
+#include <SGE/core/ecs/Entity.h>
 #include <SGE/core/Scene.h>
 #include <SGE/core/GameEngine.h>
 #include <TestingEngine/ScenePlaySpawn.h>
-#include <SGE/components/CCamera3.h>
+#include <SGE/core/ecs/components/CCamera3.h>
 #include <raylib.h>
 
 // Testing systems with SystemManager implementation.
-#include <SGE/systems/PhysicsSystem3.h>
-#include <SGE/systems/physics/AnchorBungeeSystem3.h>
-#include <SGE/systems/PlayerActionSystem.h>
+#include <TestingEngine/systems/PlayerActionSystem.h>
 #include <TestingEngine/systems/TestSpawnSystem.h>
 
 class ScenePlay : public sge::Scene {
