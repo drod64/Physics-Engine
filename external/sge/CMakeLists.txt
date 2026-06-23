@@ -23,7 +23,6 @@ set(SOURCE_FILES
 
     # managers
     src/managers/EntityManager.cpp
-    src/managers/InputActionSnapshot.cpp
 
     # physics/forceComponents
     src/physics/forceComponents/CAnchorBungee3.cpp

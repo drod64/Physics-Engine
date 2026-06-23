@@ -14,7 +14,6 @@
 
 // Necessary systems
 #include <SGE/systems/RenderingSystem3.h>
-#include <SGE/managers/InputActionSnapshot.h>
 
 namespace sge {
 /**
