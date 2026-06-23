@@ -12,6 +12,7 @@
 // Testing systems with SystemManager implementation.
 #include <TestingEngine/systems/InputDispatcherSystem.h>
 #include <TestingEngine/systems/TestSpawnSystem.h>
+#include <TestingEngine/systems/PlayerMovementSystem.h>
 
 class ScenePlay : public sge::Scene {
 private:

@@ -38,12 +38,12 @@ void TestSpawnSystem::update(sge::Registry &registry, sge::CommandBuffer &cmdBuf
                 }
             }
 
-            // Testing destruction of entities.
+            // Testing destruction of entities with gravity effect.
             if (actionEvent.actionID == static_cast<uint32_t>(ScenePlayAction::DeleteEntities)) // Backspace key
             {
-                auto t3View = registry.viewAll<sge::CRigidBody3>();
+                auto g3View = registry.viewAll<sge::CGravity3>();
         
-                for (sge::Entity e : t3View)
+                for (sge::Entity e : g3View)
                 {
                     cmdBuffer.destroyEntityDeferred(e);
                 }

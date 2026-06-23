@@ -5,6 +5,7 @@ project(TestingEngine)
 set(SOURCE_FILES
     src/systems/TestSpawnSystem.cpp
     src/systems/InputDispatcherSystem.cpp
+    src/systems/PlayerMovementSystem.cpp
     src/ScenePlay.cpp
     src/ScenePlaySpawn.cpp
     src/TestingEngine.cpp

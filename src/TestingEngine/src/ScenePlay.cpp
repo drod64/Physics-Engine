@@ -36,17 +36,22 @@ void ScenePlay::init()
     auto &systemManager = this->m_world.getSystemManager();
     systemManager.registerSystem(InputDispatcherSystem::getSystemDescription());
     systemManager.registerSystem(TestSpawnSystem::getSystemDescriptor());
+    systemManager.registerSystem(PlayerMovementSystem::getSystemDescriptor());
     // Compile systems.
     systemManager.compile();
 
     // Create camera entity.
     sge::Entity camera = this->getCommandBuffer().createEntityDeferred();
     sge::CTransform3 t3;
+    sge::CRigidBody3 r3;
+    r3.setMass(10);
+    r3.setStatic(false);
     sge::CCamera3 c3(true, CAMERA_PERSPECTIVE);
     sge::CPlayerController3 controller;
     t3.position = {0, 0, -40};
     // Add camera components to entity.
     this->getCommandBuffer().addComponentDeferred(camera, t3);
+    this->getCommandBuffer().addComponentDeferred(camera, r3);
     this->getCommandBuffer().addComponentDeferred(camera, c3);
     this->getCommandBuffer().addComponentDeferred(camera, controller);
 }

@@ -23,8 +23,8 @@ void InputDispatcherSystem::update(sge::Registry &registry, sge::CommandBuffer &
         if(playerInput.isActionHeld(ScenePlayAction::MoveUp)) controller.movementAxisY += 1;
         if(playerInput.isActionHeld(ScenePlayAction::MoveDown)) controller.movementAxisY -= 1;
         
-        if(playerInput.isActionHeld(ScenePlayAction::MoveRight)) controller.movementAxisX += 1;
-        if(playerInput.isActionHeld(ScenePlayAction::MoveLeft)) controller.movementAxisX -= 1;
+        if(playerInput.isActionHeld(ScenePlayAction::MoveRight)) controller.movementAxisX -= 1;
+        if(playerInput.isActionHeld(ScenePlayAction::MoveLeft)) controller.movementAxisX += 1;
 
 
         // Loop through max possible amount of actions.
