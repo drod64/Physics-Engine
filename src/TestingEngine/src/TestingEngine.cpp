@@ -42,5 +42,4 @@ sge::GameEngine()
 
     InitWindow(800, 600, "Particle Physics Engine");
     ToggleFullscreen();
-    SetTargetFPS(60);
 }

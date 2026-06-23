@@ -2,15 +2,15 @@
 
 void TestSpawnSystem::update(sge::Registry &registry, sge::CommandBuffer &cmdBuffer, sm::real dt)
 {
-    const auto &playerInput = registry.getOrCreateResource<sge::PlayerInputResource>();
+    auto &playerInput = registry.getOrCreateResource<sge::PlayerInputResource>();
     
     // Testing creation of entities and addition of components.
-    if (playerInput.isActionPressed(ScenePlayAction::SpawnAnchorBungee)) // Z key
+    if (playerInput.consumeActionPressed(ScenePlayAction::SpawnAnchorBungee)) // Z key
     {
         ScenePlaySpawn::spawnAnchorBungee(cmdBuffer, {0,10.5,0});
     }
 
-    if (playerInput.isActionPressed(ScenePlayAction::SpawnAnchorSpring))
+    if (playerInput.consumeActionPressed(ScenePlayAction::SpawnAnchorSpring))
     {
         ScenePlaySpawn::spawnAnchorSpring(cmdBuffer, {10, 10, 0});
     }
@@ -20,12 +20,12 @@ void TestSpawnSystem::update(sge::Registry &registry, sge::CommandBuffer &cmdBuf
     //     ScenePlaySpawn::spawnBungeeSpring(cmdBuffer);
     // }
 
-    if (playerInput.isActionPressed(ScenePlayAction::SpawnBuoyant))
+    if (playerInput.consumeActionPressed(ScenePlayAction::SpawnBuoyant))
     {
         ScenePlaySpawn::spawnBuoyancySpring(cmdBuffer);
     }
 
-    if (playerInput.isActionPressed(ScenePlayAction::SpawnFakeStiffSpring))
+    if (playerInput.consumeActionPressed(ScenePlayAction::SpawnFakeStiffSpring))
     {
         ScenePlaySpawn::spawnFakeSpring(cmdBuffer);
     }
@@ -36,7 +36,7 @@ void TestSpawnSystem::update(sge::Registry &registry, sge::CommandBuffer &cmdBuf
     // }
 
     // Testing removal of components.
-    if (playerInput.isActionPressed(ScenePlayAction::RemoveGravity)) // Left mouse click
+    if (playerInput.consumeActionPressed(ScenePlayAction::RemoveGravity)) // Left mouse click
     {
         auto gravity3View = registry.viewAll<sge::CGravity3>();
         
@@ -47,7 +47,7 @@ void TestSpawnSystem::update(sge::Registry &registry, sge::CommandBuffer &cmdBuf
     }
     
     // Testing destruction of entities.
-    if (playerInput.isActionPressed(ScenePlayAction::DeleteEntities)) // Backspace key
+    if (playerInput.consumeActionPressed(ScenePlayAction::DeleteEntities)) // Backspace key
     {
         auto t3View = registry.viewAll<sge::CRigidBody3>();
 
@@ -74,10 +74,10 @@ sge::SystemDescriptor TestSpawnSystem::getSystemDescriptor()
 
     // No system component writes.
 
-    // System resource reads.
-    desc.resourceReads.set(sge::ResourceIDCounter::get<sge::PlayerInputResource>());
-
-    // No system resource writes.
+    // No system resource reads.
+    
+    // System resource writes.
+    desc.resourceWrites.set(sge::ResourceIDCounter::get<sge::PlayerInputResource>());
 
     // System name.
     desc.name = "TestSpawnSystem";

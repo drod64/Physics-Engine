@@ -2,11 +2,10 @@
 #define SGE_GAME_ENGINE_H
 // STD includes
 #include <iostream>
-#include <memory>
 #include <string>
 #include <unordered_map>
-#include <functional>
-#include <vector>
+#include <chrono>
+#include <thread>
 #include <raylib.h>
 
 // Custom library includes
@@ -24,20 +23,15 @@ namespace sge {
 class GameEngine {
 protected:
     std::string m_currentScene;
-    std::unordered_map<std::string, std::shared_ptr<sge::Scene>> m_scenes; 
-    size_t m_simulationSpeed;
+    std::unordered_map<std::string, std::shared_ptr<sge::Scene>> m_scenes;
     bool m_running;
+    sm::real m_accumulator_dt;
+    const sm::real m_FIXED_SIMULATION_DT; 
 
     /**
      * Default Constructor.
      */
     GameEngine();
-
-    /**
-     * Updates the game by gathering user input and updating the current scene.
-     * @param dt the delta time between frames
-     */
-    void update(float dt);
 
     /**
      * Retrives the current scene the game engine is on.

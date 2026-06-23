@@ -58,7 +58,7 @@ sge::SystemDescriptor PlayerActionSystem::getSystemDescription()
     desc.componentWrites.set(sge::ComponentIDCounter::get<sge::CTransform3>());
 
     // System resource reads
-    desc.resourceReads.set(sge::ResourceIDCounter::get<sge::PlayerInputResource>());
+    // desc.resourceReads.set(sge::ResourceIDCounter::get<sge::PlayerInputResource>());
 
     // No system resource writes.
     

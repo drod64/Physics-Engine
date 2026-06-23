@@ -2,9 +2,6 @@
 
 void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer, sm::real dt)
 {
-    BeginDrawing();
-    ClearBackground(WHITE);
-
     // Begin looking for camera data.
     auto cameraView = registry.viewAll<sge::CTransform3, sge::CCamera3>();
 
@@ -56,8 +53,6 @@ void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer,
     }
 
     EndMode3D();
-
-    EndDrawing();
 }
 
 sge::SystemDescriptor sge::RenderingSystem3::getSystemDescription()
@@ -76,9 +71,13 @@ sge::SystemDescriptor sge::RenderingSystem3::getSystemDescription()
 
     // No system component writes.
 
+    // No system component accumulations.
+
     // Np system resource reads.
 
     // No system resource writes.
+
+    // No system resource accumulations.
 
     // System name.
     desc.name = "RenderingSystem3";

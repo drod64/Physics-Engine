@@ -6,19 +6,19 @@ void sge::PollInputSystem::update(sge::Registry &registry, sge::CommandBuffer &,
     const auto &inputMapper = registry.getOrCreateResource<sge::InputMappingResource>();
     auto &playerInput = registry.getOrCreateResource<sge::PlayerInputResource>();
 
-    // Save the previous frame's snapshot.
-    playerInput.updatePrevious();
-    playerInput.reset();
+    // Prepare snapshot for polling.
+    playerInput.prepareForPolling();
 
-    // Update current snapshot.
+    // Update current key input snapshot.
     for (const sge::ButtonBind &keyBind : inputMapper.getKeyBinds())
     {
         playerInput.setAction(keyBind.actionID, IsKeyDown(keyBind.button));
     }
     
+    // Update current mouse input snapshot.
     for (const sge::ButtonBind &mouseBind : inputMapper.getMouseBinds())
     {
-        playerInput.setAction(mouseBind.actionID, IsMouseButtonDown(mouseBind.button));
+        playerInput.setAction(mouseBind.actionID, IsKeyDown(mouseBind.button));
     }
 
     Vector2 mouseDelta = GetMouseDelta();

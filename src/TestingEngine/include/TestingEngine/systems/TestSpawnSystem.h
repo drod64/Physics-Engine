@@ -7,7 +7,7 @@
 #include <SGE/systems/SystemDescriptor.h>
 #include <TestingEngine/ScenePlayActions.h>
 
-// Reads.
+// Writes.
 #include <SGE/managers/registryResources/PlayerInputResource.h>
 
 namespace TestSpawnSystem {
