@@ -6,41 +6,30 @@ void sge::AnchorBungeeSystem3::update(sge::Registry &registry, sge::CommandBuffe
 
     for (const Entity &e : anchorBungee3View)
     {
-        // Reads.
+        // Read
         const auto &t3 = anchorBungee3View.get<sge::CTransform3>(e);
-        const auto &b3 = anchorBungee3View.get<sge::CAnchorBungee3>(e);
-
-        // Writes.
+        const auto &ab3 = anchorBungee3View.get<sge::CAnchorBungee3>(e);
+        
+        // Write
         auto &r3 = anchorBungee3View.get<sge::CRigidBody3>(e);
-    
+
         // Get displacement between both entities.
-        sm::Vec3 displacement = t3.position - b3.anchorPosition;
-    
+        sm::Vec3 displacement = t3.position - ab3.anchorPosition;
+
         // Calculate squared magnitude of displacement vector.
-        sm::real sqrLength = displacement.sqrMagnitude();
-    
-        // Early exit if the squared magnitude is 0.
-        if (sqrLength == 0) continue;
-    
-        // Cache real length of displacement vector.
+        sm::real sqrLength = displacement.sqrMagnitude() + (sm::real)1e-12;
         sm::real length = real_sqrt(sqrLength);
-        
-        // Normalize the displacement vector to get the direction it is currently stretching.
-        sm::Vec3 direction = displacement * ((sm::real)1 / length);
-    
-        // Calculate the stretch
-        sm::real stretch = length - b3.restLength;
-        
-        // Early exit if entities are within rest length and spring is slack
-        if (stretch <= 0) continue;
-    
-        // Calculate the final spring force using Hooke's Law while...
-        // using the direction vector to know which way it should be applied.
-        // F = -k * stretch
-        sm::Vec3 springForce = direction * -b3.springConstant * stretch;
-    
-        // Add spring (pulling) force to entity.
-        r3.addForce(springForce);
+
+        sm::real invLength = (sm::real)1.0 / length;
+        sm::Vec3 direction = displacement * invLength;
+
+        sm::real stretch = length - ab3.restLength;
+
+        // Only apply pull force if stretch is positive (exceeding rest length).
+        sm::real forceMagnitude = (stretch > (sm::real)0.0f) ? -ab3.springConstant * stretch : (sm::real)0.0;
+
+        // Add spring (push or pulling) force to entity.
+        r3.addForce(direction * forceMagnitude);
     }
 }
 

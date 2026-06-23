@@ -7,33 +7,24 @@ void sge::BuoyancySystem3::update(Registry &registry, CommandBuffer &cmdBuffer, 
     for (const Entity &e : buoyancy3View)
     {
         // Reads.
-        sm::real depth = buoyancy3View.get<sge::CTransform3>(e).position.y;
+        const auto &t3 = buoyancy3View.get<sge::CTransform3>(e);
         const auto &b3 = buoyancy3View.get<sge::CBuoyancy3>(e);
 
-        // Writes.
+        // Accumulations.
         auto &r3 = buoyancy3View.get<sge::CRigidBody3>(e);
-    
-        // Get top and bottom bounds of entity.
-        sm::real top = depth + b3.maxDepth;
-        sm::real bottom = depth - b3.maxDepth;
-    
-        // (Early exit) Check if it's completely above water.
-        if (bottom >= b3.waterHeight) continue;
-    
-        sm::Vec3 force = {0, 0, 0};
-        // Check if entity is completely submerged.
-        if (top <= b3.waterHeight)
-        {
-            force.y = b3.liquidDensity * b3.volume;
-        }
-        // Otherwise it's partially submerged
-        else
-        {
-            // Get submersion ratio (0 - 1).
-            sm::real submersionRatio = (b3.waterHeight - bottom) / (2 * b3.maxDepth);
-    
-            force.y = b3.liquidDensity * b3.volume * submersionRatio;
-        }
+        
+        // 1. Get scalar values
+        sm::real entityY = t3.position.y;
+        sm::real totalHeight = (sm::real)2.0 * b3.maxDepth;
+        sm::real bottom = entityY - b3.maxDepth;
+
+        // 2. Calculate submersion ratio based on entity's submersion height
+        sm::real rawSubmergedHeight = b3.waterHeight - bottom;
+        sm::real clippedSubmergedHeight = std::clamp(rawSubmergedHeight, (sm::real)0.0, totalHeight);
+        sm::real submersionRatio = clippedSubmergedHeight / totalHeight;
+
+        // 3. Calculate and add buoyant force.
+        sm::Vec3 force((sm::real)0, b3.liquidDensity * b3.volume * submersionRatio, (sm::real)0);
     
         r3.addForce(force);
     }

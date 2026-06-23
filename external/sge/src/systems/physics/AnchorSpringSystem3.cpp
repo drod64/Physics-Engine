@@ -17,36 +17,16 @@ void sge::AnchorSpringSystem3::update(sge::Registry &registry, sge::CommandBuffe
         sm::Vec3 displacement = t3.position - as3.anchorPosition;
 
         // Calculate squared magnitude of displacement vector.
-        sm::real length = displacement.magnitude();
+        sm::real sqrLength = displacement.sqrMagnitude() + (sm::real)1e-12;
+        sm::real length = real_sqrt(sqrLength);
 
-        sm::Vec3 direction;
+        sm::real invLength = (sm::real)1.0 / length;
+        sm::Vec3 direction = displacement * invLength;
 
-        if (length <= 0.00001)
-        {
-            // Fallback if entity is directly on top of anchor point.
-            direction = {0, 1, 0};
-            // Clamp length to 0.
-            length = (sm::real)0;
-
-            // Apply nudge to entity.
-            r3.addForce(direction * (sm::real)1);
-            continue;
-        }
-
-        direction = displacement * ((sm::real)1 / length);
-        // Calculate the stretch
-        sm::real stretch = length - as3.restLength;
-        
-        // Early exit if entities are within rest length and spring is slack
-        if (real_abs(stretch) < 0.0001) continue;
-
-        // Calculate the final spring force using Hooke's Law while...
-        // using the direction vector to know which way it should be applied.
-        // F = -k * stretch
-        sm::Vec3 springForce = direction * (-as3.springConstant * stretch);
+        sm::real forceMagnitude = -as3.springConstant * (length - as3.restLength);
 
         // Add spring (push or pulling) force to entity.
-        r3.addForce(springForce);
+        r3.addForce(direction * forceMagnitude);
     }
 }
 

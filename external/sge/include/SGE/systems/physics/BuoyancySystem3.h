@@ -1,5 +1,6 @@
 #ifndef SGE_BUOYANCY_SYSTEM3_H
 #define SGE_BUOYANCY_SYSTEM3_H
+#include <algorithm>
 #include <SGE/managers/View.h>
 #include <SGE/managers/CommandBuffer.h>
 #include <SM/Vec3.h>
