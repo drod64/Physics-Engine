@@ -3,50 +3,46 @@
 void TestSpawnSystem::update(sge::Registry &registry, sge::CommandBuffer &cmdBuffer, sm::real dt)
 {
     auto controllerView = registry.viewAll<sge::CPlayerController3>();
+    auto gravity3View = registry.viewAll<sge::CGravity3>();
 
     for (const sge::Entity &e : controllerView)
     {
         const auto &controller = controllerView.get<sge::CPlayerController3>(e);
 
         for (const auto &actionEvent : controller.getActionEvents())
-        {
+        {   
             if (actionEvent.type == sge::ActionType::Released) continue;
 
-            if (actionEvent.actionID == static_cast<uint32_t>(ScenePlayAction::SpawnAnchorBungee))
+            switch (static_cast<ScenePlayAction>(actionEvent.actionID))
             {
-                ScenePlaySpawn::spawnAnchorBungee(cmdBuffer, {0,10.5,0});
-            }
+                case ScenePlayAction::SpawnAnchorBungee:
+                    ScenePlaySpawn::spawnAnchorBungee(cmdBuffer, {0,10.5,0});
+                    break;
 
-            if (actionEvent.actionID == static_cast<uint32_t>(ScenePlayAction::SpawnAnchorSpring))
-            {
-                ScenePlaySpawn::spawnAnchorSpring(cmdBuffer, {10, 10, 0});
-            }
-
-            if (actionEvent.actionID == static_cast<uint32_t>(ScenePlayAction::SpawnBuoyant))
-            {
-                ScenePlaySpawn::spawnBuoyancySpring(cmdBuffer);
-            }
-
-            // Testing removal of components.
-            if (actionEvent.actionID == static_cast<uint32_t>(ScenePlayAction::RemoveGravity))
-            {
-                auto gravity3View = registry.viewAll<sge::CGravity3>();
+                case ScenePlayAction::SpawnAnchorSpring:
+                    ScenePlaySpawn::spawnAnchorSpring(cmdBuffer, {10, 10, 0});
+                    break;
                 
-                for (sge::Entity e : gravity3View)
-                {
-                    cmdBuffer.removeComponentDeferred<sge::CGravity3>(e);
-                }
-            }
+                case ScenePlayAction::SpawnBuoyant:
+                    ScenePlaySpawn::spawnBuoyancySpring(cmdBuffer);
+                    break;
 
-            // Testing destruction of entities with gravity effect.
-            if (actionEvent.actionID == static_cast<uint32_t>(ScenePlayAction::DeleteEntities)) // Backspace key
-            {
-                auto g3View = registry.viewAll<sge::CGravity3>();
-        
-                for (sge::Entity e : g3View)
-                {
-                    cmdBuffer.destroyEntityDeferred(e);
-                }
+                case ScenePlayAction::RemoveGravity:
+                    for (sge::Entity e : gravity3View)
+                    {
+                        cmdBuffer.removeComponentDeferred<sge::CGravity3>(e);
+                    }
+                    break;
+
+                case ScenePlayAction::DeleteEntities:
+                    for (sge::Entity e : gravity3View)
+                    {
+                        cmdBuffer.destroyEntityDeferred(e);
+                    }
+                    break;
+                
+                default:
+                    break;
             }
         }
     }
