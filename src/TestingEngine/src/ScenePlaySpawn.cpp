@@ -163,20 +163,3 @@ void ScenePlaySpawn::spawnBuoyancySpring(sge::CommandBuffer &cmdBuffer)
     cmdBuffer.addComponentDeferred(e, sge::CGravity3({0, -9.81, 0}));
     cmdBuffer.addComponentDeferred(e, sge::CBuoyancy3(-50, 100, -10, 100));
 }
-
-void ScenePlaySpawn::spawnFakeSpring(sge::CommandBuffer &cmdBuffer)
-{
-    sge::Entity e = cmdBuffer.createEntityDeferred();
-    sge::CLifespan ls(600);
-    sge::CTransform3 t3;
-    t3.position = {0, 10, 0};
-    sge::CRigidBody3 r3;
-    r3.setMass(10);
-
-    cmdBuffer.addComponentDeferred(e, ls);
-    cmdBuffer.addComponentDeferred(e, t3);
-    cmdBuffer.addComponentDeferred(e, r3);
-    cmdBuffer.addComponentDeferred(e, sge::CDrag3(0.9, 0.5));
-    cmdBuffer.addComponentDeferred(e, sge::CGravity3({0, -9.81, 0}));
-    cmdBuffer.addComponentDeferred(e, sge::CFakeStiffSpring3({0,0,0}, 100, 0.6));
-}

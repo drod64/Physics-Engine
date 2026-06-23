@@ -11,7 +11,6 @@
 #include <SGE/systems/physics/BuoyancySystem3.h>
 #include <SGE/systems/physics/ClearAccumulatorsSystem3.h>
 #include <SGE/systems/physics/DragSystem3.h>
-#include <SGE/systems/physics/FakeStiffSpringSystem3.h>
 #include <SGE/systems/physics/GravitySystem3.h>
 #include <SGE/systems/physics/IntegrationSystem3.h>
 #include <SGE/systems/physics/SpringSystem3.h>

@@ -14,7 +14,6 @@
 #include <SGE/physics/forceComponents/CBungee3.h>
 #include <SGE/physics/forceComponents/CDrag3.h>
 #include <SGE/physics/forceComponents/CBuoyancy3.h>
-#include <SGE/physics/forceComponents/CFakeStiffSpring3.h>
 #include <SGE/core/ecs/components/CLifespan.h>
 #include <SGE/core/ecs/components/CTransform3.h>
 
@@ -33,8 +32,6 @@ public:
     static void spawnBungeeSpring(sge::CommandBuffer &cmdBuffer);
 
     static void spawnBuoyancySpring(sge::CommandBuffer &cmdBuffer);
-
-    static void spawnFakeSpring(sge::CommandBuffer &cmdBuffer);
 };
 
 #endif // SCENE_PLAY_SPAWN

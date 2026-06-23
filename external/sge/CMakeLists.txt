@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.27.3)
 
 project(SGE)
+set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCE_FILES
     # core/ecs/components
@@ -30,7 +31,6 @@ set(SOURCE_FILES
     src/physics/forceComponents/CBungee3.cpp
     src/physics/forceComponents/CBuoyancy3.cpp
     src/physics/forceComponents/CDrag3.cpp
-    src/physics/forceComponents/CFakeStiffSpring3.cpp
     src/physics/forceComponents/CGravity3.cpp
     src/physics/forceComponents/CRigidBody3.cpp
     src/physics/forceComponents/CSpring3.cpp
@@ -43,7 +43,6 @@ set(SOURCE_FILES
     src/systems/physics/BuoyancySystem3.cpp
     src/systems/physics/ClearAccumulatorsSystem3.cpp
     src/systems/physics/DragSystem3.cpp
-    src/systems/physics/FakeStiffSpringSystem3.cpp
     src/systems/physics/GravitySystem3.cpp
     src/systems/physics/IntegrationSystem3.cpp
     src/systems/physics/SpringSystem3.cpp

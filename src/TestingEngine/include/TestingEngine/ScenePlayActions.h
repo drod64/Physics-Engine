@@ -14,7 +14,6 @@ enum class ScenePlayAction : uint32_t {
     SpawnAnchorSpring,
     SpawnBungeeSpring,
     SpawnBuoyant,
-    SpawnFakeStiffSpring,
     SpawnSpring,
 
     DeleteEntities,

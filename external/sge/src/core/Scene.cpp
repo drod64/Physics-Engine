@@ -16,7 +16,6 @@ void sge::Scene::init()
     sysManager.registerSystem(sge::BungeeSpringSystem3::getSystemDescriptor());
     sysManager.registerSystem(sge::BuoyancySystem3::getSystemDescriptor());
     sysManager.registerSystem(sge::DragSystem3::getSystemDescriptor());
-    sysManager.registerSystem(sge::FakeStiffSpringSystem3::getSystemDescriptor());
     sysManager.registerSystem(sge::SpringSystem3::getSystemDescriptor());
     sysManager.registerSystem(sge::IntegrationSystem3::getSystemDescriptor());
 }

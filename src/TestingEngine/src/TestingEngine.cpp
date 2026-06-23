@@ -20,7 +20,6 @@ void TestingEngine::init()
     inputMapper.bindKey(KEY_X, static_cast<uint32_t>(ScenePlayAction::SpawnAnchorSpring));
     inputMapper.bindKey(KEY_C, static_cast<uint32_t>(ScenePlayAction::SpawnBungeeSpring));
     inputMapper.bindKey(KEY_V, static_cast<uint32_t>(ScenePlayAction::SpawnBuoyant));
-    inputMapper.bindKey(KEY_B, static_cast<uint32_t>(ScenePlayAction::SpawnFakeStiffSpring));
     inputMapper.bindKey(KEY_N, static_cast<uint32_t>(ScenePlayAction::SpawnSpring));
     
     inputMapper.bindKey(KEY_BACKSPACE, static_cast<uint32_t>(ScenePlayAction::DeleteEntities));
