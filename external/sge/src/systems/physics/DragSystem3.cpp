@@ -12,20 +12,20 @@ void sge::DragSystem3::update(sge::Registry &registry, sge::CommandBuffer &cmdBu
         // Writes.
         auto &r3 = drag3View.get<sge::CRigidBody3>(e);
     
-        // Calculate speed of entity.
-        sm::real speed = r3.velocity.magnitude();
+        // Calculate squared speed of entity.
+        sm::real speedSqr = r3.velocity.sqrMagnitude();
     
         // Early exit if speed is close to 0.
-        if (speed < 0.0001) continue;
+        if (speedSqr < 0.00000001) continue;
+        
+        // Get real speed.
+        sm::real speed = r3.velocity.magnitude();
+
+        // Calculate drag coefficient (using simplified version of (v / speed) * -(k1 * speed + k2 * speed^2))
+        sm::real dragScalar = -(d3.k1 + d3.k2 * speed);
     
-        // Get direction vector (velocity vector normalized).
-        sm::Vec3 dragDirection = r3.velocity * ((sm::real)1 / speed);
-    
-        // Calculate drag coefficient.
-        sm::real dragCoeff = d3.k1 * speed + d3.k2 * speed * speed;
-    
-        // Multiply direction vector by negative drag coefficient (will produce drag in the opposite way it is heading).
-        r3.addForce(dragDirection * - dragCoeff);
+        // Multiply velocity by negative drag coefficient (will produce drag in the opposite way it is heading).
+        r3.addForce(r3.velocity * dragScalar);
     }
 }
 
