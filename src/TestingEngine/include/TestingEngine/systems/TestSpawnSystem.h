@@ -7,8 +7,8 @@
 #include <SGE/systems/SystemDescriptor.h>
 #include <TestingEngine/ScenePlayActions.h>
 
-// Writes.
-#include <SGE/managers/registryResources/PlayerInputResource.h>
+// Read.
+#include <SGE/core/ecs/components/CPlayerController3.h>
 
 namespace TestSpawnSystem {
     void update(sge::Registry &registry, sge::CommandBuffer &cmdBuffer, sm::real dt);

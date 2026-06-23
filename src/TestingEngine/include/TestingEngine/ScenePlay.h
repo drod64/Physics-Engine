@@ -10,7 +10,7 @@
 #include <raylib.h>
 
 // Testing systems with SystemManager implementation.
-#include <TestingEngine/systems/PlayerActionSystem.h>
+#include <TestingEngine/systems/InputDispatcherSystem.h>
 #include <TestingEngine/systems/TestSpawnSystem.h>
 
 class ScenePlay : public sge::Scene {

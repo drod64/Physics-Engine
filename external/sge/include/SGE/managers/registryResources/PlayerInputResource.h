@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <type_traits>
 #include <cassert>
+#include <bitset>
 #include <SM/Vec2.h>
 
 namespace sge {
