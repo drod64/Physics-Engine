@@ -51,12 +51,6 @@ public:
     template <typename T>
     const ComponentPool<T>* getPool() const;
 
-    template <typename T>
-    IComponentPool* getOrCreatePoolInterface();
-
-    template <typename T>
-    const IComponentPool* getPoolInterface() const;
-
     template <typename... Components>
     View<Components...> viewAll();
 
@@ -135,18 +129,6 @@ template <typename T>
 inline const sge::ComponentPool<T>* sge::Registry::getPool() const
 {
     return this->m_components.getPool<T>();
-}
-
-template <typename T>
-inline sge::IComponentPool* sge::Registry::getOrCreatePoolInterface()
-{
-    return this->m_components.getOrCreatePoolInterface<T>();
-}
-
-template <typename T>
-inline const sge::IComponentPool* sge::Registry::getPoolInterface() const
-{
-    return this->m_components.getPoolInterface<T>();
 }
 
 template <typename... Components>

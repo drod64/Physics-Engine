@@ -2,31 +2,35 @@
 #define SGE_VIEW_H
 #include <vector>
 #include <limits>
-#include <array>
+#include <tuple>
 #include <type_traits>
 #include <SGE/core/ecs/Entity.h>
-#include <SGE/managers/IComponentPool.h>
+#include <SGE/managers/ComponentPool.h>
 
 namespace sge {
 class Registry;
 
 template <bool isConst, typename... Components>
 class ViewImpl {
-private:
+    private:
     using RegistryRef = std::conditional_t<isConst, const Registry &, Registry &>;
-    using PoolPtr = std::conditional_t<isConst, const IComponentPool*, IComponentPool*>;
     using ViewRef = std::conditional_t<isConst, const ViewImpl &, ViewImpl &>;
 
     RegistryRef m_registry;
 
     // Cached component pools.
-    std::array<PoolPtr, sizeof...(Components)> m_cachedPools;
+    std::tuple<
+    std::add_pointer_t<
+        std::conditional_t<isConst, const sge::ComponentPool<Components>, sge::ComponentPool<Components>>
+    >...
+    > m_cachedPools;
 
-    // Smallest pool to iterate over.
-    PoolPtr m_iterationPool;
+    size_t m_iterationPoolIndex;
+    size_t m_iterationPoolSize;
+    const Entity *m_iterationEntities;
 
     template <typename T>
-    PoolPtr getPoolPtr(RegistryRef registry);
+    auto getPoolPtr(RegistryRef registry);
 
 public:
     ViewImpl(RegistryRef registry);
@@ -38,7 +42,7 @@ public:
         iterator(size_t index, ViewRef view);
 
         Entity operator*() const;
-        void operator++();
+        iterator& operator++();
         bool operator!=(const iterator &other) const;
 
     private:
@@ -59,57 +63,63 @@ public:
 
 template <bool isConst, typename... Components>
 template <typename T>
-inline typename sge::ViewImpl<isConst, Components...>::PoolPtr // Return type
-sge::ViewImpl<isConst, Components...>::getPoolPtr(typename sge::ViewImpl<isConst, Components...>::RegistryRef registry)  // Function header
+inline auto sge::ViewImpl<isConst, Components...>::getPoolPtr(typename sge::ViewImpl<isConst, Components...>::RegistryRef registry) 
 {
     if constexpr (isConst)
     {
-        return registry.template getPoolInterface<T>();
+        return registry.template getPool<T>();
     }
     else
     {
-        return registry.template getOrCreatePoolInterface<T>();
+        return registry.template getOrCreatePool<T>();
     }
 }
 
 template <bool isConst, typename... Components>
 inline sge::ViewImpl<isConst, Components...>::ViewImpl(typename sge::ViewImpl<isConst, Components...>::RegistryRef registry) :
 m_registry(registry),
-m_iterationPool(nullptr)
+m_cachedPools{ getPoolPtr<Components>(registry)...},
+m_iterationPoolIndex(0),
+m_iterationPoolSize(0xFFFFFFFF),
+m_iterationEntities(nullptr)
 {
-    size_t idx = 0;
-    // Cache pools
-    ((this->m_cachedPools[idx++] = this->getPoolPtr<Components>(this->m_registry)), ...);
+    size_t currentIndex = 0;
 
-    // Find smallest pool of components to iterate over.
-    size_t minSize = std::numeric_limits<size_t>::max();
-    for (auto *pool : this->m_cachedPools)
-    {    
-        if (pool && pool->size() < minSize)
+    auto findSmallest = [&](auto *pool) {
+        if (pool && pool->size() < this->m_iterationPoolSize)
         {
-            minSize = pool->size();
-            this->m_iterationPool = pool;
+            this->m_iterationPoolSize = pool->size();
+            this->m_iterationPoolIndex = currentIndex;
+            this->m_iterationEntities = pool->getDenseToEntities().data();
         }
-    }
+
+        ++currentIndex;
+    };
+
+    std::apply([&](auto... pools) { (findSmallest(pools), ...); }, this->m_cachedPools);
 }
 
 template <bool isConst, typename... Components>
 inline sge::ViewImpl<isConst, Components...>::iterator::iterator(size_t index, typename sge::ViewImpl<isConst, Components...>::ViewRef view) :
 index(index),
 view(view)
-{}
+{
+    this->dropInvalid();
+}
 
 template <bool isConst, typename... Components>
 inline sge::Entity sge::ViewImpl<isConst, Components...>::iterator::operator*() const
 {
-    return this->view.m_iterationPool->getEntityAt(this->index);
+    return this->view.m_iterationEntities[this->index];
 }
 
 template <bool isConst, typename... Components>
-inline void sge::ViewImpl<isConst, Components...>::iterator::operator++()
+inline typename sge::ViewImpl<isConst, Components...>::iterator& sge::ViewImpl<isConst, Components...>::iterator::operator++()
 {
     this->index++;
     this->dropInvalid();
+
+    return *this;
 }
 
 template <bool isConst, typename... Components>
@@ -121,29 +131,26 @@ inline bool sge::ViewImpl<isConst, Components...>::iterator::operator!=(const it
 template <bool isConst, typename... Components>
 inline void sge::ViewImpl<isConst, Components...>::iterator::dropInvalid()
 {
-    if (!this->view.m_iterationPool)
+    if (this->view.m_iterationPoolSize == 0 || !this->view.m_iterationEntities)
     {
         this->index = 0;
         return;
     }
 
-    while (this->index < this->view.m_iterationPool->size())
+    while (this->index < this->view.m_iterationPoolSize)
     {
-        Entity e = this->view.m_iterationPool->getEntityAt(this->index);
+        Entity e = this->view.m_iterationEntities[this->index];
 
-        // Verify Entity exists in all other cached pools.
-        bool match = true;
-        for (auto *pool : this->view.m_cachedPools)
+        bool match = std::apply([e](auto... pools) {
+            return (pools->has(e) && ...);
+        }, this->view.m_cachedPools);
+
+        if (match)
         {
-            if (pool != this->view.m_iterationPool && (!pool->has(e)))
-            {
-                match = false;
-                break;
-            }
+            break;
         }
 
-        if (match) break;
-        ++index;
+        this->index++;
     }
 }
 
@@ -156,14 +163,16 @@ inline typename sge::ViewImpl<isConst, Components...>::iterator sge::ViewImpl<is
 template <bool isConst, typename... Components>
 inline typename sge::ViewImpl<isConst, Components...>::iterator sge::ViewImpl<isConst, Components...>::end()
 {
-    return iterator(this->m_iterationPool ? m_iterationPool->size() : 0, *this);
+    return iterator(this->m_iterationPoolSize, *this);
 }
 
 template <bool isConst, typename... Components>
 template<typename T>
 std::conditional_t<isConst, const T &, T &> sge::ViewImpl<isConst, Components...>::get(Entity e) const
 {
-    return this->m_registry.template getComponent<T>(e);
+    auto *pool = std::get<std::conditional_t<isConst, const sge::ComponentPool<T>*,
+                                                        sge::ComponentPool<T>*>>(this->m_cachedPools);
+    return pool->get(e);
 }
 
 #endif // SGE_VIEW_H

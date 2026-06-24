@@ -4,18 +4,34 @@
 
 namespace sge {
 /**
- * Base class for ComponentPool classes. Sub-classes must implement the removeEntity() function.
+ * Base class for ComponentPool classes (useful for storage).
  */
 class IComponentPool {
-public:
-    /**
-     * Pure virtual function that must be implemented by a sub-class.
-     */
-    virtual void removeEntity(Entity e) = 0;
-    virtual bool has(Entity e) const = 0;
+protected:
+    using RemoveFn = void(*)(IComponentPool*, Entity);
+    using ClearFn = void(*)(IComponentPool*);
 
-    virtual size_t size() const = 0;
-    virtual Entity getEntityAt(size_t index) const = 0;
+    IComponentPool(RemoveFn removeFunc, ClearFn clearFunc) :
+    m_removeEntityFunc(removeFunc),
+    m_clearFunc(clearFunc)
+    {}
+
+private:
+    RemoveFn m_removeEntityFunc;
+    ClearFn m_clearFunc;
+
+public:
+    ~IComponentPool() = default;
+
+    void removeEntity(Entity e)
+    {
+        this->m_removeEntityFunc(this, e);
+    }
+
+    void clear()
+    {
+        this->m_clearFunc(this);
+    }
 };
 }
 

@@ -37,12 +37,25 @@ private:
      */
     std::vector<size_t> m_sparse;
 
+    // Static wrapper functions to store in the IComponent base.
+    static void s_removeEntity(IComponentPool *base, Entity e)
+    {
+        static_cast<ComponentPool<T>*>(base)->concreteRemoveEntity(e);
+    }
+
+    static void s_clear(IComponentPool *base)
+    {
+        static_cast<ComponentPool<T>*>(base)->concreteClear();
+    }
+
 public:
     /**
      * Parameterized Constructor.
      * @param initialSize the initial size of the vector containing Entity IDs
      */
     ComponentPool(size_t initialSize = 1024);
+
+    ~ComponentPool() = default;
 
     /**
      * Assigns a component to the specific Entity.
@@ -60,7 +73,7 @@ public:
      * @tparam T the component type (sge::CTransform, sge::CRigidBody, etc...)
      * @param e the entity to remove
      */
-    void removeEntity(Entity e) override;
+    void concreteRemoveEntity(Entity e);
 
     /**
      * Retrives the component from the specific entity.
@@ -84,23 +97,34 @@ public:
      * @param e the entity to check
      * @return true if the entity has the component, false otherwise
      */
-    bool has(Entity e) const override;
+    bool has(Entity e) const;
 
-    size_t size() const override;
+    size_t size() const;
 
-    Entity getEntityAt(size_t index) const override;
+    void concreteClear();
+
+    Entity getEntityAt(size_t index) const;
 
     std::vector<T>& getDenseComponents();
 
+    std::vector<Entity>& getDenseToEntities();
+    
     const std::vector<T>& getDenseComponents() const;
+
+    const std::vector<Entity>& getDenseToEntities() const;
 };
 } // namespace sge
 
 template <typename T>
 inline sge::ComponentPool<T>::ComponentPool(size_t initialSize) :
+// Store static functions in base class.
+IComponentPool(&sge::ComponentPool<T>::s_removeEntity,
+                &sge::ComponentPool<T>::s_clear),
 m_TOMBSTONE(0xFFFFFFFF)
 {
     this->m_sparse.resize(initialSize, this->m_TOMBSTONE);
+    this->m_dense.reserve(initialSize);
+    this->m_denseToEntity.reserve(initialSize);
 }
 
 template<typename T>
@@ -112,10 +136,12 @@ inline T& sge::ComponentPool<T>::assign(sge::Entity e, T&& component)
 
     if (e_int >= this->m_sparse.size())
     {
-        this->m_sparse.resize(static_cast<size_t>(e_int) + 1, this->m_TOMBSTONE);
+        size_t newSize = this->m_sparse.size() * 2;
+        if (newSize <= e_int) newSize = e_int + 1;
+        this->m_sparse.resize(newSize, this->m_TOMBSTONE);
     }
 
-    this->m_sparse.at(e_int) = this->m_dense.size();
+    this->m_sparse[e_int] = this->m_dense.size();
     this->m_dense.push_back(std::move(component));
     this->m_denseToEntity.push_back(e);
 
@@ -123,24 +149,23 @@ inline T& sge::ComponentPool<T>::assign(sge::Entity e, T&& component)
 }
 
 template <typename T>
-inline void sge::ComponentPool<T>::removeEntity(sge::Entity e)
+inline void sge::ComponentPool<T>::concreteRemoveEntity(sge::Entity e)
 {
     if (!has(e)) return;
 
     uint32_t e_int = static_cast<uint32_t>(e);
-
-    size_t indexToRemove = this->m_sparse.at(e_int);
+    size_t indexToRemove = this->m_sparse[e_int];
     size_t lastIndex = this->m_dense.size() - 1;
-    sge::Entity lastEntity = this->m_denseToEntity.at(lastIndex);
+    sge::Entity lastEntity = this->m_denseToEntity[lastIndex];
 
     // Move last entity's component and ID to removed index.
-    this->m_dense.at(indexToRemove) = std::move(this->m_dense.at(lastIndex));
-    this->m_denseToEntity.at(indexToRemove) = lastEntity;
+    this->m_dense[indexToRemove] = std::move(this->m_dense[lastIndex]);
+    this->m_denseToEntity[indexToRemove] = lastEntity;
 
     // Update last entity to point to it's correct component.
-    this->m_sparse.at((uint32_t)lastEntity) = indexToRemove;
+    this->m_sparse[static_cast<uint32_t>(lastEntity)] = indexToRemove;
     // Mark removed entity as dead.
-    this->m_sparse.at(e_int) = this->m_TOMBSTONE;
+    this->m_sparse[e_int] = this->m_TOMBSTONE;
 
     // Shrink dense vectors.
     this->m_dense.pop_back();
@@ -152,7 +177,7 @@ inline T& sge::ComponentPool<T>::get(sge::Entity e)
 {
     assert(has(e) && "Entity does not have this component type!");
     
-    return this->m_dense.at(this->m_sparse.at((uint32_t)e));
+    return this->m_dense[this->m_sparse[static_cast<uint32_t>(e)]];
 }
 
 template <typename T>
@@ -160,7 +185,7 @@ inline const T& sge::ComponentPool<T>::get(sge::Entity e) const
 {
     assert(has(e) && "Entity does not have this component type!");
     
-    return this->m_dense.at(this->m_sparse.at((uint32_t)e));
+    return this->m_dense[this->m_sparse[static_cast<uint32_t>(e)]];
 }
 
 template <typename T>
@@ -170,7 +195,7 @@ inline bool sge::ComponentPool<T>::has(sge::Entity e) const
 
     if (e_int >= this->m_sparse.size()) return false;
 
-    return this->m_sparse.at(e_int) != this->m_TOMBSTONE;
+    return this->m_sparse[e_int] != this->m_TOMBSTONE;
 }
 
 template <typename T>
@@ -180,9 +205,17 @@ inline size_t sge::ComponentPool<T>::size() const
 }
 
 template <typename T>
+inline void sge::ComponentPool<T>::concreteClear()
+{
+    this->m_dense.clear();
+    this->m_denseToEntity.clear();
+    std::fill(this->m_sparse.begin(), this->m_sparse.end(), this->m_TOMBSTONE);
+}
+
+template <typename T>
 inline sge::Entity sge::ComponentPool<T>::getEntityAt(size_t index) const
 {
-    return this->m_denseToEntity.at(index);
+    return this->m_denseToEntity[index];
 }
 
 template <typename T>
@@ -192,9 +225,21 @@ inline std::vector<T>& sge::ComponentPool<T>::getDenseComponents()
 }
 
 template <typename T>
+inline std::vector<sge::Entity>& sge::ComponentPool<T>::getDenseToEntities()
+{
+    return this->m_denseToEntity;
+}
+
+template <typename T>
 inline const std::vector<T>& sge::ComponentPool<T>::getDenseComponents() const
 {
     return this->m_dense;
+}
+
+template <typename T>
+inline const std::vector<sge::Entity>& sge::ComponentPool<T>::getDenseToEntities() const
+{
+    return this->m_denseToEntity;
 }
 
 #endif // SGE_COMPONENT_POOL

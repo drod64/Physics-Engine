@@ -1,11 +1,11 @@
 #ifndef SGE_COMPONENT_MANAGER_H
 #define SGE_COMPONENT_MANAGER_H
-#include <unordered_map>
-#include <typeindex>
 #include <memory>
+#include <cstddef>
+#include <vector>
 #include <SGE/core/ecs/Entity.h>
-#include <SGE/managers/IComponentPool.h>
 #include <SGE/managers/ComponentPool.h>
+#include <SGE/core/ecs/components/ComponentIDCounter.h>
 
 namespace sge {
 /**
@@ -15,13 +15,25 @@ namespace sge {
  */
 class ComponentManager {
 private:
-    /**
-     * Holds the collection of sge::Components.
-     * Each different type of sge::Component gets their own pool.
-     */
-    std::unordered_map<std::type_index, std::unique_ptr<IComponentPool>> m_pools;
+    using UniformPoolFootPrint = sge::ComponentPool<char>;
+    static constexpr size_t POOL_SIZE_BYTES = sizeof (UniformPoolFootPrint);
+
+    // Raw bytes to store ComponentPools in.
+    std::vector<std::byte> m_arena;
+    // Tracks initialized pools.
+    std::vector<bool> m_poolInitialized;
+    // Tracks destructor of each pool.
+    std::vector<void(*)(void*)> m_destructors;
 
 public:
+    ComponentManager() = default;
+
+    ~ComponentManager();
+
+    ComponentManager(const ComponentManager &) = delete;
+    
+    ComponentManager& operator= (const ComponentManager &) = delete;
+
     /**
      * Adds a component to a specific entity.
      * @tparam T the component type (sge::CTransform, sge::CRigidBody, etc...)
@@ -73,6 +85,8 @@ public:
      */
     void entityDestroyed(Entity e);
 
+    void clear();
+
     /**
      * Helper function that returns a specific sge::Component pool type.
      * If a pool type does not exist, it creates it.
@@ -90,26 +104,22 @@ public:
      */
     template <typename T>
     const ComponentPool<T>* getPool() const;
-
-    /**
-     * Returns the base pointer (sge::IComponent) of a sge::ComponentPool<T>.
-     * If the type does not exist, it creates it.
-     * @return a pointer to the existing or newly created base type of the ComponentPool<T>
-     */
-    template <typename T>
-    IComponentPool* getOrCreatePoolInterface();
-
-    /**
-     * Returns the the base pointer (sge::IComponent) of a sge::ComponentPool<T>/
-     * If the the type DOES NOT EXIST, it returns nullptr.
-     * @return a pointer to the existing base type of ComponentPool<T>, if it DOES NOT EXIST, it returns nullptr
-     */
-    template <typename T>
-    const IComponentPool* getPoolInterface() const;
 };
 } // namespace sge
 
 // Implementation
+
+inline sge::ComponentManager::~ComponentManager()
+{
+    for (size_t i = 0; i < this->m_poolInitialized.size(); ++i)
+    {
+        if (this->m_poolInitialized[i] && this->m_destructors[i])
+        {
+            std::byte *poolLocation = &this->m_arena[i * POOL_SIZE_BYTES];
+            this->m_destructors[i](poolLocation);
+        }
+    }
+}
 
 template <typename T>
 inline T& sge::ComponentManager::addComponent(sge::Entity e, T&& component)
@@ -120,7 +130,7 @@ inline T& sge::ComponentManager::addComponent(sge::Entity e, T&& component)
 template <typename T>
 inline void sge::ComponentManager::removeComponent(sge::Entity e)
 {
-    this->getOrCreatePool<T>()->removeEntity(e);
+    this->getOrCreatePool<T>()->concreteRemoveEntity(e);
 }
 
 template <typename T>
@@ -132,7 +142,7 @@ inline T& sge::ComponentManager::getComponent(Entity e)
 template <typename T>
 inline const T& sge::ComponentManager::getComponent(Entity e) const
 {
-    auto pool = this->getPool<T>();
+    const sge::ComponentPool<T> *pool = this->getPool<T>();
 
     assert(pool && "Component pool does not exist!");
 
@@ -142,7 +152,7 @@ inline const T& sge::ComponentManager::getComponent(Entity e) const
 template <typename T>
 inline bool sge::ComponentManager::has(Entity e) const
 {
-    auto pool = this->getPool<T>();
+    const sge::ComponentPool<T> *pool = this->getPool<T>();
 
     // Check if pool exists.
     if (pool)
@@ -155,62 +165,83 @@ inline bool sge::ComponentManager::has(Entity e) const
 
 inline void sge::ComponentManager::entityDestroyed(Entity e)
 {
-    for (auto const &[typeIndex, pool] : this->m_pools)
+    size_t activePools = this->m_poolInitialized.size();
+
+    for (size_t i = 0; i < activePools; ++i)
     {
-        pool->removeEntity(e);
+        if (this->m_poolInitialized[i])
+        {
+            sge::IComponentPool *pool = reinterpret_cast<sge::IComponentPool*>(&this->m_arena[i * POOL_SIZE_BYTES]);
+            pool->removeEntity(e);
+        }
+    }
+}
+
+inline void sge::ComponentManager::clear()
+{
+    size_t activePools = this->m_poolInitialized.size();
+
+    for (size_t i = 0; i < activePools; ++i)
+    {
+        if (this->m_poolInitialized[i])
+        {
+            sge::IComponentPool *pool = reinterpret_cast<sge::IComponentPool*>(&this->m_arena[i * POOL_SIZE_BYTES]);
+            pool->clear();
+        }
     }
 }
 
 template<typename T>
 inline sge::ComponentPool<T>* sge::ComponentManager::getOrCreatePool()
 {
-    auto typeIndex = std::type_index(typeid(T));
+    sge::ComponentID id = sge::ComponentIDCounter::get<T>();
 
-    if (this->m_pools.find(typeIndex) == this->m_pools.end())
+    // Create new pool slots if necessary.
+    if (id >= this->m_poolInitialized.size())
     {
-        this->m_pools[typeIndex] = std::make_unique<sge::ComponentPool<T>>();
+        size_t newPoolCount = this->m_poolInitialized.size() * 2;
+        if (newPoolCount <= id) newPoolCount = id + 1;
+
+        // Resize arena.
+        this->m_arena.resize(newPoolCount * POOL_SIZE_BYTES);
+        // Resize initialization tracker.
+        this->m_poolInitialized.resize(newPoolCount, false);
+        // Resize destructor tracker.
+        this->m_destructors.resize(newPoolCount, nullptr);
     }
 
-    return static_cast<sge::ComponentPool<T>*>(this->m_pools.at(typeIndex).get());
+    // Calculate location of pool.
+    std::byte *poolLocation = &this->m_arena[id * POOL_SIZE_BYTES];
+
+    // Initialize new pool.
+    if (!this->m_poolInitialized[id])
+    {
+        new(poolLocation) sge::ComponentPool<T>();
+        // Mark pool as initialized.
+        this->m_poolInitialized[id] = true;
+        // Store callback for destructor.
+        this->m_destructors[id] = [](void* ptr) {
+            static_cast<sge::ComponentPool<T>*>(ptr)->~ComponentPool<T>();
+        };
+    }
+
+    // Return existing or newly created pool.
+    return reinterpret_cast<sge::ComponentPool<T>*>(poolLocation);
 }
 
 template<typename T>
 inline const sge::ComponentPool<T>* sge::ComponentManager::getPool() const
 {
-    auto typeIndex = std::type_index(typeid(T));
+    sge::ComponentID id = sge::ComponentIDCounter::get<T>();
 
-    if (this->m_pools.find(typeIndex) == this->m_pools.end())
-    {
-        return nullptr;
-    }
+    // Pool either is out of bounds or was never initialized.
+    if (id >= this->m_poolInitialized.size() || !this->m_poolInitialized.at(id)) return nullptr;
 
-    return static_cast<sge::ComponentPool<T>*>(this->m_pools.at(typeIndex).get());
-}
+    // Calculate pool location.
+    const std::byte *poolLocation = &this->m_arena[id * POOL_SIZE_BYTES];
 
-template<typename T>
-inline sge::IComponentPool* sge::ComponentManager::getOrCreatePoolInterface()
-{
-    auto typeIndex = std::type_index(typeid(T));
-
-    if (this->m_pools.find(typeIndex) == this->m_pools.end())
-    {
-        this->m_pools[typeIndex] = std::make_unique<sge::ComponentPool<T>>();
-    }
-
-    return this->m_pools.at(typeIndex).get();
-}
-
-template <typename T>
-inline const sge::IComponentPool* sge::ComponentManager::getPoolInterface() const
-{
-    auto typeIndex = std::type_index(typeid(T));
-
-    if (this->m_pools.find(typeIndex) == this->m_pools.end())
-    {
-        return nullptr;
-    }
-
-    return this->m_pools.at(typeIndex).get();
+    // Return initialized pool.
+    return reinterpret_cast<const sge::ComponentPool<T>*>(poolLocation);
 }
 
 #endif // SGE_COMPONENT_MANAGER_H
