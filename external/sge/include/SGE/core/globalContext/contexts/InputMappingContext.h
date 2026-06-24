@@ -1,5 +1,5 @@
-#ifndef SGE_INPUT_MAPPING_RESOURCE_H
-#define SGE_INPUT_MAPPING_RESOURCE_H
+#ifndef SGE_INPUT_MAPPING_CONTEXT_H
+#define SGE_INPUT_MAPPING_CONTEXT_H
 #include <algorithm>
 #include <cstdint>
 #include <vector>
@@ -22,13 +22,13 @@ struct ButtonBind {
     }
 };
     
-class InputMappingResource {
+class InputMappingContext {
 private:
     std::vector<ButtonBind> m_keyBindings;
     std::vector<ButtonBind> m_mouseBindings;
 
 public:
-    InputMappingResource();
+    InputMappingContext();
     void bindKey(int key, uint32_t actionID);
     uint32_t getActionForKey(int key) const;
     const std::vector<ButtonBind>& getKeyBinds() const;
@@ -39,4 +39,4 @@ public:
 };
 } // namespace sge
 
-#endif // SGE_INPUT_MAPPING_RESOURCE_H
+#endif // SGE_INPUT_MAPPING_CONTEXT_H

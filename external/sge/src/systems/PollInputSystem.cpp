@@ -3,8 +3,8 @@
 
 void sge::PollInputSystem::update(sge::Registry &registry, sge::CommandBuffer &, sm::real dt)
 {
-    const auto &inputMapper = registry.getOrCreateResource<sge::InputMappingResource>();
-    auto &playerInput = registry.getOrCreateResource<sge::PlayerInputResource>();
+    const auto &inputMapper = registry.getContext<sge::InputMappingContext>();
+    auto &playerInput = registry.getContext<sge::PlayerInputContext>();
 
     // Prepare snapshot for polling.
     playerInput.prepareForPolling();
@@ -44,13 +44,13 @@ sge::SystemDescriptor sge::PollInputSystem::getSystemDescriptor()
 
     // No system component writes.
 
-    // System resource reads.
-    desc.componentReads.set(sge::ResourceIDCounter::get<sge::InputMappingResource>());
-
-    // No system resource accumulation.
-
-    // System resource writes.
-    desc.componentAccumulates.set(sge::ResourceIDCounter::get<sge::PlayerInputResource>());
+    // System context reads.
+    desc.contextReads.set(sge::GlobalContextIDCounter::get<sge::InputMappingContext>());
+    
+    // No system context accumulation.
+    
+    // System context writes.
+    desc.contextWrites.set(sge::GlobalContextIDCounter::get<sge::PlayerInputContext>());
 
     // System name.
     desc.name = "PollInputSystem";

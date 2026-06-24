@@ -58,18 +58,18 @@ void sge::SystemManager::compile()
                                                     (sysA.componentWrites & sysB.componentAccumulates).any();
 
                 // WAR, RAW, WAW
-                bool resourceReadWriteHazard = (sysA.resourceWrites & sysB.resourceReads).any()     ||
-                                                (sysA.resourceReads & sysB.resourceWrites).any()    ||
-                                                (sysA.resourceWrites & sysB.resourceWrites).any();
+                bool contextReadWriteHazard = (sysA.contextWrites & sysB.contextReads).any()     ||
+                                                (sysA.contextReads & sysB.contextWrites).any()    ||
+                                                (sysA.contextWrites & sysB.contextWrites).any();
 
-                bool resourceAccumulateHazard = (sysA.resourceAccumulates & sysB.resourceReads).any()   ||
-                                                (sysA.resourceReads & sysB.resourceAccumulates).any()   ||
-                                                (sysA.resourceAccumulates & sysB.resourceWrites).any()  ||
-                                                (sysA.resourceWrites & sysB.resourceAccumulates).any();
+                bool contextAccumulateHazard = (sysA.contextAccumulates & sysB.contextReads).any()   ||
+                                                (sysA.contextReads & sysB.contextAccumulates).any()   ||
+                                                (sysA.contextAccumulates & sysB.contextWrites).any()  ||
+                                                (sysA.contextWrites & sysB.contextAccumulates).any();
 
 
                 bool hasDataHazard = componentReadWriteHazard || componentAccumulationHazard ||
-                                    resourceReadWriteHazard || resourceAccumulateHazard;
+                                    contextReadWriteHazard || contextAccumulateHazard;
                 
                 if (hasDataHazard)
                 {

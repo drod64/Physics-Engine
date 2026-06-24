@@ -5,7 +5,7 @@
 #include <string>
 #include <SM/Precision.h>
 #include <SGE/core/ecs/components/ComponentIDCounter.h>
-#include <SGE/managers/registryResources/ResourceRegistry.h>
+#include <SGE/core/globalContext/GlobalContextIDCounter.h>
 
 namespace sge {
     // Forwarded classes.
@@ -32,9 +32,9 @@ namespace sge {
         ComponentMask componentReads;
         ComponentMask componentWrites;
         ComponentMask componentAccumulates;
-        ResourceMask resourceReads;
-        ResourceMask resourceWrites;
-        ResourceMask resourceAccumulates;
+        GlobalContextMask contextReads;
+        GlobalContextMask contextWrites;
+        GlobalContextMask contextAccumulates;
         std::string name;
 
         SystemDescriptor()

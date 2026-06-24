@@ -4,7 +4,7 @@
 #include <cassert>
 #include <SGE/managers/EntityManager.h>
 #include <SGE/managers/ComponentManager.h>
-#include <SGE/managers/registryResources/ResourceRegistry.h>
+#include <SGE/core/globalContext/GlobalContext.h>
 
 namespace sge {
 
@@ -17,7 +17,7 @@ using ConstView = sge::ViewImpl<true, Components...>;
 
 class Registry {
 private:
-    std::vector<std::unique_ptr<sge::IResourceStorage>> m_resources;
+    GlobalContext       m_contexts;
     ComponentManager    m_components;
     EntityManager       m_entities;
 
@@ -57,17 +57,19 @@ public:
     template <typename... Components>
     ConstView<Components...> viewAll() const;
 
-    template <typename T, typename... Args>
-    T& getOrCreateResource(Args&&... args);
+    // Global Context
+    template <typename T>
+    [[nodiscard]] T& getContext();
 
     template <typename T>
-    T& getResource();
+    [[nodiscard]] const T& getContext() const;
+
+    [[nodiscard]] GlobalContext& getGlobalContext();
+
+    void lockGlobalContext();
 
     template <typename T>
-    const T& getResource() const;
-
-    template <typename T>
-    bool hasResource() const;
+    bool hasContext() const;
 };
 } // namspace sge
 
@@ -143,70 +145,32 @@ inline sge::ConstView<Components...> sge::Registry::viewAll() const
     return sge::ConstView<Components...>(*this);
 }
 
-template <typename T, typename... Args>
-T& sge::Registry::getOrCreateResource(Args&&... args)
+template <typename T>
+inline T& sge::Registry::getContext()
 {
-    size_t id = static_cast<size_t>(sge::ResourceIDCounter::get<T>());
-
-    if (id >= this->m_resources.size())
-    {
-        this->m_resources.resize(id + 1);
-    }
-
-    // If resource does not exist...
-    if (!this->m_resources.at(id))
-    {
-        // Create concrete storage 
-        auto storage = std::make_unique<sge::ConcreteResourceStorage<T>>();
-
-        // Forward constructor arguments.
-        storage->value = T(std::forward<Args>(args)...);
-
-        // Assign id index to concrete storage wrapper
-        this->m_resources.at(id) = std::move(storage);
-    }
-
-    // Get raw pointer to cast it to its type
-    auto *concrete = static_cast<sge::ConcreteResourceStorage<T>*>(this->m_resources.at(id).get());
-
-    // Return created
-    return concrete->value;
+    return this->m_contexts.get<T>();
 }
 
 template <typename T>
-T& sge::Registry::getResource()
+inline const T& sge::Registry::getContext() const
 {
-    assert(this->hasResource<T>() && "Resource does not exist in Registry!");
-
-    size_t id = static_cast<size_t>(sge::ResourceIDCounter::get<T>());
-
-    // Get raw pointer to cast it to its type
-    auto *concrete = static_cast<sge::ConcreteResourceStorage<T>*>(this->m_resources.at(id).get());
-
-    // Return created
-    return concrete->value;
+    return this->m_contexts.get<T>();
 }
 
 template <typename T>
-const T& sge::Registry::getResource() const
+inline bool sge::Registry::hasContext() const
 {
-    assert(this->hasResource<T>() && "Const resource does not exist in Registry!");
-
-    size_t id = static_cast<size_t>(sge::ResourceIDCounter::get<T>());
-
-    // Get raw pointer to cast it to its type
-    auto *concrete = static_cast<sge::ConcreteResourceStorage<T>*>(this->m_resources.at(id).get());
-
-    // Return created
-    return concrete->value;
+    return this->m_contexts.has<T>();
 }
 
-template <typename T>
-bool sge::Registry::hasResource() const
+inline sge::GlobalContext& sge::Registry::getGlobalContext()
 {
-    size_t id = static_cast<size_t>(sge::ResourceIDCounter::get<T>());
+    return this->m_contexts;
+}
 
-    return (id < this->m_resources.size() && this->m_resources.at(id));
+inline void sge::Registry::lockGlobalContext()
+{
+    this->m_contexts.lockInitialization();
 }
 
 #endif // SGE_REGISTRY_H

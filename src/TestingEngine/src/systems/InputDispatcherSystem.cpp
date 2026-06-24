@@ -3,7 +3,7 @@
 void InputDispatcherSystem::update(sge::Registry &registry, sge::CommandBuffer &cmd, sm::real)
 {
     // Get player input resource.
-    auto &playerInput = registry.getOrCreateResource<sge::PlayerInputResource>();
+    auto &playerInput = registry.getContext<sge::PlayerInputContext>();
 
     // Get controller component view.
     auto cView = registry.viewAll<sge::CPlayerController3>();
@@ -58,10 +58,10 @@ sge::SystemDescriptor InputDispatcherSystem::getSystemDescription()
     // System component writes.
     desc.componentWrites.set(sge::ComponentIDCounter::get<sge::CPlayerController3>());
 
-    // System resource reads
-    desc.resourceReads.set(sge::ResourceIDCounter::get<sge::PlayerInputResource>());
+    // System context reads.
+    desc.contextReads.set(sge::GlobalContextIDCounter::get<sge::PlayerInputContext>());
 
-    // No system resource writes.
+    // No system context writes.
     
     // System name.
     desc.name = "PlayerActionSystem";

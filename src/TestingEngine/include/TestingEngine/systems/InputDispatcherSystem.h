@@ -5,10 +5,12 @@
 #include <SGE/managers/View.h>
 #include <SGE/managers/CommandBuffer.h>
 #include <SGE/systems/SystemDescriptor.h>
+#include <SGE/core/globalContext/GlobalContextIDCounter.h>
 #include <TestingEngine/ScenePlayActions.h>
 
+
 // Writes.
-#include <SGE/managers/registryResources/PlayerInputResource.h>
+#include <SGE/core/globalContext/contexts/PlayerInputContext.h>
 #include <SGE/core/ecs/components/CPlayerController3.h>
 
 namespace InputDispatcherSystem {

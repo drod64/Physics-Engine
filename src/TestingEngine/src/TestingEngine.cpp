@@ -7,7 +7,16 @@ TestingEngine("nothing")
 void TestingEngine::init()
 {
     sge::Registry &registry = this->currentScene()->getRegistry();
-    sge::InputMappingResource &inputMapper = registry.getOrCreateResource<sge::InputMappingResource>();
+    sge::GlobalContext &globalContext = registry.getGlobalContext();
+
+    // Register global contexts.
+    globalContext.registerContext<sge::PlayerInputContext>();
+    globalContext.registerContext<sge::InputMappingContext>();
+
+    // Lock global context. Keep it read-only.
+    globalContext.lockInitialization();
+
+    sge::InputMappingContext &inputMapper = registry.getContext<sge::InputMappingContext>();
 
     inputMapper.bindKey(KEY_W, static_cast<uint32_t>(ScenePlayAction::MoveForward));
     inputMapper.bindKey(KEY_A, static_cast<uint32_t>(ScenePlayAction::MoveLeft));

@@ -1,5 +1,5 @@
-#ifndef SGE_PLAYER_INPUT_RESOURCE_H
-#define SGE_PLAYER_INPUT_RESOURCE_H
+#ifndef SGE_PLAYER_INPUT_CONTEXT_H
+#define SGE_PLAYER_INPUT_CONTEXT_H
 #include <cstdint>
 #include <type_traits>
 #include <cassert>
@@ -7,7 +7,7 @@
 #include <SM/Vec2.h>
 
 namespace sge {
-class PlayerInputResource {
+class PlayerInputContext {
 private:
     std::bitset<512> m_curHeld;
     std::bitset<512> m_prevHeld;
@@ -46,27 +46,27 @@ public:
 
 // Implementation
 
-inline void sge::PlayerInputResource::setMouseDelta(const sm::Vec2 &mouseDelta)
+inline void sge::PlayerInputContext::setMouseDelta(const sm::Vec2 &mouseDelta)
 {
     this->m_mouseDelta = mouseDelta;
 }
 
-inline sm::Vec2 sge::PlayerInputResource::getMouseDelta() const
+inline sm::Vec2 sge::PlayerInputContext::getMouseDelta() const
 {
     return this->m_mouseDelta;
 }
 
-inline void sge::PlayerInputResource::setMousePosition(const sm::Vec2 &mousePosition)
+inline void sge::PlayerInputContext::setMousePosition(const sm::Vec2 &mousePosition)
 {
     this->m_mousePosition = mousePosition;
 }
 
-inline sm::Vec2 sge::PlayerInputResource::getMousePosition() const
+inline sm::Vec2 sge::PlayerInputContext::getMousePosition() const
 {
     return this->m_mousePosition;
 }
 
-inline void sge::PlayerInputResource::setAction(uint32_t actionID, bool isDown)
+inline void sge::PlayerInputContext::setAction(uint32_t actionID, bool isDown)
 {
     if ((actionID) > m_curHeld.size()) return;
     
@@ -92,18 +92,18 @@ inline void sge::PlayerInputResource::setAction(uint32_t actionID, bool isDown)
     }
 }
 
-inline void sge::PlayerInputResource::updateCurrent(const std::bitset<512> &current)
+inline void sge::PlayerInputContext::updateCurrent(const std::bitset<512> &current)
 {
     this->m_curHeld = current;
 }
 
-inline void sge::PlayerInputResource::prepareForPolling()
+inline void sge::PlayerInputContext::prepareForPolling()
 {
     this->m_prevHeld = this->m_curHeld;
     this->m_curHeld.reset();
 }
 
-inline bool sge::PlayerInputResource::consumeActionPressed(uint32_t actionID)
+inline bool sge::PlayerInputContext::consumeActionPressed(uint32_t actionID)
 {
     if (this->m_justPressed.test(actionID))
     {
@@ -114,12 +114,12 @@ inline bool sge::PlayerInputResource::consumeActionPressed(uint32_t actionID)
     return false;
 }
 
-inline bool sge::PlayerInputResource::isActionHeld(uint32_t actionID) const
+inline bool sge::PlayerInputContext::isActionHeld(uint32_t actionID) const
 {
     return this->m_prevHeld.test(actionID) && this->m_curHeld.test(actionID);
 }
 
-inline bool sge::PlayerInputResource::consumeActionReleased(uint32_t actionID)
+inline bool sge::PlayerInputContext::consumeActionReleased(uint32_t actionID)
 {
     if (this->m_justReleased.test(actionID))
     {
@@ -131,27 +131,27 @@ inline bool sge::PlayerInputResource::consumeActionReleased(uint32_t actionID)
 }
 
 template <typename EnumType>
-inline bool sge::PlayerInputResource::consumeActionPressed(EnumType actionID)
+inline bool sge::PlayerInputContext::consumeActionPressed(EnumType actionID)
 {
-    static_assert(std::is_enum_v<EnumType>, "[PlayerInputResource]: Parameter must be an enum type!");
+    static_assert(std::is_enum_v<EnumType>, "[PlayerInputContext]: Parameter must be an enum type!");
     
     return this->consumeActionPressed(static_cast<uint32_t>(actionID));
 }
 
 template <typename EnumType>
-inline bool sge::PlayerInputResource::isActionHeld(EnumType actionID) const
+inline bool sge::PlayerInputContext::isActionHeld(EnumType actionID) const
 {
-    static_assert(std::is_enum_v<EnumType>, "[PlayerInputResource]: Parameter must be an enum type!");
+    static_assert(std::is_enum_v<EnumType>, "[PlayerInputContext]: Parameter must be an enum type!");
     
     return this->isActionHeld(static_cast<uint32_t>(actionID));
 }
 
 template <typename EnumType>
-inline bool sge::PlayerInputResource::consumeActionReleased(EnumType actionID)
+inline bool sge::PlayerInputContext::consumeActionReleased(EnumType actionID)
 {
-    static_assert(std::is_enum_v<EnumType>, "[PlayerInputResource]: Parameter must be an enum type!");
+    static_assert(std::is_enum_v<EnumType>, "[PlayerInputContext]: Parameter must be an enum type!");
     
     return this->consumeActionReleased(static_cast<uint32_t>(actionID));
 }
 
-#endif // SGE_PLAYER_INPUT_RESOURCE_H
+#endif // SGE_PLAYER_INPUT_CONTEXT_H

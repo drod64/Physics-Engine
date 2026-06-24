@@ -4,12 +4,14 @@
 #include <SGE/managers/View.h>
 #include <SGE/managers/CommandBuffer.h>
 #include <SGE/systems/SystemDescriptor.h>
+#include <SGE/core/globalContext/GlobalContextIDCounter.h>
+#include <SGE/core/globalContext/GlobalContext.h>
 
 // Reads.
-#include <SGE/managers/registryResources/InputMappingResource.h>
+#include <SGE/core/globalContext/contexts/InputMappingContext.h>
 
 // Writes.
-#include <SGE/managers/registryResources/PlayerInputResource.h>
+#include <SGE/core/globalContext/contexts/PlayerInputContext.h>
 
 // 1. translation, intention, and execution pipeline
 // InputProvider -> PlayerActionSystem -> PlayerMovementSystem or any other system that depends on a specific action.
