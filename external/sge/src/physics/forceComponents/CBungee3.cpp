@@ -1,8 +1,8 @@
 #include <SGE/physics/forceComponents/CBungee3.h>
 
-sge::CBungee3::CBungee3(Entity other, sm::real springConstant, sm::real restLength)
+sge::CBungee3::CBungee3(Entity targetEntity, sm::real springConstant, sm::real restLength)
 {
-    this->other = other;
+    this->targetEntity = targetEntity;
     this->springConstant = springConstant;
     this->restLength = restLength;
 }

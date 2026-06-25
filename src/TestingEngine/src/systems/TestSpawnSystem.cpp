@@ -33,7 +33,15 @@ void TestSpawnSystem::update(sge::Registry &registry, sge::CommandBuffer &cmdBuf
                         cmdBuffer.removeComponentDeferred<sge::CGravity3>(e);
                     }
                     break;
+                
+                case ScenePlayAction::SpawnSpring:
+                    ScenePlaySpawn::spawnSpringConnection(cmdBuffer);
+                    break;
 
+                case ScenePlayAction::SpawnBungeeSpring:
+                    ScenePlaySpawn::spawnBungeeSpring(cmdBuffer);
+                    break;
+                    
                 case ScenePlayAction::DeleteEntities:
                     for (sge::Entity e : gravity3View)
                     {

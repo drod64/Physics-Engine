@@ -2,21 +2,22 @@
 #define SGE_CSPRING3_H
 #include <SGE/core/ecs/Entity.h>
 #include <SM/Precision.h>
+#include <SGE/physics/linkComponents/CLink.h>
 
 namespace sge {
-class CSpring3 {
+class CSpring3 : public CLink<CSpring3> {
 public:
-    Entity other;
+    Entity targetEntity;
     sm::real springConstant;
     sm::real restLength;
 
     /**
      * Parameterized constructor.
-     * @param other the entity to connect to
+     * @param targetEntity the entity to connect to
      * @param springConstant the strength of the spring
      * @param restLength the length at which the spring is at rest
      */
-    CSpring3(Entity other, sm::real springConstant, sm::real restLength);
+    CSpring3(Entity targetEntity, sm::real springConstant, sm::real restLength);
 };
 } // namespace sge
 

@@ -13,15 +13,18 @@ void sge::BuoyancySystem3::update(Registry &registry, CommandBuffer &cmdBuffer, 
         // Accumulations.
         auto &r3 = buoyancy3View.get<sge::CRigidBody3>(e);
         
-        // 1. Get scalar values
+        // 1. Get scalar values.
         sm::real entityY = t3.position.y;
-        sm::real totalHeight = (sm::real)2.0 * b3.maxDepth;
+        sm::real absTotalHeight = std::abs((sm::real)2.0 * b3.maxDepth);
+        absTotalHeight = std::clamp(absTotalHeight, (sm::real)1e-6f, (sm::real)3.40282e+38f);
+        
         sm::real bottom = entityY - b3.maxDepth;
 
-        // 2. Calculate submersion ratio based on entity's submersion height
+        // 2. Calculate submersion ratio based on entity's submersion height.
         sm::real rawSubmergedHeight = b3.waterHeight - bottom;
-        sm::real clippedSubmergedHeight = std::clamp(rawSubmergedHeight, (sm::real)0.0, totalHeight);
-        sm::real submersionRatio = clippedSubmergedHeight / totalHeight;
+        // Fixed clamp() from crashing to due hi < lo.
+        sm::real clippedSubmergedHeight = std::clamp(rawSubmergedHeight, (sm::real)0.0, absTotalHeight);
+        sm::real submersionRatio = clippedSubmergedHeight / absTotalHeight;
 
         // 3. Calculate and add buoyant force.
         sm::Vec3 force((sm::real)0, b3.liquidDensity * b3.volume * submersionRatio, (sm::real)0);

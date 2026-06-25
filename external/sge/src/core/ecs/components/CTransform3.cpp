@@ -8,7 +8,7 @@ rotation(0,0,0)
 
 sm::Vec3 sge::CTransform3::getForward() const
 {
-    sm::real degToRad = M_PI / 180.f;
+    sm::real degToRad = std::numbers::pi_v<float> / 180.f;
 
     sm::real radX = this->rotation.x * degToRad;
     sm::real radY = this->rotation.y * degToRad;

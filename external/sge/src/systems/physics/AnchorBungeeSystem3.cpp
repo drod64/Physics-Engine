@@ -6,9 +6,9 @@ void sge::AnchorBungeeSystem3::update(sge::Registry &registry, sge::CommandBuffe
 
     for (const Entity &e : anchorBungee3View)
     {
-        // Read
-        const auto &t3 = anchorBungee3View.get<sge::CTransform3>(e);
+        // Reads
         const auto &ab3 = anchorBungee3View.get<sge::CAnchorBungee3>(e);
+        const auto &t3 = anchorBungee3View.get<sge::CTransform3>(e);
         
         // Write
         auto &r3 = anchorBungee3View.get<sge::CRigidBody3>(e);
@@ -17,19 +17,20 @@ void sge::AnchorBungeeSystem3::update(sge::Registry &registry, sge::CommandBuffe
         sm::Vec3 displacement = t3.position - ab3.anchorPosition;
 
         // Calculate squared magnitude of displacement vector.
-        sm::real sqrLength = displacement.sqrMagnitude() + (sm::real)1e-12;
+        sm::real sqrLength = displacement.sqrMagnitude() + (sm::real)1e-6f;
         sm::real length = real_sqrt(sqrLength);
-
-        sm::real invLength = (sm::real)1.0 / length;
-        sm::Vec3 direction = displacement * invLength;
+        length = std::clamp(length, (sm::real)1e-6f, (sm::real)3.40282e+38f);
 
         sm::real stretch = length - ab3.restLength;
 
-        // Only apply pull force if stretch is positive (exceeding rest length).
-        sm::real forceMagnitude = (stretch > (sm::real)0.0f) ? -ab3.springConstant * stretch : (sm::real)0.0;
+        sm::real activeStretch = std::clamp(stretch, (sm::real)0.0, (sm::real)3.40282e+38f);
 
-        // Add spring (push or pulling) force to entity.
-        r3.addForce(direction * forceMagnitude);
+        sm::real forceMagnitude = -ab3.springConstant * activeStretch;
+
+        sm::Vec3 forceVec = displacement * (forceMagnitude / length);
+
+        // Add spring (pulling) force to entity.
+        r3.addForce(forceVec);
     }
 }
 

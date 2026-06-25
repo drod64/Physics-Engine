@@ -138,12 +138,19 @@ inline sge::CommandBuffer& sge::CommandBuffer::addComponentDeferred(sge::Entity 
                 return;
             }
         }
-        
+
+        ComponentType *mutableComponent = const_cast<ComponentType*>(packedComponent);
+
+        if constexpr (requires(ComponentType c) { c.remapPlaceholder(translationMap); })
+        {
+            mutableComponent->remapPlaceholder(translationMap);
+        }
+
         // Add component to target Entity ID.
         if (registry.isAlive(targetID))
         {
             // Explicitly pass the value type to registry.addComponent
-            registry.addComponent<ComponentType>(targetID, std::move(*const_cast<ComponentType*>(packedComponent)));
+            registry.addComponent<ComponentType>(targetID, std::move(*mutableComponent));
         }
     };
 

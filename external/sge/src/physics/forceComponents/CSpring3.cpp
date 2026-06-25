@@ -1,8 +1,8 @@
 #include <SGE/physics/forceComponents/CSpring3.h>
 
-sge::CSpring3::CSpring3(Entity other, sm::real springConstant, sm::real restLength)
+sge::CSpring3::CSpring3(Entity targetEntity, sm::real springConstant, sm::real restLength)
 {
-    this->other = other;
+    this->targetEntity = targetEntity;
     this->springConstant = springConstant;
     this->restLength = restLength;
 }

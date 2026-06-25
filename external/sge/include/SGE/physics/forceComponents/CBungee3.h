@@ -2,21 +2,22 @@
 #define CBUNGEE3_H
 #include <SM/precision.h>
 #include <SGE/core/ecs/Entity.h>
+#include <SGE/physics/linkComponents/CLink.h>
 
 namespace sge {
-class CBungee3 {
+class CBungee3 : public CLink<CBungee3> {
 public:
-    Entity other;
+    Entity targetEntity;
     sm::real springConstant;
     sm::real restLength;
 
     /**
      * Parameterized Constructor.
-     * @param other the other entity to connect to
+     * @param targetEntity the other entity to connect to
      * @param springConstant the strength of the spring
      * @param restLength the length at which the spring is at rest
      */
-    CBungee3(Entity other, sm::real springConstant, sm::real restLength);
+    CBungee3(Entity targetEntity, sm::real springConstant, sm::real restLength);
 };
 }
 
