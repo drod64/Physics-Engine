@@ -16,8 +16,6 @@ void ScenePlay::update(float dt)
     {
         this->m_world.update(dt);
     }
-
-    auto &systemOrder = this->m_world.getSystemManager().getExecutionOrder();
     
     if (this->hasEnded())
     {

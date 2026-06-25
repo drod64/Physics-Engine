@@ -46,6 +46,7 @@ set(SOURCE_FILES
     src/systems/physics/SpringSystem3.cpp
 
     # systems
+    src/systems/LifespanSystem.cpp
     src/systems/PollInputSystem.cpp
     src/systems/RenderingSystem3.cpp
     src/systems/SystemManager.cpp

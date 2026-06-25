@@ -15,6 +15,9 @@
 #include <SGE/systems/physics/IntegrationSystem3.h>
 #include <SGE/systems/physics/SpringSystem3.h>
 
+// Other system(s)
+#include <SGE/systems/LifespanSystem.h>
+
 namespace sge {
 // Forward declaration of GameEngine class.
 class GameEngine;

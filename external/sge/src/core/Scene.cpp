@@ -9,6 +9,7 @@ void sge::Scene::init()
 {
     sge::SystemManager &sysManager = this->m_world.getSystemManager();
     // Register core physic systems.
+    sysManager.registerSystem(sge::LifespanSystem::getSystemDescription());
     sysManager.registerSystem(sge::ClearAccumulatorsSystem3::getSystemDescriptor());
     sysManager.registerSystem(sge::GravitySystem3::getSystemDescriptor());
     sysManager.registerSystem(sge::AnchorBungeeSystem3::getSystemDescriptor());

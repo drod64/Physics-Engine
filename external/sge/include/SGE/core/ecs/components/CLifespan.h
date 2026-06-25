@@ -1,5 +1,6 @@
 #ifndef SGE_CLIFESPAN_H
 #define SGE_CLIFESPAN_H
+#include <SM/Precision.h>
 
 namespace sge {
 /**
@@ -7,8 +8,8 @@ namespace sge {
  */
 class CLifespan {
 public:
-    int remaining;
-    int total;
+    sm::real remaining;
+    sm::real total;
 
     /**
      * Default Constructor. Sets both the total and remaining time to 0.
@@ -19,7 +20,7 @@ public:
      * Parameterized Constructor.
      * @param total the total lifespan time
      */
-    CLifespan(int total);
+    CLifespan(sm::real total);
 };
 
 } // namespace sge

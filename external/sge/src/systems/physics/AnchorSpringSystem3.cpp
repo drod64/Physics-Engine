@@ -18,8 +18,8 @@ void sge::AnchorSpringSystem3::update(sge::Registry &registry, sge::CommandBuffe
 
         // Calculate squared magnitude of displacement vector.
         sm::real sqrLength = displacement.sqrMagnitude() + (sm::real)1e-6f;
-        
         sm::real length = real_sqrt(sqrLength);
+        length = std::clamp(length, (sm::real)1e-6f, (sm::real)3.40282e+38f);
 
         sm::real stretch = length - as3.restLength;
 

@@ -6,7 +6,7 @@ CLifespan::CLifespan() :
 CLifespan(0)
 {}
 
-CLifespan::CLifespan(int total) :
+CLifespan::CLifespan(sm::real total) :
 total(total),
 remaining(total)
 {}
