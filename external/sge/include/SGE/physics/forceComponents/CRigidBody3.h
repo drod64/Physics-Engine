@@ -12,10 +12,7 @@ public:
     sm::Vec3 accumulatedForce;
     sm::real damping;
 
-    /**
-     * Default Constructor.
-     */
-    CRigidBody3();
+    CRigidBody3() = default;
 
     /**
      * Parameterized Constructor.

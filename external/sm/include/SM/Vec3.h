@@ -13,17 +13,12 @@ public:
     real z;
 
     /**
-     * Default constructor.
-     */
-    Vec3();
-
-    /**
      * Explicit constructor.
      * @param x the x-axis position
      * @param y the y-axis position
      * @param z the z-axis position
      */
-    Vec3(real x, real y, real z);
+    Vec3(real x = 0, real y = 0, real z = 0);
 
     /**
      * Explicit construtor that accepts array-style declaration.
@@ -62,7 +57,6 @@ public:
     ////////////////////////////////////////
     //   Modifying Overloaded Operators   //
     ////////////////////////////////////////
-    Vec3& operator = (const Vec3 &vec);
     Vec3& operator *= (real scalar);
     Vec3& operator += (const Vec3 &vec);
     Vec3& operator -= (const Vec3 &vec);

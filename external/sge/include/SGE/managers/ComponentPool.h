@@ -64,7 +64,8 @@ public:
      * @param component the component to assign
      * @return a reference to the component
      */
-    T& assign(Entity e, T&& component);
+    template <typename U>
+    T& assign(Entity e, U&& component);
 
     /**
      * NOTE: This is an overriden function.
@@ -127,8 +128,9 @@ m_TOMBSTONE(0xFFFFFFFF)
     this->m_denseToEntity.reserve(initialSize);
 }
 
-template<typename T>
-inline T& sge::ComponentPool<T>::assign(sge::Entity e, T&& component)
+template <typename T> // raw class type
+template <typename U> // reference parameter.
+inline T& sge::ComponentPool<T>::assign(sge::Entity e, U&& component)
 {
     assert(!has(e) && "Entity already has this component type!");
     

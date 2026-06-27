@@ -41,8 +41,8 @@ public:
      * @param component the component to add
      * @return a reference to the newly added component
      */
-    template <typename T>
-    T& addComponent(Entity e, T&& component);
+    template <typename T, typename U>
+    T& addComponent(Entity e, U&& component);
 
     /**
      * Removes a component from an entity.
@@ -121,10 +121,12 @@ inline sge::ComponentManager::~ComponentManager()
     }
 }
 
-template <typename T>
-inline T& sge::ComponentManager::addComponent(sge::Entity e, T&& component)
+// T = raw class type
+// U = reference parameter
+template <typename T, typename U> 
+inline T& sge::ComponentManager::addComponent(sge::Entity e, U&& component)
 {
-    return this->getOrCreatePool<T>()->assign(e, std::forward<T>(component));
+    return this->getOrCreatePool<T>()->assign(e, std::forward<U>(component));
 }
 
 template <typename T>

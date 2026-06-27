@@ -51,5 +51,6 @@ void ScenePlay::init()
     this->getCommandBuffer().addComponentDeferred(camera, t3);
     this->getCommandBuffer().addComponentDeferred(camera, r3);
     this->getCommandBuffer().addComponentDeferred(camera, c3);
-    this->getCommandBuffer().addComponentDeferred(camera, controller);
+    // TODO make CPlayerController3 trivially copyable.
+    // this->getCommandBuffer().addComponentDeferred(camera, controller); 
 }

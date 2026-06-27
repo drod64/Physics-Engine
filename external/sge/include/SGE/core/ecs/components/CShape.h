@@ -16,7 +16,7 @@ public:
     /**
      * Default Constructor.
      */
-    CShape();
+    CShape() = default;
 
     /**
      * Parameterized Constructor.

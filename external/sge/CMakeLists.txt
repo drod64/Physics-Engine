@@ -5,7 +5,6 @@ project(SGE)
 set(SOURCE_FILES
     # core/ecs/components
     src/core/ecs/components/CCamera3.cpp
-    src/core/ecs/components/CInput.cpp
     src/core/ecs/components/CLifespan.cpp
     src/core/ecs/components/CScore.cpp
     src/core/ecs/components/CShape.cpp

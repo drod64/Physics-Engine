@@ -1,13 +1,5 @@
 #include <SM/Vec3.h>
 
-sm::Vec3::Vec3()
-{
-    this->x = 0;
-    this->y = 0;
-    this->z = 0;
-    this->_pad = 0;
-}
-
 sm::Vec3::Vec3(real x, real y, real z)
 {
     this->x = x;
@@ -63,18 +55,6 @@ sm::Vec3 sm::Vec3::normalized() const
     sm::real invMag = ((sm::real)1 / real_sqrt(sqrMagnitude));
 
     return *this * invMag;
-}
-
-sm::Vec3& sm::Vec3::operator = (const sm::Vec3 &vec)
-{
-    if (this != &vec)
-    {
-        this->x = vec.x;
-        this->y = vec.y;
-        this->z = vec.z;
-    }
-    
-    return *this;
 }
 
 sm::Vec3& sm::Vec3::operator *= (real scalar)

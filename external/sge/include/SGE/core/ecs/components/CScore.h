@@ -12,7 +12,7 @@ public:
     /**
      * Default Constructor.
      */
-    CScore();
+    CScore() = default;
 
     /**
      * Parameterized Constructor.

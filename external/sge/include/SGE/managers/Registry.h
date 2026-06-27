@@ -24,7 +24,7 @@ private:
 public:
     // Components
     template <typename T>
-    T& addComponent(Entity e, T&& component);
+    auto& addComponent(Entity e, T&& component);
 
     template <typename T>
     void removeComponent(Entity e);
@@ -76,9 +76,10 @@ public:
 // Implementation
 
 template <typename T>
-inline T& sge::Registry::addComponent(sge::Entity e, T&& component)
+inline auto& sge::Registry::addComponent(sge::Entity e, T&& component)
 {
-    return this->m_components.addComponent<T>(e, std::forward<T>(component));
+    using CleanType = std::decay_t<T>;
+    return this->m_components.addComponent<CleanType>(e, std::forward<T>(component));
 }
 
 template <typename T>

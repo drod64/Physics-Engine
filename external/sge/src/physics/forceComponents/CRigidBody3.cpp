@@ -1,10 +1,5 @@
 #include <SGE/physics/forceComponents/CRigidBody3.h>
 
-sge::CRigidBody3::CRigidBody3()
-:
-CRigidBody3({0,0,0}, {0,0,0}, 0, 0.5)
-{}
-
 sge::CRigidBody3::CRigidBody3(const sm::Vec3 &vel, const sm::Vec3 &accumulatedForce, sm::real mass, sm::real damping)
 {
     this->velocity = vel;

@@ -5,6 +5,7 @@
 #include <memory>
 #include <SGE/core/ecs/Entity.h>
 #include <SGE/managers/Registry.h>
+#include <SGE/util/ByteStream.h>
 #include <iostream>
 
 namespace sge {
@@ -13,18 +14,36 @@ class Registry;
 
 class CommandBuffer {
 private:
-    struct DeferredComponentPool {
-        void *poolData = nullptr;
-        void (*playbackFn)(void *, Registry &, const sge::Entity *) = nullptr;
-        void (*clearFn)(void*) = nullptr;
-        void (*destructFn)(void*) = nullptr;
+    using DeferredCommandFunction = void(*)(sge::Registry &, sge::Entity, size_t, sge::ByteStream &);
+
+    enum class CommandType {
+        AddComponentDeferred,
+        RemoveComponentDeferred
     };
+
+    template <typename T>
+    static void componentRegistrationDispatcher(sge::Registry &registry, sge::Entity e, size_t handleIndex, sge::ByteStream &byteStream)
+    {
+        std::cout << "[CommandBuffer]: In handler!\n";
+        // 4. Read payload.
+        const T &componentPayload = byteStream.getByHandle<T>(handleIndex);
+
+        // Update byte stream to next block.
+        byteStream.setReadPosition(handleIndex + sizeof(T));
+        std::cout << "[CommandBuffer]: Read payload.\n";
+
+        if (e != sge::Entity::INVALID)
+        {
+            registry.addComponent(e, componentPayload);
+        }
+        std::cout << "[CommandBuffer]: Component added to registry.\n";
+    }
+
+    // Byte stream of data.
+    ByteStream m_byteStream;
 
     // Fake ID counter.
     uint32_t m_placeHolderIndex;
-
-    // Flat vector of pools.
-    std::vector<DeferredComponentPool> m_pools; // no reset to save on allocation calls
 
     // Pending commands.
     std::vector<Entity> m_pendingEntityDestructions;
@@ -32,9 +51,10 @@ private:
     //Fake ID ---> Real ID
     std::vector<Entity> m_entityTranslationTable; // no reset to save on allocation calls
 
+    void flushByteStream(Registry &registry);
+
 public:
-    CommandBuffer();
-    ~CommandBuffer();
+    explicit CommandBuffer(size_t initialCapacity = 1024);
 
     // Prevent copying.
     CommandBuffer(const CommandBuffer&) = delete;
@@ -49,7 +69,7 @@ public:
     void destroyEntityDeferred(Entity e);
 
     template <typename T>
-    CommandBuffer& addComponentDeferred(Entity e, T&& component);
+    CommandBuffer& addComponentDeferred(Entity e, const T &component);
 
     template <typename T>
     CommandBuffer& removeComponentDeferred(Entity e);
@@ -58,26 +78,64 @@ public:
     void playBack(Registry &registry);
 
     void clear();
-
-    void abort();
 };
 } // namespace sge
 
 // Implementation
 
-inline sge::CommandBuffer::CommandBuffer()
+inline void sge::CommandBuffer::flushByteStream(sge::Registry &registry)
 {
-    this->m_placeHolderIndex = 0;
+    while (this->m_byteStream.getReadPosition() < this->m_byteStream.size())
+    {
+        // 1. Read command type.
+        CommandType type = this->m_byteStream.read<CommandType>();
+        std::cout << "[CommandBuffer]: Read CommandType.\n";
 
-    // Reserve 64 Component pools on startup.
-    this->m_pools.reserve(64);
-    this->m_entityTranslationTable.reserve(64);
-    this->m_pendingEntityDestructions.reserve(64);
+        switch (type)
+        {
+            case CommandType::AddComponentDeferred: {
+                // 2. Read handler.
+                auto handler = this->m_byteStream.read<DeferredCommandFunction>();
+
+                // 3. Read Entity ID
+                sge::Entity targetEntity = this->m_byteStream.read<sge::Entity>();
+
+                std::cout << "[CommandBuffer]: Read handler and target entity.\n";
+
+                if (sge::IsFakeEntity(targetEntity))
+                {
+                    uint32_t fakeID = static_cast<uint32_t>(targetEntity);
+                    uint32_t tableIndex = fakeID & sge::REAL_ENTITY_MASK;
+                    targetEntity = this->m_entityTranslationTable[tableIndex];
+                }
+
+                if (targetEntity == sge::Entity::INVALID)
+                {
+                    break;
+                }
+
+                size_t payloadHandle = this->m_byteStream.getReadPosition();
+                std::cout << "[CommandBuffer]: Invoking handler.\n";
+                handler(registry, targetEntity, payloadHandle, this->m_byteStream);
+                break;
+            }
+
+            case CommandType::RemoveComponentDeferred:
+                // TODO
+                break;
+            
+            default:
+                break;
+        }
+    }
 }
 
-inline sge::CommandBuffer::~CommandBuffer()
+inline sge::CommandBuffer::CommandBuffer(size_t initialCapacity) :
+m_byteStream(initialCapacity)
 {
-    this->abort();
+    this->m_placeHolderIndex = 0;
+    this->m_entityTranslationTable.reserve(64);
+    this->m_pendingEntityDestructions.reserve(64);
 }
 
 inline sge::Entity sge::CommandBuffer::createEntityDeferred()
@@ -100,71 +158,27 @@ inline void sge::CommandBuffer::destroyEntityDeferred(Entity e)
 }
 
 template<typename T>
-inline sge::CommandBuffer& sge::CommandBuffer::addComponentDeferred(sge::Entity e, T&& component)
+inline sge::CommandBuffer& sge::CommandBuffer::addComponentDeferred(sge::Entity e, const T &component)
 {
-    using ComponentType = std::decay_t<T>;
-    const sge::ComponentID ID = sge::ComponentIDCounter::get<ComponentType>();
+    using CleanType = std::decay_t<T>;
 
-     // Type erased struct for pool storage.
-    struct ConcretePool {
-        std::vector<sge::Entity> entities;
-        std::vector<ComponentType> components;
-    };
+    // 1. Write command type.
+    this->m_byteStream.write<CommandType>(CommandType::AddComponentDeferred);
 
-    // Resize pools vector.
-    if (ID >= this->m_pools.size())
-    {
-        this->m_pools.resize(ID + 1);
-    }
-
-    // Initialize pool.
-    if (!this->m_pools[ID].poolData)
-    {
-        this->m_pools[ID].poolData = new ConcretePool();
-
-        // Playback function.
-        this->m_pools[ID].playbackFn = [](void *poolPtr, sge::Registry &registry, const sge::Entity *translationTable) {
-            ConcretePool *pool = static_cast<ConcretePool*>(poolPtr);
-
-            // Map fake IDs to real IDs
-            const size_t SIZE = pool->entities.size();
-            for (size_t i = 0; i < SIZE; ++i)
-            {
-                sge::Entity e = pool->entities[i];
-                
-                if (sge::IsFakeEntity(e))
-                {
-                    e = translationTable[static_cast<uint32_t>(e) & sge::REAL_ENTITY_MASK];
-                }
-
-                // Ensure entity was not deleted and still exists in registry.
-                if (e != sge::Entity::INVALID && registry.isAlive(e))
-                {
-                    // Add component to live registry.
-                    registry.addComponent<ComponentType>(e, std::move(pool->components[i]));
-                }
-            }
-        };
-
-        // Clear function.
-        this->m_pools[ID].clearFn = [](void *poolPtr) {
-            ConcretePool* pool = static_cast<ConcretePool*>(poolPtr);
-            
-            pool->entities.clear();
-            pool->components.clear();
-        };
-
-        // Destructor function.
-        this->m_pools[ID].destructFn = [](void *poolPtr) {
-            delete static_cast<ConcretePool*>(poolPtr);
-        };
-    }
+    std::cout << "[CommandBuffer]: Wrote CommandType.\n";
     
-    // Push component into deferred pool vector.
-    ConcretePool *pool = static_cast<ConcretePool*>(this->m_pools[ID].poolData);
-    pool->entities.push_back(e);
-    pool->components.push_back(std::forward<T>(component));
+    // 2. Write handler functor.
+    auto handler = &sge::CommandBuffer::componentRegistrationDispatcher<CleanType>;
+    this->m_byteStream.write<DeferredCommandFunction>(handler);
+
+    // 3. Write Entity ID.
+    this->m_byteStream.write<sge::Entity>(e);
+
+    // 4. Write component payload
+    this->m_byteStream.write<CleanType>(component);
     
+    std::cout << "[CommandBuffer]: Wrote functor, ID, and payload.\n";
+
     return *this;
 }
 
@@ -208,27 +222,13 @@ inline void sge::CommandBuffer::playBack(sge::Registry &registry)
         // Map temp fake ID to permanent ID.
         this->m_entityTranslationTable[tableIndex] = realID;
     }
-    this->m_placeHolderIndex = 0;
     
-    // 2. Create new entities (adding/removing components).
-    for (const auto &pool : this->m_pools)
-    {
-        if (pool.poolData && pool.playbackFn)
-        {
-            pool.playbackFn(pool.poolData, registry, this->m_entityTranslationTable.data());
-        }
-    }
-
-    // 3. Clear vector of pending entities and components.
-    for (const auto &pool : this->m_pools)
-    {
-        if (pool.poolData && pool.clearFn)
-        {
-            pool.clearFn(pool.poolData);
-        }
-    }
+    std::cout << "[CommandBuffer]: Begin stream flush.\n";
+    // 2. Process commands in byte stream.
+    this->flushByteStream(registry);
+    std::cout << "[CommandBuffer]: Finished stream flush.\n";
     
-    // 4. Process destructions.
+    // 3. Process destructions.
     for (const Entity &e : this->m_pendingEntityDestructions)
     {
         // Skip fake entities. These were intercepted and...
@@ -244,24 +244,15 @@ inline void sge::CommandBuffer::playBack(sge::Registry &registry)
             registry.destroyEntity(e);
         }
     }
-    this->m_pendingEntityDestructions.clear();
+
+    this->clear();
 }
 
 inline void sge::CommandBuffer::clear()
 {
+    this->m_byteStream.clear();
     this->m_pendingEntityDestructions.clear();
     this->m_placeHolderIndex = 0;
-}
-
-inline void sge::CommandBuffer::abort()
-{
-    for (const auto &pool : this->m_pools)
-    {
-        if (pool.poolData && pool.destructFn)
-        {
-            pool.destructFn(pool.poolData);
-        }
-    }
 }
 
 #endif // SGE_COMMAND_BUFFER_H

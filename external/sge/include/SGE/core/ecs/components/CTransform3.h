@@ -15,7 +15,7 @@ public:
     /**
      * Default Constructor.
      */
-    CTransform3();
+    CTransform3() = default;
 
     sm::Vec3 getForward() const;
 };

@@ -1,11 +1,5 @@
 #include <SGE/core/ecs/components/CTransform3.h>
 
-sge::CTransform3::CTransform3()
-:
-position(0,0,0),
-rotation(0,0,0)
-{}
-
 sm::Vec3 sge::CTransform3::getForward() const
 {
     sm::real degToRad = std::numbers::pi_v<float> / 180.f;
