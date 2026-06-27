@@ -13,7 +13,7 @@ class Registry;
 
 class CommandBuffer {
 private:
-    using DeferredCommandFunction = void(*)(sge::Registry &, sge::Entity, size_t, sge::ByteStream &);
+    using DeferredCommandFunction = void(*)(sge::Registry &, sge::Entity, size_t, const sge::ByteStream &);
 
     enum class CommandType {
         AddComponentDeferred,
@@ -21,16 +21,17 @@ private:
     };
 
     template <typename T>
-    static void componentRegistrationDispatcher(sge::Registry &registry, sge::Entity e, size_t handleIndex, sge::ByteStream &byteStream)
+    static void componentRegistrationDispatcher(sge::Registry &registry, sge::Entity e, size_t handleIndex, const sge::ByteStream &byteStream)
     {
-        // 4. Read payload.
-        alignas(T) uint8_t tempBuffer[sizeof(T)];
-
-        byteStream.readRawBytes(tempBuffer, sizeof(T));
-
+        // 5. Read payload data.
         if (e != sge::Entity::INVALID)
         {
-            T &componentInstance = *reinterpret_cast<T*>(tempBuffer);
+            const void *rawBuffer = byteStream.data();
+
+            const void *payloadAddress = static_cast<const unsigned char*>(rawBuffer) + handleIndex;
+
+            const T &componentInstance = *reinterpret_cast<const T*>(payloadAddress);
+
             registry.addComponent(e, componentInstance);
         }
     }
@@ -174,8 +175,7 @@ inline sge::CommandBuffer& sge::CommandBuffer::addComponentDeferred(sge::Entity 
     this->m_byteStream.write<uint32_t>(payloadSize);
 
     // 5. Write component payload data.
-    const uint8_t *rawBuffer = reinterpret_cast<const uint8_t*>(&component);
-    this->m_byteStream.writeRawBytes(rawBuffer, payloadSize);
+    this->m_byteStream.writeRawBytes(std::addressof(component), payloadSize);
 
     return *this;
 }

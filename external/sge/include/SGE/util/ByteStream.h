@@ -17,7 +17,7 @@
 namespace sge {
 class ByteStream {
 private:
-    uint8_t *m_data;
+    unsigned char *m_data;
     size_t m_capacity;
     size_t m_writePointer;
     size_t m_readPointer;
@@ -37,9 +37,9 @@ public:
     ByteStream(ByteStream &&) noexcept;
     ByteStream& operator= (ByteStream &&) noexcept;
 
-    uint8_t* data();
+    void* data();
 
-    const uint8_t* data() const;
+    const void* data() const;
 
     size_t size() const;
 
@@ -62,9 +62,9 @@ public:
     template <typename T>
     const T& getByHandle(size_t handleIndex) const;
 
-    void writeRawBytes(const uint8_t *srcData, size_t sizeInBytes);
+    void writeRawBytes(const void *srcData, size_t sizeInBytes);
 
-    void readRawBytes(uint8_t *dest, size_t sizeInBytes);
+    void readRawBytes(void *dest, size_t sizeInBytes);
 
     template <typename T>
     T read();
@@ -94,7 +94,7 @@ m_readPointer(0)
 
     #if defined(_WIN32)
         // Windows Platform Allocation
-        this->m_data = static_cast<uint8_t*>(_aligned_malloc(this->m_capacity, ALIGNMENT));
+        this->m_data = static_cast<unsigned char*>(_aligned_malloc(this->m_capacity, ALIGNMENT));
     #else
         // Linux / Mac / Console Allocation
         void* allocatedPtr = nullptr;
@@ -102,7 +102,7 @@ m_readPointer(0)
         {
             throw std::bad_alloc();
         }
-        this->m_data = static_cast<uint8_t*>(allocatedPtr);
+        this->m_data = static_cast<unsigned char*>(allocatedPtr);
     #endif
 
     if (!this->m_data)
@@ -141,18 +141,18 @@ inline void sge::ByteStream::reserve(size_t newCapacity)
         newCapacity += (ALIGNMENT - REMAINDER);
     }
 
-    uint8_t *newData = nullptr;
+    unsigned char *newData = nullptr;
 
     // Allocate based on OS
     #if defined(_WIN32)
-        newData = static_cast<uint8_t*>(_aligned_malloc(newCapacity, ALIGNMENT));
+        newData = static_cast<unsigned char*>(_aligned_malloc(newCapacity, ALIGNMENT));
     #else
         void* allocatedPtr = nullptr;
         if (posix_memalign(&allocatedPtr, ALIGNMENT, newCapacity) != 0)
         {
             throw std::bad_alloc();
         }
-        newData = static_cast<uint8_t*>(allocatedPtr);
+        newData = static_cast<unsigned char*>(allocatedPtr);
     #endif
 
     if (!newData)
@@ -220,12 +220,12 @@ inline sge::ByteStream& sge::ByteStream::operator=(ByteStream &&other) noexcept
     return *this;
 }
 
-inline uint8_t* sge::ByteStream::data()
+inline void* sge::ByteStream::data()
 {
     return this->m_data;
 }
 
-inline const uint8_t* sge::ByteStream::data() const
+inline const void* sge::ByteStream::data() const
 {
     return this->m_data;
 }
@@ -327,7 +327,7 @@ inline const T& sge::ByteStream::getByHandle(size_t handleIndex) const
     return *reinterpret_cast<const T*>(this->m_data + handleIndex);
 }
 
-inline void sge::ByteStream::writeRawBytes(const uint8_t *srcData, size_t sizeInBytes)
+inline void sge::ByteStream::writeRawBytes(const void *srcData, size_t sizeInBytes)
 {
     if (this->m_writePointer + sizeInBytes > this->m_capacity)
     {
@@ -339,7 +339,7 @@ inline void sge::ByteStream::writeRawBytes(const uint8_t *srcData, size_t sizeIn
     this->m_writePointer += sizeInBytes;
 }
 
-inline void sge::ByteStream::readRawBytes(uint8_t *dest, size_t sizeInBytes)
+inline void sge::ByteStream::readRawBytes(void *dest, size_t sizeInBytes)
 {
     if (this->m_readPointer + sizeInBytes > this->m_writePointer)
     {

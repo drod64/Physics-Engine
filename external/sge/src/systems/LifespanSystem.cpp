@@ -4,7 +4,7 @@ void sge::LifespanSystem::update(sge::Registry &registry, sge::CommandBuffer &cm
 {
     auto *lifespanPool = registry.getOrCreatePool<sge::CLifespan>();
 
-    auto &densePool = lifespanPool->getDenseComponents();
+    auto densePool = lifespanPool->getDenseComponents();
 
     for (size_t i = 0; i < densePool.size(); ++i)
     {

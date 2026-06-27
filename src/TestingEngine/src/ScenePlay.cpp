@@ -52,5 +52,4 @@ void ScenePlay::init()
     this->getCommandBuffer().addComponentDeferred(camera, r3);
     this->getCommandBuffer().addComponentDeferred(camera, c3);
     this->getCommandBuffer().addComponentDeferred(camera, controller);
-    this->getCommandBuffer().addComponentDeferred(camera, sge::CGravity3({0, -9.81, 0}));
 }
