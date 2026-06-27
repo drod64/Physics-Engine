@@ -1,5 +1,5 @@
-#ifndef SGE_MULTI_BYTE_BUFFER_H
-#define SGE_MULTI_BYTE_BUFFER_H
+#ifndef SGE_BYTE_STREAM_H
+#define SGE_BYTE_STREAM_H
 #include <cstdint>
 #include <cstring>
 #include <stdexcept>
@@ -359,4 +359,4 @@ inline T sge::ByteStream::read()
 }
 
 
-#endif // SGE_MULTI_BYTE_BUFFER_H
+#endif // SGE_BYTE_STREAM_H
