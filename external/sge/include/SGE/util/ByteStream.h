@@ -39,7 +39,11 @@ public:
 
     uint8_t* data();
 
+    const uint8_t* data() const;
+
     size_t size() const;
+
+    void setWritePosition(size_t position);
 
     size_t getReadPosition() const;
 
@@ -221,9 +225,19 @@ inline uint8_t* sge::ByteStream::data()
     return this->m_data;
 }
 
+inline const uint8_t* sge::ByteStream::data() const
+{
+    return this->m_data;
+}
+
 inline size_t sge::ByteStream::size() const
 {
     return this->m_writePointer;
+}
+
+inline void sge::ByteStream::setWritePosition(size_t position)
+{
+    this->m_writePointer = position;
 }
 
 inline size_t sge::ByteStream::getReadPosition() const
