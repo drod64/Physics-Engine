@@ -51,6 +51,6 @@ void ScenePlay::init()
     this->getCommandBuffer().addComponentDeferred(camera, t3);
     this->getCommandBuffer().addComponentDeferred(camera, r3);
     this->getCommandBuffer().addComponentDeferred(camera, c3);
-    // TODO make CPlayerController3 trivially copyable.
-    // this->getCommandBuffer().addComponentDeferred(camera, controller); 
+    this->getCommandBuffer().addComponentDeferred(camera, controller);
+    this->getCommandBuffer().addComponentDeferred(camera, sge::CGravity3({0, -9.81, 0}));
 }

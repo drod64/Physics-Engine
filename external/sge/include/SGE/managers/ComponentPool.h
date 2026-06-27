@@ -65,7 +65,7 @@ public:
      * @return a reference to the component
      */
     template <typename U>
-    T& assign(Entity e, U&& component);
+    T& assign(Entity e, U &&component);
 
     /**
      * NOTE: This is an overriden function.
@@ -128,9 +128,9 @@ m_TOMBSTONE(0xFFFFFFFF)
     this->m_denseToEntity.reserve(initialSize);
 }
 
-template <typename T> // raw class type
-template <typename U> // reference parameter.
-inline T& sge::ComponentPool<T>::assign(sge::Entity e, U&& component)
+template <typename T>
+template <typename U>
+inline T& sge::ComponentPool<T>::assign(sge::Entity e, U &&component)
 {
     assert(!has(e) && "Entity already has this component type!");
     
@@ -144,7 +144,7 @@ inline T& sge::ComponentPool<T>::assign(sge::Entity e, U&& component)
     }
 
     this->m_sparse[e_int] = this->m_dense.size();
-    this->m_dense.push_back(std::move(component));
+    this->m_dense.push_back(component);
     this->m_denseToEntity.push_back(e);
 
     return this->m_dense.back();

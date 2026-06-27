@@ -9,8 +9,11 @@ void TestSpawnSystem::update(sge::Registry &registry, sge::CommandBuffer &cmdBuf
     {
         const auto &controller = controllerView.get<sge::CPlayerController3>(e);
 
-        for (const auto &actionEvent : controller.getActionEvents())
+        const sge::ActionEvent *actions = controller.getActionEvents();
+        for (size_t i = 0; i < controller.getActionCount(); ++i)
         {   
+            sge::ActionEvent actionEvent = actions[i];
+            
             if (actionEvent.type == sge::ActionType::Released) continue;
 
             switch (static_cast<ScenePlayAction>(actionEvent.actionID))

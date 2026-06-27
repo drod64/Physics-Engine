@@ -1,17 +1,17 @@
 #ifndef SGE_CPLAYER_CONTROLLER_H
 #define SGE_CPLAYER_CONTROLLER_H
-#include <array>
-#include <vector>
 #include <cstdint>
-#include <cassert>
-#include <type_traits>
 #include <SM/Precision.h>
 #include <SGE/core/ecs/ActionEvent.h>
 
 namespace sge {
 class CPlayerController3 {
 private:
-    std::vector<ActionEvent> m_actions;
+    static const size_t MAX_ACTIONS = 128;
+
+    ActionEvent m_actions[MAX_ACTIONS];
+    size_t m_curSize = 0;
+
 
 public:
     sm::real movementAxisX;
@@ -25,19 +25,27 @@ public:
         this->movementAxisZ = 0;
     }
 
-    const std::vector<ActionEvent>& getActionEvents() const
+    const ActionEvent* getActionEvents() const
     {
         return this->m_actions;
     }
 
+    size_t getActionCount() const
+    {
+        return this->m_curSize;
+    }
+
     void addActionEvent(ActionEvent actionEvent)
     {
-        this->m_actions.push_back(actionEvent);
+        if (this->m_curSize < sge::CPlayerController3::MAX_ACTIONS)
+        {
+            this->m_actions[this->m_curSize++] = actionEvent;
+        }
     }
 
     void clearActions()
     {
-        this->m_actions.clear();
+        this->m_curSize = 0;
     }
 
     void resetMovementAxes()

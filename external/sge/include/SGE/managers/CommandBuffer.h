@@ -6,7 +6,6 @@
 #include <SGE/core/ecs/Entity.h>
 #include <SGE/managers/Registry.h>
 #include <SGE/util/ByteStream.h>
-#include <iostream>
 
 namespace sge {
 // Forward declaration of Registry class. 
@@ -24,19 +23,16 @@ private:
     template <typename T>
     static void componentRegistrationDispatcher(sge::Registry &registry, sge::Entity e, size_t handleIndex, sge::ByteStream &byteStream)
     {
-        std::cout << "[CommandBuffer]: In handler!\n";
         // 4. Read payload.
-        const T &componentPayload = byteStream.getByHandle<T>(handleIndex);
+        alignas(T) uint8_t tempBuffer[sizeof(T)];
 
-        // Update byte stream to next block.
-        byteStream.setReadPosition(handleIndex + sizeof(T));
-        std::cout << "[CommandBuffer]: Read payload.\n";
+        byteStream.readRawBytes(tempBuffer, sizeof(T));
 
         if (e != sge::Entity::INVALID)
         {
-            registry.addComponent(e, componentPayload);
+            T &componentInstance = *reinterpret_cast<T*>(tempBuffer);
+            registry.addComponent(e, componentInstance);
         }
-        std::cout << "[CommandBuffer]: Component added to registry.\n";
     }
 
     // Byte stream of data.
@@ -89,7 +85,6 @@ inline void sge::CommandBuffer::flushByteStream(sge::Registry &registry)
     {
         // 1. Read command type.
         CommandType type = this->m_byteStream.read<CommandType>();
-        std::cout << "[CommandBuffer]: Read CommandType.\n";
 
         switch (type)
         {
@@ -100,7 +95,11 @@ inline void sge::CommandBuffer::flushByteStream(sge::Registry &registry)
                 // 3. Read Entity ID
                 sge::Entity targetEntity = this->m_byteStream.read<sge::Entity>();
 
-                std::cout << "[CommandBuffer]: Read handler and target entity.\n";
+                // 4. Read payload size
+                uint32_t payloadSize = this->m_byteStream.read<uint32_t>();
+
+                size_t payloadHandle = this->m_byteStream.getReadPosition();
+                size_t nextCommandHandle = payloadHandle + payloadSize;
 
                 if (sge::IsFakeEntity(targetEntity))
                 {
@@ -109,14 +108,12 @@ inline void sge::CommandBuffer::flushByteStream(sge::Registry &registry)
                     targetEntity = this->m_entityTranslationTable[tableIndex];
                 }
 
-                if (targetEntity == sge::Entity::INVALID)
+                if (targetEntity != sge::Entity::INVALID)
                 {
-                    break;
+                    handler(registry, targetEntity, payloadHandle, this->m_byteStream);
                 }
 
-                size_t payloadHandle = this->m_byteStream.getReadPosition();
-                std::cout << "[CommandBuffer]: Invoking handler.\n";
-                handler(registry, targetEntity, payloadHandle, this->m_byteStream);
+                this->m_byteStream.setReadPosition(nextCommandHandle);
                 break;
             }
 
@@ -164,8 +161,6 @@ inline sge::CommandBuffer& sge::CommandBuffer::addComponentDeferred(sge::Entity 
 
     // 1. Write command type.
     this->m_byteStream.write<CommandType>(CommandType::AddComponentDeferred);
-
-    std::cout << "[CommandBuffer]: Wrote CommandType.\n";
     
     // 2. Write handler functor.
     auto handler = &sge::CommandBuffer::componentRegistrationDispatcher<CleanType>;
@@ -174,10 +169,13 @@ inline sge::CommandBuffer& sge::CommandBuffer::addComponentDeferred(sge::Entity 
     // 3. Write Entity ID.
     this->m_byteStream.write<sge::Entity>(e);
 
-    // 4. Write component payload
-    this->m_byteStream.write<CleanType>(component);
-    
-    std::cout << "[CommandBuffer]: Wrote functor, ID, and payload.\n";
+    // 4. Write component payload size.
+    uint32_t payloadSize = static_cast<uint32_t>(sizeof(CleanType));
+    this->m_byteStream.write<uint32_t>(payloadSize);
+
+    // 5. Write component payload data.
+    const uint8_t *rawBuffer = reinterpret_cast<const uint8_t*>(&component);
+    this->m_byteStream.writeRawBytes(rawBuffer, payloadSize);
 
     return *this;
 }
@@ -223,10 +221,8 @@ inline void sge::CommandBuffer::playBack(sge::Registry &registry)
         this->m_entityTranslationTable[tableIndex] = realID;
     }
     
-    std::cout << "[CommandBuffer]: Begin stream flush.\n";
     // 2. Process commands in byte stream.
     this->flushByteStream(registry);
-    std::cout << "[CommandBuffer]: Finished stream flush.\n";
     
     // 3. Process destructions.
     for (const Entity &e : this->m_pendingEntityDestructions)

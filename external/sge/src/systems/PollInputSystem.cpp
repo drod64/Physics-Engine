@@ -1,5 +1,4 @@
 #include <SGE/systems/PollInputSystem.h>
-#include <iostream>
 
 void sge::PollInputSystem::update(sge::Registry &registry, sge::CommandBuffer &, sm::real dt)
 {

@@ -22,7 +22,7 @@ private:
     size_t m_writePointer;
     size_t m_readPointer;
 
-    size_t getAlignedPosition(size_t curPosition, size_t alignement) const;
+    size_t getAlignedPosition(size_t curPosition, size_t alignment) const;
 
     void reserve(size_t newCapacity);
 
@@ -58,8 +58,9 @@ public:
     template <typename T>
     const T& getByHandle(size_t handleIndex) const;
 
-    // TODO what is this
-    void writeRawBytes(const uint8_t *src, size_t sizeInBytes);
+    void writeRawBytes(const uint8_t *srcData, size_t sizeInBytes);
+
+    void readRawBytes(uint8_t *dest, size_t sizeInBytes);
 
     template <typename T>
     T read();
@@ -74,7 +75,11 @@ m_data(nullptr),
 m_writePointer(0),
 m_readPointer(0)
 {
-    if (this->m_capacity == 0) return;
+    if (this->m_capacity < 64);
+    {
+        this->m_capacity = 64;
+    }
+
     const size_t ALIGNMENT = 64;
     const size_t REMAINDER = this->m_capacity % ALIGNMENT;
 
@@ -88,7 +93,12 @@ m_readPointer(0)
         this->m_data = static_cast<uint8_t*>(_aligned_malloc(this->m_capacity, ALIGNMENT));
     #else
         // Linux / Mac / Console Allocation
-        this->m_data = static_cast<uint8_t*>(std::aligned_alloc(ALIGNMENT, this->m_capacity));
+        void* allocatedPtr = nullptr;
+        if (posix_memalign(&allocatedPtr, ALIGNMENT, this->m_capacity) != 0)
+        {
+            throw std::bad_alloc();
+        }
+        this->m_data = static_cast<uint8_t*>(allocatedPtr);
     #endif
 
     if (!this->m_data)
@@ -133,7 +143,12 @@ inline void sge::ByteStream::reserve(size_t newCapacity)
     #if defined(_WIN32)
         newData = static_cast<uint8_t*>(_aligned_malloc(newCapacity, ALIGNMENT));
     #else
-        newData = static_cast<uint8_t*>(std::aligned_alloc(ALIGNMENT, newCapacity));
+        void* allocatedPtr = nullptr;
+        if (posix_memalign(&allocatedPtr, ALIGNMENT, newCapacity) != 0)
+        {
+            throw std::bad_alloc();
+        }
+        newData = static_cast<uint8_t*>(allocatedPtr);
     #endif
 
     if (!newData)
@@ -218,6 +233,10 @@ inline size_t sge::ByteStream::getReadPosition() const
 
 inline void sge::ByteStream::setReadPosition(size_t position)
 {
+    if (position > this->m_writePointer)
+    {
+        throw std::out_of_range("[ByteStream]::setReadPosition: Target position exceeds active stream size boundaries.\n");
+    }
     this->m_readPointer = position;
 }
 
@@ -241,11 +260,20 @@ inline size_t sge::ByteStream::write(const T &value)
 
     if (alignedWrite + sizeof(T) > this->m_capacity)
     {
-        this->reserve(std::max(this->m_capacity * 2, alignedWrite + sizeof(T)));
+        size_t neededCapacity = alignedWrite + sizeof(T);
+
+        this->reserve(std::max(this->m_capacity * 2, neededCapacity));
+
         alignedWrite = this->getAlignedPosition(this->m_writePointer, alignof(T));
     }
 
+    if (alignedWrite > this->m_writePointer)
+    {
+        std::memset(this->m_data + this->m_writePointer, 0, alignedWrite - this->m_writePointer);
+    }
+
     this->m_writePointer = alignedWrite;
+
     size_t dataHandleIndex = this->m_writePointer;
 
     std::memcpy(this->m_data + this->m_writePointer, &value, sizeof(T));
@@ -257,12 +285,31 @@ inline size_t sge::ByteStream::write(const T &value)
 template <typename T>
 inline T& sge::ByteStream::getByHandle(size_t handleIndex)
 {
+    if (handleIndex + sizeof(T) > this->m_writePointer)
+    {
+        throw std::out_of_range("[ByteStream]::getByHandle: Handle index + payload size overflows written buffer.\n");
+    }
+
+    if ((handleIndex & (alignof(T) - 1)) != 0)
+    {
+        throw std::invalid_argument("[ByteStream]::getByHandle: Handle address is improperly aligned for target type.\n");
+    }
+
     return *reinterpret_cast<T*>(this->m_data + handleIndex);
 }
 
 template <typename T>
 inline const T& sge::ByteStream::getByHandle(size_t handleIndex) const
 {
+    if (handleIndex + sizeof(T) > this->m_writePointer)
+    {
+        throw std::out_of_range("[ByteStream]::getByHandle: Handle index + payload size overflows written buffer.\n");
+    }
+
+    if ((handleIndex & (alignof(T) - 1)) != 0)
+    {
+        throw std::invalid_argument("[ByteStream]::getByHandle: Handle address is improperly aligned for target type.\n");
+    }
     return *reinterpret_cast<const T*>(this->m_data + handleIndex);
 }
 
@@ -270,11 +317,23 @@ inline void sge::ByteStream::writeRawBytes(const uint8_t *srcData, size_t sizeIn
 {
     if (this->m_writePointer + sizeInBytes > this->m_capacity)
     {
-        throw std::out_of_range("[ByteStream]::write(): Capacity limit breached.");
+        size_t neededCapacity = this->m_writePointer + sizeInBytes;
+        this->reserve(std::max(this->m_capacity * 2, neededCapacity));
     }
 
     std::memcpy(this->m_data + this->m_writePointer, srcData, sizeInBytes);
     this->m_writePointer += sizeInBytes;
+}
+
+inline void sge::ByteStream::readRawBytes(uint8_t *dest, size_t sizeInBytes)
+{
+    if (this->m_readPointer + sizeInBytes > this->m_writePointer)
+    {
+        throw std::out_of_range("[ByteStream]::readRawBytes: Stream read overflow out-of-bounds.\n");
+    }
+
+    std::memcpy(dest, this->m_data + this->m_readPointer, sizeInBytes);
+    this->m_readPointer += sizeInBytes;
 }
 
 template <typename T>

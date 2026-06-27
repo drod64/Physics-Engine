@@ -8,9 +8,9 @@ namespace sge {
  */
 class CRigidBody3 {
 public:
-    sm::Vec3 velocity;
-    sm::Vec3 accumulatedForce;
-    sm::real damping;
+    sm::Vec3 velocity = {0, 0, 0};
+    sm::Vec3 accumulatedForce = {0, 0, 0};
+    sm::real damping = 0;
 
     CRigidBody3() = default;
 
@@ -67,7 +67,7 @@ public:
 
 private:
     sm::real m_inverseMass;
-    bool m_static;
+    bool m_static = false;
 
 };
 } // namespace sge

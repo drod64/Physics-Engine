@@ -42,7 +42,7 @@ public:
      * @return a reference to the newly added component
      */
     template <typename T, typename U>
-    T& addComponent(Entity e, U&& component);
+    T& addComponent(Entity e, U &&component);
 
     /**
      * Removes a component from an entity.
@@ -121,12 +121,11 @@ inline sge::ComponentManager::~ComponentManager()
     }
 }
 
-// T = raw class type
-// U = reference parameter
-template <typename T, typename U> 
-inline T& sge::ComponentManager::addComponent(sge::Entity e, U&& component)
+template <typename T, typename U>
+inline T& sge::ComponentManager::addComponent(sge::Entity e, U &&component)
 {
-    return this->getOrCreatePool<T>()->assign(e, std::forward<U>(component));
+    using CleanType = std::decay_t<T>;
+    return this->getOrCreatePool<CleanType>()->assign(e, std::forward<U>(component));
 }
 
 template <typename T>

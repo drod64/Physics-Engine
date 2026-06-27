@@ -1,5 +1,4 @@
 #include <SGE/systems/physics/ClearAccumulatorsSystem3.h>
-#include <iostream>
 
 void sge::ClearAccumulatorsSystem3::update(sge::Registry &registry, sge::CommandBuffer &, sm::real dt)
 {
