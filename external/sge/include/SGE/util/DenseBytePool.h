@@ -3,26 +3,76 @@
 #include <SGE/util/ByteStream.h>
 
 namespace sge {
+/**
+ * Helpful utility class to write object data of the same type to one uniform pool (stored as raw bytes).
+ * Unlike ByteStream, this class supports random access through indexing (0, 1, 2 ...N).
+ * Since this class is not templated, it has no idea of the underlying type it is storing.
+ * Upon construction you must pass sizeof(T), where T represents your desired object type to store.
+ * 
+ * NOTE: Objects are expected to be of the same type.
+ * Passing in object data differing from what the pool expects to hold will cause undefined behavior.
+ */
 class DenseBytePool {
 private:
     ByteStream      m_byteStream;
     const size_t    m_OBJECT_SIZE;
 
 public:
+    /**
+     * Explicit parameterized constructor.
+     * @param objectSize the size of the data/object (use sizeof(T))
+     * @param initialCount the initial count of objects to allocate memory for
+     */
     explicit DenseBytePool(size_t objectSize, size_t initialCount);
 
+    /**
+     * Write object data at an index.
+     * 
+     * NOTE: Object's are expected to be of the same type.
+     * @param index the index position to write the data
+     * @param srcData a pointer to the data to write into the pool
+     */
     void writeData(size_t index, const void *srcData);
 
+    /**
+     * Read data at an index.
+     * 
+     * NOTE: This simply copies the bytes to your desired address.
+     * Any updates to the copy will NOT reflect in this DenseBytePool.
+     * @param index the index position to read the data from
+     * @param outData the external pointer address to pass the data to 
+     */
     void readData(size_t index, void *outData);
 
+    /**
+     * Copies data from one index to another destination index.
+     * @param srcIndex the source index that will be copied
+     * @param destIndex the destination index that will house the copied bytes
+     */
     void copyData(size_t srcIndex, size_t destIndex);
 
+    /**
+     * @return a non-modifiable type-erased pointer to the raw data in bytes
+     */
     const void* getRawData() const;
 
+    /**
+     * @return a modifiable type-erased pointer to the raw data in bytes
+     * 
+     * TIP: use T *object = reinterpret_cast<T*>(static_cast<unsigned char*>(baseBuffer) + offset)
+     * to get the object pointer to modify it. This WILL reflect in the DenseBytePool.
+     */
     void* getRawData();
 
+    /**
+     * @return the capacity (in bytes) of the DenseBytePool
+     */
     size_t capacity() const;
 
+    /**
+     * Resets the read/write pointers.
+     * Use this when your old data has no use and you want to start writing from the beginning.
+     */
     void clear();
 };
 } // namespace sge
