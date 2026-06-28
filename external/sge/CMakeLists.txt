@@ -50,8 +50,6 @@ set(SOURCE_FILES
     src/systems/RenderingSystem3.cpp
     src/systems/SystemManager.cpp
 
-    # Utility
-    src/util/Bitmask.cpp
     )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
