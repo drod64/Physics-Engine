@@ -11,6 +11,10 @@ namespace sge {
 // Forward declaration of Registry class. 
 class Registry;
 
+/**
+ * Manager class.
+ * This class has the responsibility of deferring commands until it's playback() function is called.
+ */
 class CommandBuffer {
 private:
     using DeferredCommandFunction = void(*)(sge::Registry &, sge::Entity, size_t, const sge::ByteStream &);
@@ -20,6 +24,13 @@ private:
         RemoveComponentDeferred
     };
 
+    /**
+     * Static helper function for adding components to the registry.
+     * @param registry the active registry to add the component to
+     * @param e the Entity ID to add the component to
+     * @param handleIndex the handle index of the actual component payload
+     * @param byteStream the byte stream to read from
+     */
     template <typename T>
     static void componentRegistrationDispatcher(sge::Registry &registry, sge::Entity e, size_t handleIndex, const sge::ByteStream &byteStream)
     {
@@ -36,6 +47,23 @@ private:
         }
     }
 
+    /**
+     * Static helper function for removing components from Entities.
+     * @param registry the active registry to remove the component from
+     * @param e the sge::Entity ID to remove the component from
+     */
+    template <typename T>
+    static void componentRemovalDispatcher(sge::Registry &registry, sge::Entity e, size_t, const sge::ByteStream &)
+    {
+        if (e == sge::Entity::INVALID) return;
+        
+        // Remove component only if entity exists and has the component.
+        if (registry.isAlive(e) && registry.hasComponent<T>(e))
+        {
+            registry.removeComponent<T>(e);
+        }
+    }
+
     // Byte stream of data.
     ByteStream m_byteStream;
 
@@ -48,9 +76,17 @@ private:
     //Fake ID ---> Real ID
     std::vector<Entity> m_entityTranslationTable; // no reset to save on allocation calls
 
+    /**
+     * Flushes the byte stream of it's deferred commands.
+     * @param registry the active registry needed to fulfill the commands
+     */
     void flushByteStream(Registry &registry);
 
 public:
+    /**
+     * Parameterized constructor.
+     * @param initialCapacity the initial capacity (in bytes) the CommandBuffer will work with.
+     */
     explicit CommandBuffer(size_t initialCapacity = 1024);
 
     // Prevent copying.
@@ -61,19 +97,55 @@ public:
     CommandBuffer(CommandBuffer&&) noexcept = default;
     CommandBuffer& operator= (CommandBuffer&&) noexcept = default;
 
+    /**
+     * Queues an Entity to be created in the next sync point.
+     * 
+     * NOTE: this function returns a fake sge::Entity ID that can still
+     * be used to add components in the same frame. DO NOT CACHE THIS ID.
+     * @return a fake sge::Entity placeholder ID
+     */
     Entity createEntityDeferred();
 
+    /**
+     * Queues an Entity to be destroyed in the next sync point.
+     * 
+     * NOTE: This function accepts both placeholder and real IDs.
+     * @param e the sge::Entity ID to destroy
+     */
     void destroyEntityDeferred(Entity e);
 
+    /**
+     * Adds a component type to the requested sge::Entity ID.
+     * 
+     * NOTE: This function accepts both placeholder and real IDs.
+     * @tparam T the component type
+     * @param e the sge::Entity ID to add the component to
+     * @param component the component to add
+     * @return a reference to this
+     */
     template <typename T>
     CommandBuffer& addComponentDeferred(Entity e, const T &component);
 
+    /**
+     * Removes a component type from the requested sge::Entity ID.
+     * 
+     * NOTE: This function accepts both placeholder and real IDs.
+     * @param e the sge::Entity ID to remove the component from
+     * @return a reference to this
+     */
     template <typename T>
     CommandBuffer& removeComponentDeferred(Entity e);
 
-    // This is the spot where real Entities are spawned in the Registry (usually at the start of a new frame). 
+    /**
+     * This flushes the CommandBuffer's deferred commands.
+     * Call this function during your sync points.
+     * @param registry the active registry needed to fulfill the commands
+     */
     void playBack(Registry &registry);
 
+    /**
+     * Clears all the CommandBuffer's queued commands.
+     */
     void clear();
 };
 } // namespace sge
@@ -118,9 +190,19 @@ inline void sge::CommandBuffer::flushByteStream(sge::Registry &registry)
                 break;
             }
 
-            case CommandType::RemoveComponentDeferred:
-                // TODO
+            case CommandType::RemoveComponentDeferred: {
+                // 2. Read handler.
+                auto handler = this->m_byteStream.read<DeferredCommandFunction>();
+
+                // 3. Read Entity ID
+                sge::Entity targetEntity = this->m_byteStream.read<sge::Entity>();
+
+                if (targetEntity != sge::Entity::INVALID)
+                {
+                    handler(registry, targetEntity, 0, this->m_byteStream);
+                }
                 break;
+            }
             
             default:
                 break;
@@ -183,6 +265,18 @@ inline sge::CommandBuffer& sge::CommandBuffer::addComponentDeferred(sge::Entity 
 template<typename T>
 inline sge::CommandBuffer& sge::CommandBuffer::removeComponentDeferred(sge::Entity e)
 {
+    using CleanType = std::decay_t<T>;
+
+    // 1. Write command type.
+    this->m_byteStream.write<CommandType>(CommandType::RemoveComponentDeferred);
+
+    // 2. Write handler.
+    auto handler = &sge::CommandBuffer::componentRemovalDispatcher<CleanType>;
+    this->m_byteStream.write<DeferredCommandFunction>(handler);
+
+    // 3. Write Entity ID.
+    this->m_byteStream.write<sge::Entity>(e);
+
     return *this;
 }
 

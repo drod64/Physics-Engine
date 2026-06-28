@@ -24,7 +24,7 @@ namespace sge {
     public:
         /**
          * Fetches a unique ID based on T.
-         * @tparam the Component data type
+         * @tparam T the Component data type
          * @return a unique ID based on the Component data type. Will return the same unique ID for Components of the same type
          */
         template <typename T>

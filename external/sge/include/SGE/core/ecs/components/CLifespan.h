@@ -8,13 +8,8 @@ namespace sge {
  */
 class CLifespan {
 public:
-    sm::real remaining;
-    sm::real total;
-
-    /**
-     * Default Constructor. Sets both the total and remaining time to 0.
-     */
-    CLifespan();
+    sm::real remaining = 0;
+    sm::real total = 0;
 
     /**
      * Parameterized Constructor.

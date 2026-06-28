@@ -7,12 +7,7 @@ namespace sge {
  */
 class CScore {
 public:
-    int score;
-
-    /**
-     * Default Constructor.
-     */
-    CScore() = default;
+    int score = 0;
 
     /**
      * Parameterized Constructor.

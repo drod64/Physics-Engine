@@ -17,7 +17,7 @@ void sge::PollInputSystem::update(sge::Registry &registry, sge::CommandBuffer &,
     // Update current mouse input snapshot.
     for (const sge::ButtonBind &mouseBind : inputMapper.getMouseBinds())
     {
-        playerInput.setAction(mouseBind.actionID, IsKeyDown(mouseBind.button));
+        playerInput.setAction(mouseBind.actionID, IsMouseButtonDown(mouseBind.button));
     }
 
     Vector2 mouseDelta = GetMouseDelta();

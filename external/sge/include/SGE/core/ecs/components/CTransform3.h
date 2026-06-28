@@ -9,14 +9,12 @@ namespace sge {
  */
 class CTransform3 {
 public:
-    sm::Vec3 position;
-    sm::Vec3 rotation;
+    sm::Vec3 position = {0,0,0};
+    sm::Vec3 rotation = {0,0,0};
 
     /**
-     * Default Constructor.
+     * @return the forward vector of the CTransform3
      */
-    CTransform3() = default;
-
     sm::Vec3 getForward() const;
 };
 } // namespace sge

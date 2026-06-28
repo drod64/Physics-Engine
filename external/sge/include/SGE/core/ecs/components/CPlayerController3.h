@@ -14,27 +14,32 @@ private:
 
 
 public:
-    sm::real movementAxisX;
-    sm::real movementAxisY;
-    sm::real movementAxisZ;
+    sm::real movementAxisX = 0;
+    sm::real movementAxisY = 0;
+    sm::real movementAxisZ = 0;
 
-    CPlayerController3()
-    {
-        this->movementAxisX = 0;
-        this->movementAxisY = 0;
-        this->movementAxisZ = 0;
-    }
-
+    /**
+     * Retrives the queued action events of the frame.
+     * Use CPlayerController::getActionCount() to iterate through this array.
+     * @return an array to the queued action events of the current frame
+     */
     const ActionEvent* getActionEvents() const
     {
         return this->m_actions;
     }
 
+    /**
+     * @return the count of action events queued this frame.
+     */
     size_t getActionCount() const
     {
         return this->m_curSize;
     }
 
+    /**
+     * Adds an action event to the queue.
+     * @param actionEvent the action event to add
+     */
     void addActionEvent(ActionEvent actionEvent)
     {
         if (this->m_curSize < sge::CPlayerController3::MAX_ACTIONS)
@@ -43,11 +48,17 @@ public:
         }
     }
 
+    /**
+     * Clears the queue of action events.
+     */
     void clearActions()
     {
         this->m_curSize = 0;
     }
 
+    /**
+     * Resets the all movement axes to 0.
+     */
     void resetMovementAxes()
     {
         this->movementAxisX = 0;

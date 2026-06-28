@@ -9,14 +9,9 @@ namespace sge
  */
 class CShape {
 public:
-    int radius;
-    int points;
-    sm::real outlineThickness;
-
-    /**
-     * Default Constructor.
-     */
-    CShape() = default;
+    int radius = 0;
+    int points = 0;
+    sm::real outlineThickness = 0;
 
     /**
      * Parameterized Constructor.

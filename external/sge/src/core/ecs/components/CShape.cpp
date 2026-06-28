@@ -2,7 +2,6 @@
 
 namespace sge
 {
-
     CShape::CShape(float radius, int points, sm::real outlineThickness)
     {
         this->radius = radius;
