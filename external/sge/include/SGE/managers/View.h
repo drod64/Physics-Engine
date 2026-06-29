@@ -110,11 +110,11 @@ inline auto sge::ViewImpl<isConst, Components...>::getPoolPtr(typename sge::View
 {
     if constexpr (isConst)
     {
-        return registry.template getPool<T>();
+        return registry.template getComponentPool<T>();
     }
     else
     {
-        return registry.template getOrCreatePool<T>();
+        return registry.template getOrCreateComponentPool<T>();
     }
 }
 

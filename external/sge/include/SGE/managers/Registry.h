@@ -5,6 +5,7 @@
 #include <SGE/managers/EntityManager.h>
 #include <SGE/managers/ComponentManager.h>
 #include <SGE/core/globalContext/GlobalContext.h>
+#include <SGE/physics/constraints/ConstraintPoolManager.h>
 
 namespace sge {
 
@@ -17,9 +18,10 @@ using ConstView = sge::ViewImpl<true, Components...>;
 
 class Registry {
 private:
-    GlobalContext       m_contexts;
-    ComponentManager    m_components;
-    EntityManager       m_entities;
+    GlobalContext           m_contexts;
+    ComponentManager        m_components;
+    EntityManager           m_entities;
+    ConstraintPoolManager   m_constraints;
 
 public:
     /**
@@ -92,7 +94,7 @@ public:
      * @return a pointer to the ComponentPool<T>*, it will never return nullptr
      */
     template <typename T>
-    ComponentPool<T>* getOrCreatePool();
+    ComponentPool<T>* getOrCreateComponentPool();
 
     /**
      * Retrieves a non-modifiable pool list of all components of type T.
@@ -100,7 +102,7 @@ public:
      * @return a pointer to the ComponentPool<T>*, nullptr if it does NOT exist
      */
     template <typename T>
-    const ComponentPool<T>* getPool() const;
+    const ComponentPool<T>* getComponentPool() const;
 
     /**
      * This function returns a light-weight sge::View object of all entities with the queried components.
@@ -156,6 +158,27 @@ public:
      */
     template <typename T>
     bool hasContext() const;
+
+    template <typename T, typename... Args>
+    Constraint addConstraint(Args&&... args);
+
+    template <typename T>
+    T& getConstraint(Constraint c);
+
+    template <typename T>
+    const T& getConstraint(Constraint c) const;
+
+    void destroyConstraint(Constraint c);
+
+    template <typename T>
+    bool isActive(Constraint c) const;
+
+    template <typename T>
+    ConstraintPool<T>* getOrCreateConstraintPool();
+
+    template <typename T>
+    const ConstraintPool<T>* getConstraintPool() const;
+
 }; // class Registry
 } // namspace sge
 
@@ -209,13 +232,13 @@ inline bool sge::Registry::isAlive(sge::Entity e) const
 }
 
 template <typename T>
-inline sge::ComponentPool<T>* sge::Registry::getOrCreatePool()
+inline sge::ComponentPool<T>* sge::Registry::getOrCreateComponentPool()
 {
     return this->m_components.getOrCreatePool<T>();
 }
 
 template <typename T>
-inline const sge::ComponentPool<T>* sge::Registry::getPool() const
+inline const sge::ComponentPool<T>* sge::Registry::getComponentPool() const
 {
     return this->m_components.getPool<T>();
 }
@@ -264,6 +287,47 @@ inline sge::GlobalContext& sge::Registry::getGlobalContext()
 inline void sge::Registry::lockGlobalContext()
 {
     this->m_contexts.lockInitialization();
+}
+
+template <typename T, typename... Args>
+inline sge::Constraint sge::Registry::addConstraint(Args&&... args)
+{
+    return this->m_constraints.addConstraint<T>(std::forward<Args>(args)...);
+}
+
+template <typename T>
+inline T& sge::Registry::getConstraint(sge::Constraint c)
+{
+    return this->m_constraints.getConstraint<T>(c);
+}
+
+template <typename T>
+inline const T& sge::Registry::getConstraint(sge::Constraint c) const
+{
+    return this->m_constraints.getConstraint<T>(c);
+}
+
+inline void sge::Registry::destroyConstraint(sge::Constraint c)
+{
+    this->m_constraints.constraintDestroyed(c);
+}
+
+template <typename T>
+inline bool sge::Registry::isActive(sge::Constraint c) const
+{
+    return this->m_constraints.has<T>(c);
+}
+
+template <typename T>
+inline sge::ConstraintPool<T>* sge::Registry::getOrCreateConstraintPool()
+{
+    return this->m_constraints.getOrCreatePool<T>();
+}
+
+template <typename T>
+inline const sge::ConstraintPool<T>* sge::Registry::getConstraintPool() const
+{
+    return this->m_constraints.getPool<T>();
 }
 
 #endif // SGE_REGISTRY_H

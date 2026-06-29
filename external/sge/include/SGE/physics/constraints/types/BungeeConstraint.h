@@ -19,7 +19,7 @@ public:
 
 private:
     sm::real m_padding;
-};
-}
+}; // class BungeeConstraint
+} // namespace sge
 
 #endif // SGE_BUNGEE_CONSTRAINT_H

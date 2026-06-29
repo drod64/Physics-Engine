@@ -22,6 +22,9 @@ set(SOURCE_FILES
     # managers
     src/managers/EntityManager.cpp
 
+    # physics/constraints
+    src/physics/constraints/ConstraintManager.cpp
+
     # physics/forceComponents
     src/physics/forceComponents/CAnchorBungee3.cpp
     src/physics/forceComponents/CAnchorSpring3.cpp

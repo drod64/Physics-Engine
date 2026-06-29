@@ -45,7 +45,7 @@ void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer,
     BeginMode3D(rayCam);
 
     // Component pool of sge::CTransform3
-    const auto &t3Components = registry.getPool<sge::CTransform3>()->getDenseComponents();
+    const auto &t3Components = registry.getComponentPool<sge::CTransform3>()->getDenseComponents();
 
     for (const auto &t3 : t3Components)
     {

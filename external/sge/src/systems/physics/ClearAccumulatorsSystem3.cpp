@@ -3,7 +3,7 @@
 void sge::ClearAccumulatorsSystem3::update(sge::Registry &registry, sge::CommandBuffer &, sm::real dt)
 {
     // Get pool of CRigidBody.
-    auto rigidBodyPool = registry.getOrCreatePool<sge::CRigidBody3>();
+    auto rigidBodyPool = registry.getOrCreateComponentPool<sge::CRigidBody3>();
 
     // Early exit if no rigid bodies exist.
     if (!rigidBodyPool) return;

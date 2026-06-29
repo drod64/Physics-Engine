@@ -1,0 +1,199 @@
+#ifndef SGE_CONSTRAINT_POOL_H
+#define SGE_CONSTRAINT_POOL_H
+#include <vector>
+#include <span>
+#include <queue>
+#include <SGE/util/DenseBytePool.h>
+#include <SGE/physics/constraints/Constraint.h>
+#include <SGE/physics/constraints/IConstraintPool.h>
+
+
+namespace sge {
+template <typename T>
+class ConstraintPool : public IConstraintPool {
+private:
+    static_assert(std::is_trivially_copyable_v<T>, "[ConstraintPool]: Error, constraint type must be trivially copyable.");
+
+    static void s_remove(IConstraintPool *base, Constraint c)
+    {
+        static_cast<ConstraintPool<T>*>(base)->removeConstraint(c);
+    }
+
+    static void s_clear(IConstraintPool *base)
+    {
+        static_cast<ConstraintPool<T>*>(base)->clear();
+    }
+
+    const size_t m_TOMBSTONE;
+    DenseBytePool m_densePool;
+    std::vector<Constraint> m_denseToConstraint;
+    std::vector<size_t> m_sparse;
+
+public:
+    ConstraintPool(size_t initialSize = 1024);
+
+    ~ConstraintPool() = default;
+
+    T& addConstraint(Constraint c, T &&constraint);
+
+    void removeConstraint(Constraint c);
+
+    T& getConstraint(Constraint c);
+
+    const T& getConstraint(Constraint c) const;
+
+    size_t size() const;
+
+    void clear();
+
+    bool has(Constraint c) const;
+
+    Constraint getConstraintAt(size_t denseIndex) const;
+    
+    std::span<T> getDenseConstraints();
+    
+    std::span<const T> getDenseConstraints() const;
+
+    const std::vector<Constraint>& getDenseToConstraints() const;
+}; // class ConstraintPool
+} // namespace sge
+
+// Implementation
+
+template <typename T>
+inline sge::ConstraintPool<T>::ConstraintPool(size_t initialSize) :
+IConstraintPool(&sge::ConstraintPool<T>::s_remove,
+                &sge::ConstraintPool<T>::s_clear),
+m_TOMBSTONE(0xFFFFFFFF),
+m_densePool(sizeof(T), initialSize)
+{
+    this->m_sparse.resize(initialSize, this->m_TOMBSTONE);
+    this->m_denseToConstraint.resize(initialSize);
+}
+
+
+template <typename T>
+inline T& sge::ConstraintPool<T>::addConstraint(sge::Constraint c, T &&constraint)
+{
+    assert(!this->has(c) && "Error. Cannot add a constraint to an already active handle\n");
+    size_t c_int = static_cast<size_t>(c);
+
+    // Resize if necessary.
+    if (c_int > this->m_sparse.size())
+    {
+        size_t newSize = this->m_sparse.size() * 2;
+        if (newSize <= c_int) newSize = c_int + 1;
+        this->m_sparse.resize(newSize, this->m_TOMBSTONE);
+    }
+
+    // Update sparse mapping.
+    size_t denseIndex = this->m_denseToConstraint.size();
+    this->m_sparse[c_int] = denseIndex;
+    this->m_denseToConstraint.push_back(c);
+
+    // Write constraint data.
+    this->m_densePool.writeData(denseIndex, std::addressof(constraint));
+
+    // Get data...
+    T* poolBuffer = static_cast<T*>(this->m_densePool.getRawData());
+
+    // ...and return a transient reference.
+    return poolBuffer[denseIndex];
+}
+
+template <typename T>
+inline void sge::ConstraintPool<T>::removeConstraint(sge::Constraint c)
+{
+    if (!has(c)) return;
+
+    size_t c_int = static_cast<size_t>(c);
+    size_t indexToRemove = this->m_sparse[c_int];
+    size_t lastIndex = this->m_denseToConstraint.size() - 1;
+
+    if (indexToRemove != lastIndex)
+    {
+        sge::Constraint lastInstance = this->m_denseToConstraint[lastIndex];
+        this->m_densePool.copyData(lastIndex, indexToRemove);
+        this->m_denseToConstraint[indexToRemove] = lastInstance;
+        this->m_sparse[static_cast<size_t>(lastInstance)] = indexToRemove;
+    }
+
+    this->m_sparse[c_int] = this->m_TOMBSTONE;
+    this->m_denseToConstraint.pop_back();
+}
+
+template <typename T>
+T& sge::ConstraintPool<T>::getConstraint(sge::Constraint c)
+{
+    assert(has(c) && "Constraint handle is not active.");
+
+    size_t c_int = static_cast<size_t>(c);
+
+    T* poolBuffer = static_cast<T*>(this->m_densePool.getRawData());
+
+    return poolBuffer[this->m_sparse[c_int]];
+}
+
+template <typename T>
+const T& sge::ConstraintPool<T>::getConstraint(sge::Constraint c) const
+{
+    assert(has(c) && "Constraint handle is not active.");
+
+    size_t c_int = static_cast<size_t>(c);
+
+    const T* poolBuffer = static_cast<const T*>(this->m_densePool.getRawData());
+
+    return poolBuffer[this->m_sparse[c_int]];
+}
+
+template <typename T>
+size_t sge::ConstraintPool<T>::size() const
+{
+    return this->m_denseToConstraint.size();
+}
+
+template <typename T>
+void sge::ConstraintPool<T>::clear()
+{
+    this->m_densePool.clear();
+    this->m_denseToConstraint.clear();
+    std::fill(this->m_sparse.begin(), this->m_sparse.end(), this->m_TOMBSTONE);
+}
+
+template <typename T>
+bool sge::ConstraintPool<T>::has(sge::Constraint c) const
+{
+    size_t c_int = static_cast<size_t>(c);
+
+    if (c_int >= this->m_sparse.size()) return false;
+
+    return this->m_sparse[c_int] != this->m_TOMBSTONE;
+}
+
+template <typename T>
+sge::Constraint sge::ConstraintPool<T>::getConstraintAt(size_t denseIndex) const
+{
+    return this->m_denseToConstraint[denseIndex];
+}
+
+template <typename T>
+std::span<T> sge::ConstraintPool<T>::getDenseConstraints()
+{
+    T* poolBuffer = static_cast<T*>(this->m_densePool.getRawData());
+    return std::span<T>(poolBuffer, this->m_denseToConstraint.size());
+}
+
+template <typename T>
+std::span<const T> sge::ConstraintPool<T>::getDenseConstraints() const
+{
+    const T* poolBuffer = static_cast<T*>(this->m_densePool.getRawData());
+    return std::span<const T>(poolBuffer, this->m_denseToConstraint.size());
+}
+
+template <typename T>
+const std::vector<sge::Constraint>& sge::ConstraintPool<T>::getDenseToConstraints() const
+{
+    return this->m_denseToConstraint;
+}
+
+#endif // SGE_CONSTRAINTS_POOL_H

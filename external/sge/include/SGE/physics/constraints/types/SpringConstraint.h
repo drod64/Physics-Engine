@@ -19,7 +19,7 @@ public:
 
 private:
     sm::real m_padding;
-};
-}
+}; // class SpringConstraint
+} // namespace sge
 
 #endif // SGE_SPRING_CONSTRAINT_H
