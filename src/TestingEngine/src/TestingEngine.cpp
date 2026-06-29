@@ -7,14 +7,13 @@ TestingEngine("nothing")
 void TestingEngine::init()
 {
     sge::Registry &registry = this->currentScene()->getRegistry();
-    sge::GlobalContext &globalContext = registry.getGlobalContext();
 
     // Register global contexts.
-    globalContext.registerContext<sge::PlayerInputContext>();
-    globalContext.registerContext<sge::InputMappingContext>();
+    registry.registerContext<sge::PlayerInputContext>();
+    registry.registerContext<sge::InputMappingContext>();
 
     // Lock global context. Keep it read-only.
-    globalContext.lockInitialization();
+    registry.lockGlobalContext();
 
     sge::InputMappingContext &inputMapper = registry.getContext<sge::InputMappingContext>();
 

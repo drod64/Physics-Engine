@@ -100,7 +100,7 @@ public:
      */
     template <typename T>
     const ComponentPool<T>* getPool() const;
-};
+}; // class ComponentManager
 } // namespace sge
 
 // Implementation

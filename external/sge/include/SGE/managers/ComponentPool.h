@@ -100,18 +100,35 @@ public:
      */
     bool has(Entity e) const;
 
+    /**
+     * @return the current size of the component pool
+     */
     size_t size() const;
 
+    /**
+     * Clears the component pool of its contents.
+     */
     void concreteClear();
 
-    Entity getEntityAt(size_t index) const;
+    /**
+     * @param denseIndex the dense component index
+     * @return the sge::Entity ID of this component pool's dense index
+     */
+    Entity getEntityAt(size_t denseIndex) const;
 
+    /**
+     * @return a modifiable span<T> of all components of the pool
+     */
     std::span<T> getDenseComponents();
-
-    std::vector<Entity>& getDenseToEntities();
     
+    /**
+     * @return a non-modifiable span<T> of all components of the pool
+     */
     const std::span<const T> getDenseComponents() const;
 
+    /**
+     * @return a read-only list of dense component indexes mapped to their entity
+     */
     const std::vector<Entity>& getDenseToEntities() const;
 };
 } // namespace sge
@@ -238,9 +255,9 @@ inline void sge::ComponentPool<T>::concreteClear()
 }
 
 template <typename T>
-inline sge::Entity sge::ComponentPool<T>::getEntityAt(size_t index) const
+inline sge::Entity sge::ComponentPool<T>::getEntityAt(size_t denseIndex) const
 {
-    return this->m_denseToEntity[index];
+    return this->m_denseToEntity[denseIndex];
 }
 
 template <typename T>
@@ -248,12 +265,6 @@ inline std::span<T> sge::ComponentPool<T>::getDenseComponents()
 {
     T *poolPtr = reinterpret_cast<T*>(this->m_densePool.getRawData());
     return std::span<T>(poolPtr, this->m_denseToEntity.size());
-}
-
-template <typename T>
-inline std::vector<sge::Entity>& sge::ComponentPool<T>::getDenseToEntities()
-{
-    return this->m_denseToEntity;
 }
 
 template <typename T>

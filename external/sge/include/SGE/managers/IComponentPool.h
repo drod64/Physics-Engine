@@ -32,7 +32,7 @@ public:
     {
         this->m_clearFunc(this);
     }
-};
-}
+}; // class IComponentPool
+} // namespace sge
 
 #endif // SGE_COMPONENT_POOL_H

@@ -147,7 +147,7 @@ public:
      * Clears all the CommandBuffer's queued commands.
      */
     void clear();
-};
+}; // class CommandBuffer
 } // namespace sge
 
 // Implementation

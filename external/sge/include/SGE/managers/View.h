@@ -29,32 +29,75 @@ class ViewImpl {
     size_t m_iterationPoolSize;
     const Entity *m_iterationEntities;
 
+    /**
+     * Helper function to get the required component pool ptr.
+     * @param registry the active registry to get the pool from
+     * @return a pointer to the pool
+     */
     template <typename T>
     auto getPoolPtr(RegistryRef registry);
 
 public:
+    /**
+     * Parameterized constructor.
+     * @param registry the active registry to get pool data from
+     */
     ViewImpl(RegistryRef registry);
 
     struct iterator {
         size_t index;
         ViewRef view;
-    
+        
+        /**
+         * Parameterized constructor.
+         * @param index the starting index
+         * @param view the view reference
+         */
         iterator(size_t index, ViewRef view);
 
+        /**
+         * Dereferences the iterator.
+         * @return a sge::Entity ID
+         */
         Entity operator*() const;
+
+        /**
+         * Moves the iterator forwards.
+         * @return a reference to the iterator
+         */
         iterator& operator++();
+
+        /**
+         * Checks if two iterators are the same.
+         * @return true/false if the iterators match
+         */
         bool operator!=(const iterator &other) const;
 
     private:
+        /**
+         * Disregards entities that do not match the queried components.
+         */
         void dropInvalid();
     };
 
+    /**
+     * @return an iterator to the beginning
+     */
     iterator begin();
+
+    /**
+     * @return an iterator to the end
+     */
     iterator end();
 
+    /**
+     * @tparam T the component type
+     * @param e the sge::Entity ID
+     * @return the component that belongs to the entity
+     */
     template <typename T>
     std::conditional_t<isConst, const T &, T &> get(Entity e) const;
-};
+}; // class View
 } // namespace sge
 
 

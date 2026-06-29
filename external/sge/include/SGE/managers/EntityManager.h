@@ -62,8 +62,7 @@ public:
      * @return true if still alive, false otherwise
      */
     bool isAlive(Entity e) const;
-};
-
+}; // class EntityManager
 } // namespace sge
 
 #endif // SGE_ENTITY_MANAGER_H

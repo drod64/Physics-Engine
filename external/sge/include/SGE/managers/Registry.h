@@ -22,55 +22,141 @@ private:
     EntityManager       m_entities;
 
 public:
-    // Components
+    /**
+     * Adds a component to an existing entity.
+     * @tparam T the component type
+     * @param e the sge::Entity ID
+     * @param component the component object/data
+     * @return a transient reference to the newly added component
+     */
     template <typename T>
     auto& addComponent(Entity e, T &&component);
 
+    /**
+     * Removes a component from an existing entity.
+     * @tparam T the component type
+     * @param e the sge::Entity ID
+     */
     template <typename T>
     void removeComponent(Entity e);
     
+    /**
+     * Retrives a modifiable component from an existing entity.
+     * @tparam T the component type
+     * @param e the sge::Entity ID
+     * @return a transient reference to the component
+     */
     template <typename T>
     T& getComponent(Entity e);
 
+    /**
+     * Retrives a non-modifiable component from an existing entity.
+     * @tparam T the component type
+     * @param e the sge::Entity ID
+     * @return a transient reference to the component
+     */
     template <typename T>
     const T& getComponent(Entity e) const;
     
+    /**
+     * Checks if an entity has a component.
+     * @tparam T the component type
+     * @param e the sge::Entity ID
+     * @return true/false if the component has the component
+     */
     template <typename T>
     bool hasComponent(Entity e) const;
     
-    // Entity 
+    /**
+     * Create a new entity.
+     * @return the newly created sge::Entity ID 
+     */
     Entity createEntity();
 
+    /**
+     * Destroys an entity from the registry (removes all components from the entity as well).
+     * @param e the sge::Entity ID to destroy
+     */
     void destroyEntity(Entity e);
 
+    /**
+     * Checks if an entity is alive/exists.
+     * @param e the sge::Entity ID to check
+     */
     bool isAlive(Entity e) const;
 
+    /**
+     * Retrieves a modifiable pool list of all components of type T.
+     * This function will create the pool if it does not exist.
+     * @tparam T the component type
+     * @return a pointer to the ComponentPool<T>*, it will never return nullptr
+     */
     template <typename T>
     ComponentPool<T>* getOrCreatePool();
 
+    /**
+     * Retrieves a non-modifiable pool list of all components of type T.
+     * @tparam T the component type
+     * @return a pointer to the ComponentPool<T>*, nullptr if it does NOT exist
+     */
     template <typename T>
     const ComponentPool<T>* getPool() const;
 
+    /**
+     * This function returns a light-weight sge::View object of all entities with the queried components.
+     * @tparam Components the queried components
+     * @return a lightweight sge::View object of queried components
+     */
     template <typename... Components>
     View<Components...> viewAll();
-
+/**
+     * This function returns a const light-weight sge::View object of all entities with the queried components.
+     * @tparam Components the queried components
+     * @return a lightweight sge::View object of queried components
+     */
     template <typename... Components>
     ConstView<Components...> viewAll() const;
 
-    // Global Context
+    /**
+     * Retrives an already registered global context.
+     * @tparam T the context type
+     * @return the global context
+     */
     template <typename T>
     [[nodiscard]] T& getContext();
 
+    /**
+     * Retrives an already registered global context (const).
+     * @tparam T the context type
+     * @return the global context
+     */
     template <typename T>
     [[nodiscard]] const T& getContext() const;
 
+    /**
+     * Shortcut to register contexts through the registry.
+     */
+    template <typename T, typename... Args>
+    T& registerContext(Args&&... args);
+
+    /**
+     * Retrives the sge::GlobalContext of the registry.
+     * @return the sge::GlobalContext
+     */
     [[nodiscard]] GlobalContext& getGlobalContext();
 
+    /**
+     * Locks the sge::GlobalContext from registering new contexts.
+     */
     void lockGlobalContext();
 
+    /**
+     * Checks if the registry has a registered context.
+     * @return true/false if the registry has the context
+     */
     template <typename T>
     bool hasContext() const;
-};
+}; // class Registry
 } // namspace sge
 
 // Implementation
@@ -156,6 +242,12 @@ template <typename T>
 inline const T& sge::Registry::getContext() const
 {
     return this->m_contexts.get<T>();
+}
+
+template <typename T, typename... Args>
+inline T& sge::Registry::registerContext(Args&&... args)
+{
+    return this->m_contexts.registerContext<T>(std::forward<Args>(args)...);
 }
 
 template <typename T>
