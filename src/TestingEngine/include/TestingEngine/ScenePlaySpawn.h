@@ -5,6 +5,7 @@
 #include <SGE/managers/CommandBuffer.h>
 #include <TestingEngine/ProjectileType.h>
 #include <SGE/physics/constraints/commands/SpringConstraintCommand.h>
+#include <SGE/physics/constraints/commands/BungeeConstraintCommand.h>
 
 // Components
 #include <SGE/physics/forceComponents/CRigidBody3.h>

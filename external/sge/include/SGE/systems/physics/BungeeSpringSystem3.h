@@ -7,7 +7,7 @@
 
 // Component reads
 #include <SGE/core/ecs/components/CTransform3.h>
-#include <SGE/physics/forceComponents/CBungee3.h>
+#include <SGE/physics/constraints/types/BungeeConstraint.h>
 
 // Component writes
 #include <SGE/physics/forceComponents/CRigidBody3.h>

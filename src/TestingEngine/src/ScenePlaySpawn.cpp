@@ -131,9 +131,9 @@ void ScenePlaySpawn::spawnBungeeSpring(sge::CommandBuffer &cmdBuffer)
     sge::Entity e1 = cmdBuffer.createEntityDeferred();
     sge::CLifespan ls_e1(10);
     sge::CTransform3 t3_e1;
-    t3_e1.position = {0, 5, 0};
+    t3_e1.position = {0, 25, 0};
     sge::CRigidBody3 r3_e1;
-    r3_e1.addForce({0, 0, 100});
+    r3_e1.velocity = {0, 10, 10};
     r3_e1.setMass(10);
 
     sge::Entity e2 = cmdBuffer.createEntityDeferred();
@@ -147,14 +147,19 @@ void ScenePlaySpawn::spawnBungeeSpring(sge::CommandBuffer &cmdBuffer)
     cmdBuffer.addComponentDeferred(e1, ls_e1);
     cmdBuffer.addComponentDeferred(e1, t3_e1);
     cmdBuffer.addComponentDeferred(e1, r3_e1);
-    cmdBuffer.addComponentDeferred(e1, sge::CBungee3(e2, 40, 15));
     cmdBuffer.addComponentDeferred(e1, sge::CGravity3({0, -9.81, 0}));
 
     cmdBuffer.addComponentDeferred(e2, ls_e2);
     cmdBuffer.addComponentDeferred(e2, t3_e2);
     cmdBuffer.addComponentDeferred(e2, r3_e2);
-    cmdBuffer.addComponentDeferred(e2, sge::CBungee3(e1, 40, 15));
     cmdBuffer.addComponentDeferred(e2, sge::CGravity3({0, -9.81, 0}));
+
+    cmdBuffer.pushCustomCommand(sge::BungeeConstraintCommand {
+        .entityA = e1,
+        .entityB = e2,
+        .springConstant = 45,
+        .restLength = 15,
+    });
 }
 
 void ScenePlaySpawn::spawnBuoyancySpring(sge::CommandBuffer &cmdBuffer)

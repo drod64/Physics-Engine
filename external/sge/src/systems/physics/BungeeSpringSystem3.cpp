@@ -1,51 +1,48 @@
 #include <SGE/systems/physics/BungeeSpringSystem3.h>
+#include <iostream>
 
 void sge::BungeeSpringSystem3::update(sge::Registry &registry, sge::CommandBuffer &cmd, sm::real dt) {
-    auto bungeeSpring3View = registry.viewAll<sge::CTransform3, sge::CRigidBody3, sge::CBungee3>();
+    auto bungeePoolPtr = registry.getOrCreateConstraintPool<sge::BungeeConstraint>();
 
-    for (const Entity &e : bungeeSpring3View)
+    const auto bungeePool = bungeePoolPtr->getDenseConstraints();
+
+    for (const sge::BungeeConstraint &constraint : bungeePool)
     {
+        if (!registry.isAlive(constraint.entityA) || !registry.isAlive(constraint.entityB)) continue;
+        if (!registry.hasComponent<sge::CTransform3>(constraint.entityA) ||
+            !registry.hasComponent<sge::CRigidBody3>(constraint.entityA) ||
+            !registry.hasComponent<sge::CTransform3>(constraint.entityB) ||
+            !registry.hasComponent<sge::CRigidBody3>(constraint.entityB))
+        {
+            continue;
+        }
         // Read
-        const auto &b3 = bungeeSpring3View.get<sge::CBungee3>(e);
+        const auto &aT3 = registry.getComponent<sge::CTransform3>(constraint.entityA);
+        const auto &bT3 = registry.getComponent<sge::CTransform3>(constraint.entityB);
 
-        // Only calculate force for one entity. Opposite force will be applied anyways.
-        if (b3.targetEntity > e) continue;
-
-        // Early exit if target entity does not have necessary components.
-        if (!registry.hasComponent<sge::CTransform3>(b3.targetEntity)) continue;
-
-        // Reads
-        const auto &t3 = bungeeSpring3View.get<sge::CTransform3>(e);
-        const auto &otherT3 = registry.getComponent<sge::CTransform3>(b3.targetEntity);
-        
-        // Write
-        auto &r3 = bungeeSpring3View.get<sge::CRigidBody3>(e);
+        // Accumulate
+        auto &aR3 = registry.getComponent<sge::CRigidBody3>(constraint.entityA);
+        auto &bR3 = registry.getComponent<sge::CRigidBody3>(constraint.entityB);
 
         // Get displacement between both entities.
-        sm::Vec3 displacement = t3.position - otherT3.position;
+        sm::Vec3 displacement = aT3.position - bT3.position;
 
         // Calculate squared magnitude of displacement vector.
         sm::real sqrLength = displacement.sqrMagnitude() + (sm::real)1e-6f;
         sm::real length = real_sqrt(sqrLength);
         length = std::clamp(length, (sm::real)1e-6f, (sm::real)3.40282e+38f);
 
-        sm::real stretch = length - b3.restLength;
+        sm::real stretch = length - constraint.restLength;
 
         sm::real activeStretch = std::clamp(stretch, (sm::real)0.0, (sm::real)3.40282e+38f);
 
-        sm::real forceMagnitude = -b3.springConstant * activeStretch;
+        sm::real forceMagnitude = -constraint.springConstant * activeStretch;
 
         sm::Vec3 forceVec = displacement * (forceMagnitude / length);
 
         // Add spring (pulling) force to entity.
-        r3.addForce(forceVec);
-        
-        // Apply same force to other object.
-        if (registry.hasComponent<sge::CRigidBody3>(b3.targetEntity))
-        {
-            auto &otherR3 = registry.getComponent<sge::CRigidBody3>(b3.targetEntity);
-            otherR3.addForce(forceVec * -1);
-        }
+        aR3.addForce(forceVec);
+        bR3.addForce(forceVec * -1);
     }
 }
 
@@ -62,7 +59,6 @@ sge::SystemDescriptor sge::BungeeSpringSystem3::getSystemDescriptor()
 
     // System component reads.
     desc.componentReads.set(sge::ComponentIDCounter::get<sge::CTransform3>());
-    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CBungee3>());
 
     // No system component writes.
 

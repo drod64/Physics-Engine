@@ -6,19 +6,11 @@
 namespace sge {
 class BungeeConstraint {
 public:
-    sge::Entity targetEntity;
-    sm::real springConstant;
-    sm::real restLength;
+    sge::Entity entityA = sge::Entity::INVALID;
+    sge::Entity entityB = sge::Entity::INVALID;
+    sm::real restLength = 10;
+    sm::real springConstant = 10;
 
-    BungeeConstraint(sge::Entity targetEntity, sm::real springConstant, sm::real restLength)
-    {
-        this->targetEntity = targetEntity;
-        this->springConstant = springConstant;
-        this->restLength = restLength;
-    }
-
-private:
-    sm::real m_padding;
 }; // class BungeeConstraint
 } // namespace sge
 
