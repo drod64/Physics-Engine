@@ -33,7 +33,6 @@ set(SOURCE_FILES
     src/physics/forceComponents/CDrag3.cpp
     src/physics/forceComponents/CGravity3.cpp
     src/physics/forceComponents/CRigidBody3.cpp
-    src/physics/forceComponents/CSpring3.cpp
 
 
     # systems/physics

@@ -4,21 +4,13 @@
 #include <SM/Precision.h>
 
 namespace sge {
-class SpringConstraint {
+struct SpringConstraint {
 public:
-    sge::Entity targetEntity;
-    sm::real springConstant;
-    sm::real restLength;
+    Entity entityA = sge::Entity::INVALID;
+    Entity entityB = sge::Entity::INVALID;
+    sm::real springConstant = 10;
+    sm::real restLength = 10;
 
-    SpringConstraint(sge::Entity targetEntity, sm::real springConstant, sm::real restLength)
-    {
-        this->targetEntity = targetEntity;
-        this->springConstant = springConstant;
-        this->restLength = restLength;
-    }
-
-private:
-    sm::real m_padding;
 }; // class SpringConstraint
 } // namespace sge
 

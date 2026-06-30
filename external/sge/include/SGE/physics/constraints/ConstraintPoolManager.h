@@ -19,8 +19,8 @@ public:
     ConstraintPoolManager(const ConstraintPoolManager &) = delete;
     ConstraintPoolManager& operator= (const ConstraintPoolManager &) = delete;
 
-    template <typename T, typename... Args>
-    Constraint addConstraint(Args&&... args);
+    template <typename T, typename U>
+    Constraint addConstraint(U &&constraintData);
 
     template <typename T>
     T& getConstraint(Constraint c);
@@ -45,12 +45,14 @@ public:
 
 // Implementation
 
-template <typename T, typename... Args>
-inline sge::Constraint sge::ConstraintPoolManager::addConstraint(Args&&... args)
+template <typename T, typename U>
+inline sge::Constraint sge::ConstraintPoolManager::addConstraint(U &&constraintData)
 {
+    using CleanType = std::remove_cvref_t<T>;
+
     sge::Constraint id = this->m_manager.createConstraint();
 
-    this->getOrCreatePool<T>()->addConstraint(id, std::forward<Args>(args)...);
+    this->getOrCreatePool<T>()->addConstraint(id, std::forward<U>(constraintData));
 
     return id;
 }
@@ -90,7 +92,10 @@ inline void sge::ConstraintPoolManager::constraintDestroyed(sge::Constraint c)
     // ...just to delete one constraint.
     for (auto &pool : this->m_pools)
     {
-        pool->removeConstraint(c);
+        if (pool)
+        {
+            pool->removeConstraint(c);
+        }
     }
 }
 

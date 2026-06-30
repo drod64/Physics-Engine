@@ -8,6 +8,7 @@
 // Component reads
 #include <SGE/core/ecs/components/CTransform3.h>
 #include <SGE/physics/forceComponents/CSpring3.h>
+#include <SGE/physics/constraints/types/SpringConstraint.h>
 
 // Component writes
 #include <SGE/physics/forceComponents/CRigidBody3.h>
@@ -15,7 +16,6 @@
 namespace sge {
     namespace SpringSystem3 {
         void update(Registry &registry, CommandBuffer &cmdBuffer, sm::real dt);
-
         SystemDescriptor getSystemDescriptor();
     }
 }

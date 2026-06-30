@@ -152,7 +152,7 @@ inline T& sge::ComponentPool<T>::assign(sge::Entity e, U &&component)
     static_assert(std::is_same_v<std::decay_t<U>, T>,
                 "[ComponentPool]::assign: Mismatched type! The object passed must match pool template T.");
 
-    assert(!has(e) && "Entity already has this component type!");
+    assert(!this->has(e) && "Entity already has this component type!");
     
     size_t e_int = static_cast<size_t>(e);
 

@@ -6,6 +6,7 @@
 #include <SGE/util/DenseBytePool.h>
 #include <SGE/physics/constraints/Constraint.h>
 #include <SGE/physics/constraints/IConstraintPool.h>
+#include <iostream>
 
 
 namespace sge {
@@ -34,7 +35,8 @@ public:
 
     ~ConstraintPool() = default;
 
-    T& addConstraint(Constraint c, T &&constraint);
+    template <typename U>
+    T& addConstraint(Constraint c, U &&constraint);
 
     void removeConstraint(Constraint c);
 
@@ -68,18 +70,24 @@ m_TOMBSTONE(0xFFFFFFFF),
 m_densePool(sizeof(T), initialSize)
 {
     this->m_sparse.resize(initialSize, this->m_TOMBSTONE);
-    this->m_denseToConstraint.resize(initialSize);
+    this->m_denseToConstraint.reserve(initialSize);
 }
 
 
 template <typename T>
-inline T& sge::ConstraintPool<T>::addConstraint(sge::Constraint c, T &&constraint)
+template <typename U>
+inline T& sge::ConstraintPool<T>::addConstraint(sge::Constraint c, U &&constraint)
 {
+    using CleanType = std::remove_cvref_t<U>;
+
+    static_assert(std::is_same_v<CleanType, T>,
+    "[ConstraintPool]::addConstraint: Mismatched type! The object passed must match pool template T.");
+
     assert(!this->has(c) && "Error. Cannot add a constraint to an already active handle\n");
     size_t c_int = static_cast<size_t>(c);
 
     // Resize if necessary.
-    if (c_int > this->m_sparse.size())
+    if (c_int >= this->m_sparse.size())
     {
         size_t newSize = this->m_sparse.size() * 2;
         if (newSize <= c_int) newSize = c_int + 1;
@@ -91,11 +99,13 @@ inline T& sge::ConstraintPool<T>::addConstraint(sge::Constraint c, T &&constrain
     this->m_sparse[c_int] = denseIndex;
     this->m_denseToConstraint.push_back(c);
 
+    CleanType materialized = std::forward<U>(constraint);
+
     // Write constraint data.
-    this->m_densePool.writeData(denseIndex, std::addressof(constraint));
+    this->m_densePool.writeData(denseIndex, std::addressof(materialized));
 
     // Get data...
-    T* poolBuffer = static_cast<T*>(this->m_densePool.getRawData());
+    T* poolBuffer = reinterpret_cast<T*>(this->m_densePool.getRawData());
 
     // ...and return a transient reference.
     return poolBuffer[denseIndex];
@@ -129,7 +139,7 @@ T& sge::ConstraintPool<T>::getConstraint(sge::Constraint c)
 
     size_t c_int = static_cast<size_t>(c);
 
-    T* poolBuffer = static_cast<T*>(this->m_densePool.getRawData());
+    T* poolBuffer = reinterpret_cast<T*>(this->m_densePool.getRawData());
 
     return poolBuffer[this->m_sparse[c_int]];
 }
@@ -141,7 +151,7 @@ const T& sge::ConstraintPool<T>::getConstraint(sge::Constraint c) const
 
     size_t c_int = static_cast<size_t>(c);
 
-    const T* poolBuffer = static_cast<const T*>(this->m_densePool.getRawData());
+    const T* poolBuffer = reinterpret_cast<const T*>(this->m_densePool.getRawData());
 
     return poolBuffer[this->m_sparse[c_int]];
 }
@@ -179,14 +189,14 @@ sge::Constraint sge::ConstraintPool<T>::getConstraintAt(size_t denseIndex) const
 template <typename T>
 std::span<T> sge::ConstraintPool<T>::getDenseConstraints()
 {
-    T* poolBuffer = static_cast<T*>(this->m_densePool.getRawData());
+    T* poolBuffer = reinterpret_cast<T*>(this->m_densePool.getRawData());
     return std::span<T>(poolBuffer, this->m_denseToConstraint.size());
 }
 
 template <typename T>
 std::span<const T> sge::ConstraintPool<T>::getDenseConstraints() const
 {
-    const T* poolBuffer = static_cast<T*>(this->m_densePool.getRawData());
+    const T* poolBuffer = reinterpret_cast<const T*>(this->m_densePool.getRawData());
     return std::span<const T>(poolBuffer, this->m_denseToConstraint.size());
 }
 

@@ -74,15 +74,21 @@ void ScenePlaySpawn::spawnSpringConnection(sge::CommandBuffer &cmdBuffer)
     r3e2.setMass(10);
     r3e2.velocity = {0, 0, 0};
 
+
     cmdBuffer.addComponentDeferred(e1, lse1);
     cmdBuffer.addComponentDeferred(e1, t3e1);
     cmdBuffer.addComponentDeferred(e1, r3e1);
-    cmdBuffer.addComponentDeferred(e1, sge::CSpring3(e2, 10, 17));
     
     cmdBuffer.addComponentDeferred(e2, lse2);
     cmdBuffer.addComponentDeferred(e2, t3e2);
     cmdBuffer.addComponentDeferred(e2, r3e2);
-    cmdBuffer.addComponentDeferred(e2, sge::CSpring3(e1, 10, 17));
+
+    cmdBuffer.pushCustomCommand(sge::SpringConstraintCommand {
+        .entityA = e1,
+        .entityB = e2,
+        .springConstant = 65,
+        .restLength = 10
+    });
 }
 
 void ScenePlaySpawn::spawnAnchorSpring(sge::CommandBuffer &cmdBuffer, const sm::Vec3 &position)

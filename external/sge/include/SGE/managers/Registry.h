@@ -159,8 +159,8 @@ public:
     template <typename T>
     bool hasContext() const;
 
-    template <typename T, typename... Args>
-    Constraint addConstraint(Args&&... args);
+    template <typename T>
+    Constraint addConstraint(T &&constraintData);
 
     template <typename T>
     T& getConstraint(Constraint c);
@@ -289,10 +289,11 @@ inline void sge::Registry::lockGlobalContext()
     this->m_contexts.lockInitialization();
 }
 
-template <typename T, typename... Args>
-inline sge::Constraint sge::Registry::addConstraint(Args&&... args)
+template <typename T>
+inline sge::Constraint sge::Registry::addConstraint(T &&constraintData)
 {
-    return this->m_constraints.addConstraint<T>(std::forward<Args>(args)...);
+    using CleanType = std::remove_cvref_t<T>;
+    return this->m_constraints.addConstraint<CleanType>(std::forward<T>(constraintData));
 }
 
 template <typename T>

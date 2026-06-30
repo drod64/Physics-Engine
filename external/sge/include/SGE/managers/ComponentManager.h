@@ -152,7 +152,10 @@ inline void sge::ComponentManager::entityDestroyed(Entity e)
 {
     for (auto &pool : this->m_pools)
     {
-        pool->removeEntity(e);
+        if (pool)
+        {
+            pool->removeEntity(e);
+        }
     }
 }
 

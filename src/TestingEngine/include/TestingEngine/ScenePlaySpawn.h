@@ -4,6 +4,7 @@
 #include <SM/Vec3.h>
 #include <SGE/managers/CommandBuffer.h>
 #include <TestingEngine/ProjectileType.h>
+#include <SGE/physics/constraints/commands/SpringConstraintCommand.h>
 
 // Components
 #include <SGE/physics/forceComponents/CRigidBody3.h>
