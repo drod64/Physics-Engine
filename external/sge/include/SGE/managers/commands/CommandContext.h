@@ -11,17 +11,30 @@ private:
     const std::vector<Entity> &m_translationTable;
 
 public:
+    /**
+     * Parameterized constructor.
+     * @param registry a reference to the active registry
+     * @param translationTable a reference to the entity translation table
+     */
     CommandContext(Registry &registry, const std::vector<Entity> &translationTable) :
     m_registry(registry),
     m_translationTable(translationTable)
     {
     }
 
+    /**
+     * @return the active registry
+     */
     Registry& getRegistry()
     {
         return this->m_registry;
     }
 
+    /**
+     * Maps a buffer Entity ID to a real Entity ID.
+     * @param bufferID a sge::Entity ID returned by a CommandBuffer
+     * @return the real sge::Entity ID or sge::Entity::INVALID if the bufferID was invalid
+     */
     Entity getEntity(Entity bufferID) const
     {
         if (sge::IsFakeEntity(bufferID))

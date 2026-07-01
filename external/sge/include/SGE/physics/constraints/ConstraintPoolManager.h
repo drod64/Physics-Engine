@@ -19,25 +19,59 @@ public:
     ConstraintPoolManager(const ConstraintPoolManager &) = delete;
     ConstraintPoolManager& operator= (const ConstraintPoolManager &) = delete;
 
+    /**
+     * Adds a constraint.
+     * @tparam T the constraint type
+     * @tparam U lvalue/rvalue of the constraint type
+     * @param constraintData the constraint object
+     */
     template <typename T, typename U>
     Constraint addConstraint(U &&constraintData);
 
+    /**
+     * @param c the sge::Constraint ID handle
+     * @returns a transient reference to the constraint object
+     */
     template <typename T>
     T& getConstraint(Constraint c);
 
+    /**
+     * @param c the sge::Constraint ID handle
+     * @returns a transient reference to the constraint object
+     */
     template <typename T>
     const T& getConstraint(Constraint c) const;
 
+    /**
+     * Checks if a sge::Constraint ID handle has a constraint type.
+     * @param c the sge::Constraint handle
+     * @return true/false whether the handle contains the type
+     */
     template <typename T>
     bool has(Constraint c) const;
     
+    /**
+     * Destroys a constraint.
+     * @param c the sge::Constraint ID handle
+     */
     void constraintDestroyed(Constraint c);
 
+    /**
+     * Clears all pools.
+     */
     void clear();
 
+    /**
+     * Retrieves or creates a constraint pool.
+     * @return the constraint pool pointer (will never return nullptr)
+     */
     template <typename T>
     ConstraintPool<T>* getOrCreatePool();
 
+    /**
+     * Retrieves a constraint pool.
+     * @return the constraint pool const pointer (WILL return nullptr if pool does not exist)
+     */
     template <typename T>
     const ConstraintPool<T>* getPool() const;
 }; // class ConstraintPoolManager
@@ -97,6 +131,9 @@ inline void sge::ConstraintPoolManager::constraintDestroyed(sge::Constraint c)
             pool->removeConstraint(c);
         }
     }
+
+    // Recycle ID
+    this->m_manager.destroyConstraint(c);
 }
 
 inline void sge::ConstraintPoolManager::clear()

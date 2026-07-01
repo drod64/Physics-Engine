@@ -159,23 +159,60 @@ public:
     template <typename T>
     bool hasContext() const;
 
+    /**
+     * Add a constraint between entities.
+     * @tparam T the constraint data type
+     * @param constraintData the constraint data
+     * @return a sge::Constraint handle (used for querying a specific constraint)
+     */
     template <typename T>
     Constraint addConstraint(T &&constraintData);
 
+    /**
+     * Retrieves a specific constraint.
+     * @tparam T the constraint type
+     * @param c the sge::Constraint handle
+     * @return a transient reference to the constraint object
+     */
     template <typename T>
     T& getConstraint(Constraint c);
 
+    /**
+     * Retrieves a specific constraint.
+     * @tparam T the constraint type
+     * @param c the sge::Constraint handle
+     * @return a const transient reference to the constraint object
+     */
     template <typename T>
     const T& getConstraint(Constraint c) const;
 
+    /**
+     * Destroys a specific constraint.
+     * @param c the sge::Constraint handle to destroy
+     */
     void destroyConstraint(Constraint c);
 
+    /**
+     * Checks if a constraint is still active.
+     * @tparam T the constraint type
+     * @param c the sge::Constraint handle to check
+     */
     template <typename T>
     bool isActive(Constraint c) const;
 
+    /**
+     * Retrieves or creates a constraint pool type.
+     * @tparam T the constraint type
+     * @return a pointer to the constraint pool
+     */
     template <typename T>
     ConstraintPool<T>* getOrCreateConstraintPool();
 
+    /**
+     * Retrieves or creates a constraint pool type.
+     * @tparam T the constraint type
+     * @return a const pointer to the constraint pool
+     */
     template <typename T>
     const ConstraintPool<T>* getConstraintPool() const;
 

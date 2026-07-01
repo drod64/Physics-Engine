@@ -147,6 +147,14 @@ public:
     template <typename T>
     CommandBuffer& removeComponentDeferred(Entity e);
     
+    /**
+     * Pushes a custom deferred command into the CommandBuffer.
+     * @tparam TCommand the command struct passed as the argument
+     * 
+     * NOTE: the struct is expected to have this function signature implemented:
+     * 'void execute(sge::CommandContext &context) const'
+     * @return a reference to the CommandBuffer for chaining. 
+     */
     template <typename TCommand>
     CommandBuffer& pushCustomCommand(const TCommand &command);
 

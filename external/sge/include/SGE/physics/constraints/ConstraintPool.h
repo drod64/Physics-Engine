@@ -31,31 +31,77 @@ private:
     std::vector<size_t> m_sparse;
 
 public:
+    /**
+     * Parameterized constructor.
+     * @param initialSize the initial size of the pool on start-up
+     */
     ConstraintPool(size_t initialSize = 1024);
 
     ~ConstraintPool() = default;
 
+    /**
+     * Adds a constraint to the pool.
+     * @tparam U lvalue/rvalue of constraint type
+     * @param c the sge::Constraint ID handle to assign the object to
+     * @param constraint the constraint object data
+     */
     template <typename U>
     T& addConstraint(Constraint c, U &&constraint);
 
+    /**
+     * Removes the constraint from the pool.
+     * @param c the sge::Constraint ID handle
+     */
     void removeConstraint(Constraint c);
 
+    /**
+     * @param c the sge::Constraint ID handle
+     * @return a transient reference to the constraint object.
+     */
     T& getConstraint(Constraint c);
 
+    /**
+     * @param c the sge::Constraint ID handle
+     * @return a const transient reference to the constraint object.
+     */
     const T& getConstraint(Constraint c) const;
 
+    /**
+     * @return the size of the pool
+     */
     size_t size() const;
 
+    /**
+     * Clears the pool.
+     */
     void clear();
 
+    /**
+     * Checks if a sge::Constraint ID handle belongs in this pool.
+     * @param c the sge::Constraint ID handle
+     * @return true/false whether the sge::Constraint has data in this pool
+     */
     bool has(Constraint c) const;
 
+    /**
+     * @param denseIndex the dense index
+     * @return the sge::Constraint ID handle mapped to the dense index
+     */
     Constraint getConstraintAt(size_t denseIndex) const;
-    
+
+    /**
+     * @return a list of all the constraint objects
+     */
     std::span<T> getDenseConstraints();
-    
+
+    /**
+     * @return a const list of all the constraint objects
+     */
     std::span<const T> getDenseConstraints() const;
 
+    /**
+     * @return the list mapping dense indexes to sge::Constraint ID handles
+     */
     const std::vector<Constraint>& getDenseToConstraints() const;
 }; // class ConstraintPool
 } // namespace sge
