@@ -4,7 +4,8 @@ cmake_minimum_required(VERSION 3.20)
 project(SM) 
 
 set(SOURCE_FILES
-    include/SM/Precision.h
+    src/Matrix3x3.cpp
+    src/Quaternion.cpp
     src/Vec2.cpp
     src/Vec3.cpp)
 

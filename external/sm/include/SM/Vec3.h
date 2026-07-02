@@ -100,11 +100,11 @@ public:
     Vec3 componentProduct(const Vec3 &vec) const;
 
     /**
-     * Calcualtes the vector product between this Vec3 and another Vec3.
+     * Calcualtes the vector (cross) product between this Vec3 and another Vec3.
      * @param vec the other Vec3 to perform the operation with
      * @return a brand new Vec3 representing the vector product between both Vec3s
      */
-    Vec3 vectorProduct(const Vec3 &vec) const;
+    Vec3 crossProduct(const Vec3 &vec) const;
 
 private:
     float _pad;

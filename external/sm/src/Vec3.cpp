@@ -110,7 +110,7 @@ sm::Vec3 sm::Vec3::operator % (const sm::Vec3 &vec) const
 {
     return Vec3(this->y * vec.z - this->z * vec.y,
                 this->z * vec.x - this->x * vec.z,
-                this->x * vec.y - this->y * vec.y);
+                this->x * vec.y - this->y * vec.x);
 }
 
 sm::Vec3& sm::Vec3::componentProductUpdate(const sm::Vec3 &vec)
@@ -143,7 +143,7 @@ sm::Vec3 sm::Vec3::componentProduct(const sm::Vec3 &vec) const
     return Vec3(this->x * vec.x, this->y * vec.y, this->z * vec.z);
 }
 
-sm::Vec3 sm::Vec3::vectorProduct(const sm::Vec3 &vec) const
+sm::Vec3 sm::Vec3::crossProduct(const sm::Vec3 &vec) const
 {
     return *this % vec;
 }
