@@ -41,9 +41,7 @@ void ScenePlay::init()
     // Create camera entity.
     sge::Entity camera = this->getCommandBuffer().createEntityDeferred();
     sge::CTransform3 t3;
-    sge::CRigidBody3 r3;
-    r3.setMass(10);
-    r3.setStatic(false);
+    sge::CRigidBody3 r3(10, false);
     sge::CCamera3 c3(true, CAMERA_PERSPECTIVE);
     sge::CPlayerController3 controller;
     t3.position = {0, 0, -40};

@@ -13,7 +13,7 @@ void sge::GravitySystem3::update(sge::Registry &registry, sge::CommandBuffer &, 
         auto &r3 = gravity3View.get<sge::CRigidBody3>(e);
         
         // Ignore immovable entities
-        if (r3.isStatic()) continue;
+        if (r3.is_static) continue;
 
         // Update movable entities with gravitational force
         r3.addForce(g3.gravity * r3.getMass());

@@ -1,37 +1,19 @@
 #include <SGE/physics/forceComponents/CRigidBody3.h>
 
-sge::CRigidBody3::CRigidBody3(const sm::Vec3 &vel, const sm::Vec3 &accumulatedForce, sm::real mass, sm::real damping)
+sge::CRigidBody3::CRigidBody3(sm::real mass, bool isStatic)
 {
-    this->velocity = vel;
-    this->accumulatedForce = accumulatedForce;
     setMass(mass);
-    this->damping = damping;
-    this->m_static = false;
+    this->is_static = isStatic;
 }
 
 void sge::CRigidBody3::setMass(sm::real mass)
 {
-    this->m_inverseMass = 1.0 / mass;
+    this->inverseMass = static_cast<sm::real>(1) / mass;
 }
 
 sm::real sge::CRigidBody3::getMass() const
 {
-    return 1.0 / this->m_inverseMass;
-}
-
-sm::real sge::CRigidBody3::getInverseMass() const
-{
-    return this->m_inverseMass;
-}
-
-void sge::CRigidBody3::setStatic(bool value)
-{
-    this->m_static = value;
-}
-
-bool sge::CRigidBody3::isStatic() const
-{
-    return this->m_static;
+    return static_cast<sm::real>(1) / this->inverseMass;
 }
 
 void sge::CRigidBody3::addForce(const sm::Vec3 &force)

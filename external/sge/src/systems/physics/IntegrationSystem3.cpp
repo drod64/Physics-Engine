@@ -11,12 +11,12 @@ void sge::IntegrationSystem3::update(sge::Registry &registry, sge::CommandBuffer
         sge::CTransform3 &t3 = view.get<sge::CTransform3>(e);
 
         // Static entity. Continue to next entity.
-        if (r3.isStatic()) continue;
+        if (r3.is_static) continue;
 
         assert(dt > 0.0f);
         
         // Calculate acceleration (dependending on acting forces) and integrate velocity
-        r3.velocity.addScaledVector(r3.accumulatedForce * r3.getInverseMass(), dt);
+        r3.velocity.addScaledVector(r3.accumulatedForce * r3.inverseMass, dt);
         
         // Numerical rest check
         if (r3.velocity.sqrMagnitude() < 0.00001)
