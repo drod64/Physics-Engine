@@ -10,6 +10,7 @@ namespace sge {
 class CTransform3 {
 public:
     sm::Vec3 position = {0,0,0};
+    sm::Vec3 prevPosition = {0,0,0};
     sm::Vec3 rotation = {0,0,0};
 
     /**

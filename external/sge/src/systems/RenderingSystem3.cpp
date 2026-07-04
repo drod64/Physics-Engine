@@ -49,7 +49,9 @@ void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer,
 
     for (const auto &t3 : t3Components)
     {
-        DrawCube({t3.position.x, t3.position.y, t3.position.z}, 2, 2, 2, RED);
+        sm::Vec3 renderPos = sm::MathUtil::lerp(t3.prevPosition, t3.position, dt);
+
+        DrawCube({renderPos.x, renderPos.y, renderPos.z}, 2, 2, 2, RED);
     }
 
     EndMode3D();

@@ -1,7 +1,7 @@
 #ifndef SGE_RENDERING_SYSTEM
 #define SGE_RENDERING_SYSTEM
 #include <raylib.h>
-#include <SM/Precision.h>
+#include <SM/MathUtil.h>
 #include <SGE/managers/View.h>
 #include <SGE/managers/CommandBuffer.h>
 #include <SGE/systems/SystemDescriptor.h>

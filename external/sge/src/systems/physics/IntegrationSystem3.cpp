@@ -10,9 +10,12 @@ void sge::IntegrationSystem3::update(sge::Registry &registry, sge::CommandBuffer
         sge::CRigidBody3 &r3 = view.get<sge::CRigidBody3>(e);
         sge::CTransform3 &t3 = view.get<sge::CTransform3>(e);
 
+        // Update previos position.
+        t3.prevPosition = t3.position;
+        
         // Static entity. Continue to next entity.
         if (r3.is_static) continue;
-
+        
         assert(dt > 0.0f);
         
         // Calculate acceleration (dependending on acting forces) and integrate velocity
