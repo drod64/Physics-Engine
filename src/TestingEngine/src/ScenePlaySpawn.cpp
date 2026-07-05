@@ -29,6 +29,7 @@ void ScenePlaySpawn::spawnProjectile(sge::CommandBuffer &cmdBuffer, ProjectileTy
     }
 
     t3.position = sm::Vec3(0, 1.5, 0);
+    t3.prevPosition = t3.position;
 
     cmdBuffer.addComponentDeferred(e, r3);
     cmdBuffer.addComponentDeferred(e, t3);
@@ -44,6 +45,7 @@ void ScenePlaySpawn::spawnFirework(sge::CommandBuffer &cmdBuffer, const std::str
     sge::CLifespan ls(100);
 
     t3.position = {0,0,0};
+    t3.prevPosition = t3.position;
     r3.velocity = {0,35,0};
 
     cmdBuffer.addComponentDeferred(e, r3);
@@ -63,6 +65,7 @@ void ScenePlaySpawn::spawnSpringConnection(sge::CommandBuffer &cmdBuffer)
     sge::CLifespan lse2(10);
     sge::CTransform3 t3e2;
     t3e2.position = {5, 0 ,0};
+    t3e2.prevPosition = t3e2.position;
     sge::CRigidBody3 r3e2(10, false);
     r3e2.velocity = {0, 0, 0};
 
@@ -90,6 +93,7 @@ void ScenePlaySpawn::spawnAnchorSpring(sge::CommandBuffer &cmdBuffer, const sm::
     sge::CLifespan ls(10);
     sge::CTransform3 t3;
     t3.position = {0, -90, 0};
+    t3.prevPosition = t3.position;
     sge::CRigidBody3 r3(5, false);
 
     cmdBuffer.addComponentDeferred(e, ls);
@@ -106,6 +110,7 @@ void ScenePlaySpawn::spawnAnchorBungee(sge::CommandBuffer &cmdBuffer, const sm::
     sge::CLifespan ls(10);
     sge::CTransform3 t3;
     t3.position = {0, 0, 0};
+    t3.prevPosition = t3.position;
     sge::CRigidBody3 r3(5, false);
 
     cmdBuffer.addComponentDeferred(e, sge::CAnchorBungee3(position, 45, 10));
@@ -122,6 +127,7 @@ void ScenePlaySpawn::spawnBungeeSpring(sge::CommandBuffer &cmdBuffer)
     sge::CLifespan ls_e1(10);
     sge::CTransform3 t3_e1;
     t3_e1.position = {0, 25, 0};
+    t3_e1.prevPosition = t3_e1.position;
     sge::CRigidBody3 r3_e1(10, false);
     r3_e1.velocity = {0, 10, 10};
 
@@ -129,6 +135,7 @@ void ScenePlaySpawn::spawnBungeeSpring(sge::CommandBuffer &cmdBuffer)
     sge::CLifespan ls_e2(10);
     sge::CTransform3 t3_e2;
     t3_e2.position = {0, 30, 0};
+    t3_e2.prevPosition = t3_e2.position;
     sge::CRigidBody3 r3_e2(10, false);
     r3_e2.addForce({0, 0, 100});
 
@@ -156,6 +163,7 @@ void ScenePlaySpawn::spawnBuoyancySpring(sge::CommandBuffer &cmdBuffer)
     sge::CLifespan ls(10);
     sge::CTransform3 t3;
     t3.position = {0, 4, 0};
+    t3.prevPosition = t3.position;
     sge::CRigidBody3 r3(10, false);
 
     cmdBuffer.addComponentDeferred(e, ls);
