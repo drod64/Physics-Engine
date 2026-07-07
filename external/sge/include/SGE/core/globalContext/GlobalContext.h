@@ -15,17 +15,43 @@ private:
 public:
     GlobalContext() = default;
 
+    /**
+     * Register a context.
+     * @tparam T the context type
+     * @tparam Args the constructor arguments
+     * @param args the type T constructor arguments
+     * @return a reference to the newly registered context
+     */
     template <typename T, typename... Args>
     T& registerContext(Args&&... args);
 
+    /**
+     * Lock the GlobalContext from registering more contexts.
+     * Call this before the game loop starts.
+     */
     void lockInitialization();
     
+    /**
+     * Retrieves a context.
+     * @tparam T the context type
+     * @return a reference to the context
+     */
     template <typename T>
     [[nodiscard]] T& get();
 
+    /**
+     * Retrieves a context.
+     * @tparam T the context type
+     * @return a const reference to the context
+     */
     template <typename T>
     [[nodiscard]] const T& get() const;
 
+    /**
+     * Checks if the GlobalContext has a context.
+     * @tparam T the context type
+     * @return true/false whether the context was registered
+     */
     template <typename T>
     bool has() const;
     

@@ -16,7 +16,12 @@ private:
     } 
 
 public:
-    template <typename>
+    /**
+     * Retrieves the unique ID of a context type.
+     * @tparam T the context type
+     * @return a unique sge::GlobalContextID of the context type 
+     */
+    template <typename T>
     static inline GlobalContextID get()
     {
         static const GlobalContextID ID = nextID();

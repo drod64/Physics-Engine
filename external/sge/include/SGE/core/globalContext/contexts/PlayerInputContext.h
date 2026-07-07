@@ -19,30 +19,99 @@ private:
     sm::Vec2    m_mousePosition;
 
 public:
+    /**
+     * Set the mouse delta.
+     * @param mouseDelta the mouse delta
+     */
     void setMouseDelta(const sm::Vec2 &mouseDelta);
+
+    /**
+     * @return the mouse delta
+     */
     sm::Vec2 getMouseDelta() const;
 
+    /**
+     * Set the mouse position.
+     * @param mousePosition the mouse position
+     */
     void setMousePosition(const sm::Vec2 &mousePosition);
+
+    /**
+     * @return the mouse position
+     */
     sm::Vec2 getMousePosition() const;
 
+    /**
+     * Set the action state.
+     * @param actionID the action represented as an uint32_t
+     * @param isDown the action state (true/false)
+     */
     void setAction(uint32_t actionID, bool isDown);
-    void updateCurrent(const std::bitset<512> &current);
+
+    /**
+     * Prepare the PlayerInputContext for polling.
+     * Use this at the start of the frame for input polling.
+     */
     void prepareForPolling();
     
+    /**
+     * Consume an action that was just pressed.
+     * @param actionID the action represented as an uint32_t
+     * @return the action state (true/false)
+     */
     bool consumeActionPressed(uint32_t actionID);
+
+    /**
+     * Check if an action is held.
+     * @param actionID the action represented as an uint32_t
+     * @return the action state (true/false)
+     */
     bool isActionHeld(uint32_t actionID) const;
+
+    /**
+     * Consume an action that was just released.
+     * @param actionID the action represented as an uint32_t
+     * @return the action state (true/false)
+     */
     bool consumeActionReleased(uint32_t actionID);
 
+    /**
+     * Consume an action that was just pressed.
+     * @tparam EnumType the custom enum type
+     * @param actionID the action represented as a custom enum.
+     * 
+     * NOTE: The function expects an enum type to be passed.
+     * It then static_casts the enum to a uint32_t.
+     * @return the action state (true/false)
+     */
     template <typename EnumType>
     bool consumeActionPressed(EnumType actionID);
 
+    /**
+     * Check if an action is held.
+     * @tparam EnumType the custom enum type
+     * @param actionID the action represented as a custom enum.
+     * 
+     * NOTE: The function expects an enum type to be passed.
+     * It then static_casts the enum to a uint32_t.
+     * @return the action state (true/false)
+     */
     template <typename EnumType>
     bool isActionHeld(EnumType actionID) const;
 
+    /**
+     * Consume an action that was just released.
+     * @tparam EnumType the custom enum type
+     * @param actionID the action represented as a custom enum.
+     * 
+     * NOTE: The function expects an enum type to be passed.
+     * It then static_casts the enum to a uint32_t.
+     * @return the action state (true/false)
+     */
     template <typename EnumType>
     bool consumeActionReleased(EnumType actionID);
-};
-}
+}; // class PlayerInputContext
+} // namespace sge
 
 // Implementation
 
@@ -90,11 +159,6 @@ inline void sge::PlayerInputContext::setAction(uint32_t actionID, bool isDown)
             this->m_justReleased.set(actionID, true);
         }
     }
-}
-
-inline void sge::PlayerInputContext::updateCurrent(const std::bitset<512> &current)
-{
-    this->m_curHeld = current;
 }
 
 inline void sge::PlayerInputContext::prepareForPolling()
