@@ -43,7 +43,7 @@ public:
      * Clears all forces taking effect on the rigid body.
      */
     void clearAccumulator();
-};
+}; // class CRigidBody3
 } // namespace sge
 
 #endif // SGE_CRIGID_BODY3_H

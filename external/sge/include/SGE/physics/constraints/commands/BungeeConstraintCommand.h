@@ -11,6 +11,10 @@ struct BungeeConstraintCommand {
     sm::real springConstant;
     sm::real restLength;
 
+    /**
+     * Executes constraint logic for a bungee spring connection.
+     * @param context the sge::CommandContext containing the active registry and translation table
+     */
     void execute(CommandContext &context) const
     {
         Entity realA = context.getEntity(this->entityA);

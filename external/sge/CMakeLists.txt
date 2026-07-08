@@ -26,12 +26,6 @@ set(SOURCE_FILES
     src/physics/constraints/ConstraintManager.cpp
 
     # physics/forceComponents
-    src/physics/forceComponents/CAnchorBungee3.cpp
-    src/physics/forceComponents/CAnchorSpring3.cpp
-    src/physics/forceComponents/CBungee3.cpp
-    src/physics/forceComponents/CBuoyancy3.cpp
-    src/physics/forceComponents/CDrag3.cpp
-    src/physics/forceComponents/CGravity3.cpp
     src/physics/forceComponents/CRigidBody3.cpp
 
 

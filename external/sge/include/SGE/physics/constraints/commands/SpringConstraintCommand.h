@@ -11,6 +11,10 @@ struct SpringConstraintCommand {
     sm::real springConstant = 10;
     sm::real restLength = 10;
 
+    /**
+     * Executes constraint logic for a regular spring connection.
+     * @param context the sge::CommandContext containing the active registry and translation table
+     */
     void execute(CommandContext &context) const
     {
         Entity realA = context.getEntity(this->entityA);

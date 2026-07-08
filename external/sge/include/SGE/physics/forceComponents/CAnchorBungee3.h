@@ -15,8 +15,13 @@ public:
      * @param springConstant the strength of the spring
      * @param restLength the length at which the spring is at rest
      */
-    CAnchorBungee3(const sm::Vec3 &position, sm::real springConstant, sm::real restLength);
-};
-}
+    CAnchorBungee3(const sm::Vec3 &position, sm::real springConstant, sm::real restLength)
+    {
+        this->anchorPosition = position;
+        this->springConstant = springConstant;
+        this->restLength = restLength;
+    }
+}; // class CAnchorBungee3
+} // namespace sge
 
 #endif // SGE_CANCHOR_BUNGEE3_H
