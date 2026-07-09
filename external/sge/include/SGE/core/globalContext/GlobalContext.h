@@ -2,14 +2,14 @@
 #define SGE_GLOBAL_CONTEXT_H
 #include <any>
 #include <unordered_map>
-#include <typeindex>
 #include <cassert>
 #include <exception>
+#include <SGE/core/globalContext/GlobalContextIDCounter.h>
 
 namespace sge {
 class GlobalContext {
 private:
-    std::unordered_map<std::type_index, std::any> m_registry;
+    std::unordered_map<GlobalContextID, std::any> m_registry;
     bool m_isLocked = false;
 
 public:
@@ -68,10 +68,10 @@ inline T& sge::GlobalContext::registerContext(Args&&... args)
         throw std::runtime_error("Cannot register new contexts after the GlobalContext has been locked!");
     }
 
-    std::type_index typeID = typeid(T);
-    assert(this->m_registry.find(typeID) == this->m_registry.end() && "Context type has already been registered");
+    const sge::GlobalContextID ID =  sge::GlobalContextIDCounter::get<T>();
+    assert(this->m_registry.find(ID) == this->m_registry.end() && "Context type has already been registered");
 
-    auto [it, inserted] = this->m_registry.emplace(typeID, std::make_any<T>(std::forward<Args>(args)...));
+    auto [it, inserted] = this->m_registry.emplace(ID, std::make_any<T>(std::forward<Args>(args)...));
     return std::any_cast<T&>(it->second);
 }
 
@@ -83,8 +83,8 @@ inline void sge::GlobalContext::lockInitialization()
 template <typename T>
 inline T& sge::GlobalContext::get()
 {
-    std::type_index typeID = typeid(T);
-    auto it = this->m_registry.find(typeID);
+    const sge::GlobalContextID ID = sge::GlobalContextIDCounter::get<T>();
+    auto it = this->m_registry.find(ID);
 
     assert(it != this->m_registry.end() && "Requested context was never registered during boot!");
 
@@ -94,8 +94,8 @@ inline T& sge::GlobalContext::get()
 template <typename T>
 inline const T& sge::GlobalContext::get() const
 {
-    std::type_index typeID = typeid(T);
-    auto it = this->m_registry.find(typeID);
+    const sge::GlobalContextID ID = sge::GlobalContextIDCounter::get<T>();
+    auto it = this->m_registry.find(ID);
 
     assert(it != this->m_registry.end() && "Requested context was never registered during boot!");
 
@@ -105,8 +105,8 @@ inline const T& sge::GlobalContext::get() const
 template <typename T>
 inline bool sge::GlobalContext::has() const
 {
-    std::type_index typeID = typeid(T);
-    auto it = this->m_registry.find(typeID);
+    const sge::GlobalContextID ID = sge::GlobalContextIDCounter::get<T>();
+    auto it = this->m_registry.find(ID);
 
     return (it != this->m_registry.end());
 }
