@@ -47,12 +47,6 @@ public:
      * Normalizes the Vector3.
      */
     void normalize();
-
-    /**
-     * Creates a normalized Vector3 copy.
-     * @return the normalized version of the Vector3
-     */
-    Vec3 normalized() const;
     
     ////////////////////////////////////////
     //   Modifying Overloaded Operators   //
@@ -85,30 +79,44 @@ public:
      */
     Vec3& addScaledVector(const Vec3 &vec, real scalar);
 
+    //////////////////////////////
+    //     Static Functions     //
+    //////////////////////////////
+
     /**
-     * Returns the dot product between this Vec3 and another Vec3.
-     * @param vec the other Vec3 to perform the operation with
+     * Creates a normalized Vector3 copy.
+     * @param v the Vector3
+     * @return the normalized version of the Vector3
+     */
+    static Vec3 normalized(const Vec3 &v);
+
+    /**
+     * Returns the dot product between two Vec3s
+     * @param v1 the first Vec3
+     * @param v2 the second Vec3
      * @return a floating-point scalar
      */
-    real dotProduct(const Vec3 &vec) const;
+    static real dot(const Vec3& v1, const Vec3 &v2);
 
     /**
-     * Calculates the component product between this Vec3 and another Vec3.
-     * @param vec the other Vec3 to perform the operation with
+     * Calculates the component product between two Vec3s.
+     * @param v1 the first Vec3
+     * @param v2 the second Vec3
      * @return a brand new Vec3 representing the component product between both Vec3s
      */
-    Vec3 componentProduct(const Vec3 &vec) const;
+    static Vec3 componentProduct(const Vec3 &v1, const Vec3 &v2);
 
     /**
-     * Calcualtes the vector (cross) product between this Vec3 and another Vec3.
-     * @param vec the other Vec3 to perform the operation with
+     * Calcualtes the vector (cross) product between two Vec3s.
+     * @param v1 the first Vec3
+     * @param v2 the second Vec3
      * @return a brand new Vec3 representing the vector product between both Vec3s
      */
-    Vec3 crossProduct(const Vec3 &vec) const;
+    static Vec3 crossProduct(const Vec3 &v1, const Vec3 &v2);
 
 private:
     float _pad;
-};
+}; // class Vec3
 
 } // namespace sm
 

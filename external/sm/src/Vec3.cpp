@@ -46,17 +46,6 @@ void sm::Vec3::normalize()
     }
 }
 
-sm::Vec3 sm::Vec3::normalized() const
-{
-    sm::real sqrMagnitude = this->sqrMagnitude();
-
-    if (sqrMagnitude == 0) return {0, 0, 0};
-    
-    sm::real invMag = ((sm::real)1 / real_sqrt(sqrMagnitude));
-
-    return *this * invMag;
-}
-
 sm::Vec3& sm::Vec3::operator *= (real scalar)
 {
     this->x *= scalar;
@@ -131,19 +120,30 @@ sm::Vec3& sm::Vec3::addScaledVector(const sm::Vec3 &vec, real scalar)
     return *this;
 }
 
-sm::real sm::Vec3::dotProduct(const sm::Vec3 &vec) const
+sm::Vec3 sm::Vec3::normalized(const sm::Vec3 &v)
 {
-    return  this->x * vec.x +
-            this->y * vec.y +
-            this->z * vec.z;
+    sm::real sqrMagnitude = v.sqrMagnitude();
+
+    if (sqrMagnitude == 0) return {0, 0, 0};
+    
+    sm::real invMag = ((sm::real)1 / real_sqrt(sqrMagnitude));
+
+    return v * invMag;
 }
 
-sm::Vec3 sm::Vec3::componentProduct(const sm::Vec3 &vec) const
+sm::real sm::Vec3::dot(const sm::Vec3 &v1, const sm::Vec3 &v2)
 {
-    return Vec3(this->x * vec.x, this->y * vec.y, this->z * vec.z);
+    return  v1.x * v2.x +
+            v1.y * v2.y +
+            v1.z * v2.z;
 }
 
-sm::Vec3 sm::Vec3::crossProduct(const sm::Vec3 &vec) const
+sm::Vec3 sm::Vec3::componentProduct(const sm::Vec3 &v1, const sm::Vec3 &v2)
 {
-    return *this % vec;
+    return Vec3(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
+}
+
+sm::Vec3 sm::Vec3::crossProduct(const sm::Vec3 &v1, const sm::Vec3 &v2)
+{
+    return v1 % v2;
 }

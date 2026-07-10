@@ -22,8 +22,8 @@ sm::Vec3 sm::Quaternion::operator* (const sm::Vec3 &v) const
 {
     sm::Vec3 qVec(this->x, this->y, this->z);
 
-    sm::Vec3 cross1 = qVec.crossProduct(v);
-    sm::Vec3 cross2 = qVec.crossProduct(cross1);
+    sm::Vec3 cross1 = sm::Vec3::crossProduct(qVec, v);
+    sm::Vec3 cross2 = sm::Vec3::crossProduct(qVec, cross1);
 
     return v + (cross1 * w + cross2) * static_cast<sm::real>(2);
 }
