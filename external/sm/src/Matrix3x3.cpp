@@ -42,19 +42,17 @@ sm::Matrix3x3 sm::Matrix3x3::operator*(const sm::Matrix3x3 &other) const
 {
     sm::Matrix3x3 result;
 
-    for (uint32_t r = 0; r < 3; ++r)
-    {
-        sm::real r0 = (*this)[r][0];
-        sm::real r1 = (*this)[r][1];
-        sm::real r2 = (*this)[r][2];
+    result[0][0] = (*this)[0][0] * other[0][0] + (*this)[0][1] * other[1][0] + (*this)[0][2] * other[2][0];
+    result[0][1] = (*this)[0][0] * other[0][1] + (*this)[0][1] * other[1][1] + (*this)[0][2] * other[2][1];
+    result[0][2] = (*this)[0][0] * other[0][2] + (*this)[0][1] * other[1][2] + (*this)[0][2] * other[2][2];
 
-        for (uint32_t c = 0; c < 3; ++c)
-        {
-            result[r][c] = r0 * other[0][c] +
-                           r1 * other[1][c] +
-                           r2 * other[2][c];
-        }
-    }
+    result[1][0] = (*this)[1][0] * other[0][0] + (*this)[1][1] * other[1][0] + (*this)[1][2] * other[2][0];
+    result[1][1] = (*this)[1][0] * other[0][1] + (*this)[1][1] * other[1][1] + (*this)[1][2] * other[2][1];
+    result[1][2] = (*this)[1][0] * other[0][2] + (*this)[1][1] * other[1][2] + (*this)[1][2] * other[2][2];
+
+    result[2][0] = (*this)[2][0] * other[0][0] + (*this)[2][1] * other[1][0] + (*this)[2][2] * other[2][0];
+    result[2][1] = (*this)[2][0] * other[0][1] + (*this)[2][1] * other[1][1] + (*this)[2][2] * other[2][1];
+    result[2][2] = (*this)[2][0] * other[0][2] + (*this)[2][1] * other[1][2] + (*this)[2][2] * other[2][2];
 
     return result;
 }
