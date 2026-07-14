@@ -1,6 +1,7 @@
 #ifndef SM_MATRIX_3X3_H
 #define SM_MATRIX_3X3_H
 #include <cstdint>
+#include <stdexcept>
 #include <SM/Precision.h>
 #include <SM/Vec3.h>
 
@@ -10,16 +11,23 @@ private:
     sm::real m_matrix[9] = {1,0,0,
                             0,1,0,
                             0,0,1};
+
+    void setMatrix(const sm::real *matrix);
+
 public:
     sm::real* operator[] (uint32_t row);
 
     const sm::real* operator[] (uint32_t row) const;
 
-    Matrix3x3 transpose() const;
+    void transpose();
 
-    Matrix3x3 inverse() const;
+    void inverse();
 
     Matrix3x3 absolute() const;
+
+    static Matrix3x3 transposed(const Matrix3x3 &mat);
+
+    static Matrix3x3 inversed(const Matrix3x3 &mat);
 
     static Matrix3x3 outerProduct(const Vec3 &v1, const Vec3 &v2);
 

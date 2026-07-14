@@ -1,5 +1,6 @@
 #ifndef SM_MATRIX_3X4_H
 #define SM_MATRIX_3X4_H
+#include <stdexcept>
 #include <SM/Vec3.h>
 
 namespace sm {
@@ -9,9 +10,17 @@ private:
                          0, 1, 0, 0,
                          0, 0, 1, 0};
 
+    void setMatrix(const real *matrix);
 public:
     real* operator[](size_t row);
     const real* operator[](size_t row) const;
+    
+    void inverse();
+
+    sm::real* data();
+    const sm::real *data() const;
+
+    static sm::Matrix3x4 inversed(const Matrix3x4 &mat);
 
 }; // class Matrix3x4
 
