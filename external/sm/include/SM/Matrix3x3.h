@@ -11,32 +11,81 @@ private:
     sm::real m_matrix[9] = {1,0,0,
                             0,1,0,
                             0,0,1};
-
+    
+    /**
+     * Sets the internal array to represent a 3x3 matrix.
+     * This function simply copies the values from the passed in sm::real*
+     * 
+     * @param matrix the sm::real* to copy from
+     */
     void setMatrix(const sm::real *matrix);
 
 public:
+    /**
+     * @param row the desired row
+     * @return a sm::real pointer offset by row
+     */
     sm::real* operator[] (uint32_t row);
-
+    
+    /**
+     * @param row the desired row
+     * @return a sm::real pointer offset by row
+     */
     const sm::real* operator[] (uint32_t row) const;
-
+    
+    /**
+     * Transposes the Matrix3x3 in-place.
+     */
     void transpose();
-
+    
+    /**
+     * Inverses the Matrix3x3 in-place.
+     */
     void inverse();
+    
+    /**
+     * Absolutes the Matrix3x3 in-place.
+     */
+    void absolute();
+    
+    /**
+     * @return the internal sm::real[]
+     */
+    sm::real* data();
+    
+    /**
+     * @return the const internal sm::real[]
+     */
+    const sm::real* data() const;
+    
+    //////////////////////////
+    //   Static functions   //
+    //////////////////////////
 
-    Matrix3x3 absolute() const;
-
+    /**
+     * Static helper.
+     * @param mat the Matrix3x3
+     * @return the absolute copy-version of the Matrix3x3
+     */
+    static Matrix3x3 absoluted(const Matrix3x3 &mat);
+    
+    /**
+     * Static helper.
+     * @param mat the Matrix3x3
+     * @return the transpose copy-version of the Matrix3x3
+     */
     static Matrix3x3 transposed(const Matrix3x3 &mat);
-
+    
+    /**
+     * Static helper.
+     * @param mat the Matrix3x3
+     * @return the inverse copy-version of the Matrix3x3
+     */
     static Matrix3x3 inversed(const Matrix3x3 &mat);
 
     static Matrix3x3 outerProduct(const Vec3 &v1, const Vec3 &v2);
 
     static Matrix3x3 createSkewSymmetric(const Vec3 &v);
-
-    sm::real* data();
-
-    const sm::real* data() const;
-
 }; // class Matrix3x3
 
 // Math operator overload declarations
@@ -70,30 +119,38 @@ inline sm::Matrix3x3 sm::operator+(const sm::Matrix3x3 &lhs, const sm::Matrix3x3
 
 inline sm::Matrix3x3 sm::operator*(const sm::Matrix3x3 &lhs, const sm::Matrix3x3 &rhs)
 {
+    const sm::real a = lhs[0][0], b = lhs[0][1], c = lhs[0][2];
+    const sm::real d = lhs[1][0], e = lhs[1][1], f = lhs[1][2];
+    const sm::real g = lhs[2][0], h = lhs[2][1], i = lhs[2][2];
+
+    const sm::real j = rhs[0][0], k = rhs[0][1], l = rhs[0][2];
+    const sm::real m = rhs[1][0], n = rhs[1][1], o = rhs[1][2];
+    const sm::real p = rhs[2][0], q = rhs[2][1], r = rhs[2][2];
+
     sm::Matrix3x3 result;
 
-    result[0][0] = lhs[0][0] * rhs[0][0] + lhs[0][1] * rhs[1][0] + lhs[0][2] * rhs[2][0];
-    result[0][1] = lhs[0][0] * rhs[0][1] + lhs[0][1] * rhs[1][1] + lhs[0][2] * rhs[2][1];
-    result[0][2] = lhs[0][0] * rhs[0][2] + lhs[0][1] * rhs[1][2] + lhs[0][2] * rhs[2][2];
+    result[0][0] = (a * j) + (b * m) + (c * p);
+    result[0][1] = (a * k) + (b * n) + (c * q);
+    result[0][2] = (a * l) + (b * o) + (c * r);
 
-    result[1][0] = lhs[1][0] * rhs[0][0] + lhs[1][1] * rhs[1][0] + lhs[1][2] * rhs[2][0];
-    result[1][1] = lhs[1][0] * rhs[0][1] + lhs[1][1] * rhs[1][1] + lhs[1][2] * rhs[2][1];
-    result[1][2] = lhs[1][0] * rhs[0][2] + lhs[1][1] * rhs[1][2] + lhs[1][2] * rhs[2][2];
+    result[1][0] = (d * j) + (e * m) + (f * p);
+    result[1][1] = (d * k) + (e * n) + (f * q);
+    result[1][2] = (d * l) + (e * o) + (f * r);
 
-    result[2][0] = lhs[2][0] * rhs[0][0] + lhs[2][1] * rhs[1][0] + lhs[2][2] * rhs[2][0];
-    result[2][1] = lhs[2][0] * rhs[0][1] + lhs[2][1] * rhs[1][1] + lhs[2][2] * rhs[2][1];
-    result[2][2] = lhs[2][0] * rhs[0][2] + lhs[2][1] * rhs[1][2] + lhs[2][2] * rhs[2][2];
+    result[2][0] = (g * j) + (h * m) + (i * p);
+    result[2][1] = (g * k) + (h * n) + (i * q);
+    result[2][2] = (g * l) + (h * o) + (i * r);
 
     return result;
 }
 
 inline sm::Vec3 sm::operator*(const sm::Matrix3x3 &mat, const sm::Vec3 &v)
 {
-    return sm::Vec3(
-        mat[0][0] * v.x + mat[0][1] * v.y + mat[0][2] * v.z,
-        mat[1][0] * v.x + mat[1][1] * v.y + mat[1][2] * v.z,
-        mat[2][0] * v.x + mat[2][1] * v.y + mat[2][2] * v.z
-    );
+    const sm::real x = mat[0][0] * v.x + mat[0][1] * v.y + mat[0][2] * v.z;
+    const sm::real y = mat[1][0] * v.x + mat[1][1] * v.y + mat[1][2] * v.z;
+    const sm::real z = mat[2][0] * v.x + mat[2][1] * v.y + mat[2][2] * v.z;
+
+    return sm::Vec3(x, y, z);
 }
 
 inline sm::Vec3 sm::operator* (const sm::Vec3 &v, const sm::Matrix3x3 &mat)

@@ -87,21 +87,38 @@ void sm::Matrix3x3::inverse()
     this->m_matrix[8] = r22;
 }
 
-sm::Matrix3x3 sm::Matrix3x3::absolute() const
+void sm::Matrix3x3::absolute()
+{
+    (*this)[0][0] = real_abs((*this)[0][0]);
+    (*this)[0][1] = real_abs((*this)[0][1]);
+    (*this)[0][2] = real_abs((*this)[0][2]);
+
+    (*this)[1][0] = real_abs((*this)[1][0]);
+    (*this)[1][1] = real_abs((*this)[1][1]);
+    (*this)[1][2] = real_abs((*this)[1][2]);
+
+    (*this)[2][0] = real_abs((*this)[2][0]);
+    (*this)[2][1] = real_abs((*this)[2][1]);
+    (*this)[2][2] = real_abs((*this)[2][2]);
+}
+
+sm::real* sm::Matrix3x3::data()
+{
+    return this->m_matrix;
+}
+
+const sm::real* sm::Matrix3x3::data() const
+{
+    return this->m_matrix;
+}
+
+sm::Matrix3x3 sm::Matrix3x3::absoluted(const sm::Matrix3x3 &mat)
 {
     sm::Matrix3x3 result;
 
-    result[0][0] = real_abs((*this)[0][0]);
-    result[0][1] = real_abs((*this)[0][1]);
-    result[0][2] = real_abs((*this)[0][2]);
+    result.setMatrix(mat.data());
 
-    result[1][0] = real_abs((*this)[1][0]);
-    result[1][1] = real_abs((*this)[1][1]);
-    result[1][2] = real_abs((*this)[1][2]);
-
-    result[2][0] = real_abs((*this)[2][0]);
-    result[2][1] = real_abs((*this)[2][1]);
-    result[2][2] = real_abs((*this)[2][2]);
+    result.absolute();
 
     return result;
 }
@@ -164,14 +181,4 @@ sm::Matrix3x3 sm::Matrix3x3::createSkewSymmetric(const sm::Vec3 &v)
     result[2][2] = 0;
 
     return result;
-}
-
-sm::real* sm::Matrix3x3::data()
-{
-    return this->m_matrix;
-}
-
-const sm::real* sm::Matrix3x3::data() const
-{
-    return this->m_matrix;
 }
