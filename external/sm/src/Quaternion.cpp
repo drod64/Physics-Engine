@@ -38,25 +38,6 @@ void sm::Quaternion::normalize()
     }
 }
 
-sm::Matrix3x3 sm::Quaternion::toMatrix3x3() const
-{
-    sm::Matrix3x3 result;
-
-    result[0][0] = static_cast<sm::real>(1) - static_cast<sm::real>(2) * (y * y + z * z);
-    result[0][1] = static_cast<sm::real>(2) * (x * y - w * z);
-    result[0][2] = static_cast<sm::real>(2) * (x * z + w * y);
-
-    result[1][0] = static_cast<sm::real>(2) * (x * y + w * z);
-    result[1][1] = static_cast<sm::real>(1) - static_cast<sm::real>(2) * (x * x + z * z); 
-    result[1][2] = static_cast<sm::real>(2) * (y * z - w * x);
-
-    result[2][0] = static_cast<sm::real>(2) * (x * z - w * y);
-    result[2][1] = static_cast<sm::real>(2) * (y * z + w * x);
-    result[2][2] = static_cast<sm::real>(1) - static_cast<sm::real>(2) * (x * x + y * y);
-
-    return result;
-}
-
 sm::real sm::Quaternion::dot(const sm::Quaternion &lhs, const sm::Quaternion &rhs)
 {
     return (lhs.w * rhs.w) + (lhs.x * rhs.x) + (lhs.y * rhs.y) + (lhs.z * rhs.z);

@@ -49,6 +49,12 @@ public:
     void absolute();
     
     /**
+     * Sets the data of the Matrix3x3.
+     * @param mat the Matrix3x3 to copy from
+     */
+    void setMatrix3x3(const Matrix3x3 &mat);
+    
+    /**
      * @return the internal sm::real[]
      */
     sm::real* data();

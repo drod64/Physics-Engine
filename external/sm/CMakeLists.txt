@@ -8,6 +8,7 @@ set(SOURCE_FILES
     src/Matrix3x3.cpp
     src/Matrix3x4.cpp
     src/Quaternion.cpp
+    src/Transformations.cpp
     src/Vec2.cpp
     src/Vec3.cpp)
 

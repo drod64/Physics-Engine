@@ -1,7 +1,7 @@
 #ifndef SM_QUATERNION_H
 #define SM_QUATERNION_H
 #include <SM/Precision.h>
-#include <SM/Matrix3x3.h>
+#include <SM/Vec3.h>
 
 namespace sm {
 struct Quaternion {
@@ -17,8 +17,6 @@ struct Quaternion {
     Quaternion conjugate() const;
 
     void normalize();
-    
-    Matrix3x3 toMatrix3x3() const;
 
     static sm::real dot(const Quaternion &lhs, const Quaternion &rhs);
 

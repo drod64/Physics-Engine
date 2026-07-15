@@ -1,4 +1,5 @@
 #include <SM/Matrix3x4.h>
+#include <SM/Quaternion.h>
 
 void sm::Matrix3x4::setMatrix(const sm::real *matrix)
 {
@@ -79,6 +80,11 @@ void sm::Matrix3x4::inverse()
     this->m_matrix[9] = r21;
     this->m_matrix[10] = r22;
     this->m_matrix[11] = itz;
+}
+
+void sm::Matrix3x4::setMatrix3x4(const sm::Matrix3x4 &mat)
+{
+    this->setMatrix(mat.data());
 }
 
 sm::real* sm::Matrix3x4::data()

@@ -102,6 +102,11 @@ void sm::Matrix3x3::absolute()
     (*this)[2][2] = real_abs((*this)[2][2]);
 }
 
+void sm::Matrix3x3::setMatrix3x3(const sm::Matrix3x3 &mat)
+{
+    this->setMatrix(mat.data());
+}
+
 sm::real* sm::Matrix3x3::data()
 {
     return this->m_matrix;

@@ -34,6 +34,12 @@ public:
     void inverse();
     
     /**
+     * Sets the data of the Matrix3x4.
+     * @mat the sm::Matrix3x4 to copy from
+     */
+    void setMatrix3x4(const Matrix3x4 &mat);
+    
+    /**
      * @return the internal sm::real[]
      */
     sm::real* data();
