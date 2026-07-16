@@ -14,15 +14,13 @@ struct Quaternion {
     
     Quaternion& operator+= (const Quaternion &other);
 
-    Quaternion conjugate() const;
-
     void normalize();
-
+    
     static sm::real dot(const Quaternion &lhs, const Quaternion &rhs);
+    
+    Quaternion conjugated() const;
 
-    static Quaternion normalized(const Quaternion &quat);
-
-    static Quaternion fromAxisAngle(const Vec3 &axis, real angleRadians);
+    Quaternion normalized() const;
 }; // class Quaternion
 
 // Math operator overload declarations.

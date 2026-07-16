@@ -63,35 +63,30 @@ public:
      * @return the const internal sm::real[]
      */
     const sm::real* data() const;
-    
-    //////////////////////////
-    //   Static functions   //
-    //////////////////////////
 
     /**
-     * Static helper.
-     * @param mat the Matrix3x3
+     * Returns an absolute version of the Matrix3x3.
+     * 
+     * NOTE: This is a non-modifying function.
      * @return the absolute copy-version of the Matrix3x3
      */
-    static Matrix3x3 absoluted(const Matrix3x3 &mat);
+    sm::Matrix3x3 absoluted() const;
     
     /**
-     * Static helper.
-     * @param mat the Matrix3x3
+     * Returns a transposed version of the Matrix3x3.
+     * 
+     * NOTE: This is a non-modifying function.
      * @return the transpose copy-version of the Matrix3x3
      */
-    static Matrix3x3 transposed(const Matrix3x3 &mat);
+    sm::Matrix3x3 transposed() const;
     
     /**
-     * Static helper.
-     * @param mat the Matrix3x3
+     * Returns an inversed version of the Matrix3x3.
+     * 
+     * NOTE: This is a non-modifying function.
      * @return the inverse copy-version of the Matrix3x3
      */
-    static Matrix3x3 inversed(const Matrix3x3 &mat);
-
-    static Matrix3x3 outerProduct(const Vec3 &v1, const Vec3 &v2);
-
-    static Matrix3x3 createSkewSymmetric(const Vec3 &v);
+    sm::Matrix3x3 inversed() const;
 }; // class Matrix3x3
 
 // Math operator overload declarations

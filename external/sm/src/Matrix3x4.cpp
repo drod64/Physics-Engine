@@ -97,11 +97,11 @@ const sm::real* sm::Matrix3x4::data() const
     return this->m_matrix;
 }
 
-sm::Matrix3x4 sm::Matrix3x4::inversed(const sm::Matrix3x4 &mat)
+sm::Matrix3x4 sm::Matrix3x4::inversed() const
 {
     sm::Matrix3x4 result;
 
-    result.setMatrix(mat.data());
+    result.setMatrix(this->m_matrix);
     
     result.inverse();
 

@@ -117,73 +117,35 @@ const sm::real* sm::Matrix3x3::data() const
     return this->m_matrix;
 }
 
-sm::Matrix3x3 sm::Matrix3x3::absoluted(const sm::Matrix3x3 &mat)
+sm::Matrix3x3 sm::Matrix3x3::absoluted() const
 {
     sm::Matrix3x3 result;
 
-    result.setMatrix(mat.data());
+    result.setMatrix(this->m_matrix);
 
     result.absolute();
 
     return result;
 }
 
-sm::Matrix3x3 sm::Matrix3x3::transposed(const sm::Matrix3x3 &mat)
+sm::Matrix3x3 sm::Matrix3x3::transposed() const
 {
     sm::Matrix3x3 result;
 
-    result.setMatrix(mat.data());
+    result.setMatrix(this->m_matrix);
 
     result.transpose();
     
     return result;
 }
 
-sm::Matrix3x3 sm::Matrix3x3::inversed(const sm::Matrix3x3 &mat)
+sm::Matrix3x3 sm::Matrix3x3::inversed() const
 {
     sm::Matrix3x3 result;
 
-    result.setMatrix(mat.data());
+    result.setMatrix(this->m_matrix);
 
     result.inverse();
-
-    return result;
-}
-
-sm::Matrix3x3 sm::Matrix3x3::outerProduct(const sm::Vec3 &v1, const sm::Vec3 &v2)
-{
-    sm::Matrix3x3 result;
-
-    result[0][0] = v1.x * v2.x;
-    result[0][1] = v1.x * v2.y;
-    result[0][2] = v1.x * v2.z;
-
-    result[1][0] = v1.y * v2.x;
-    result[1][1] = v1.y * v2.y;
-    result[1][2] = v1.y * v2.z;
-
-    result[2][0] = v1.z * v2.x;
-    result[2][1] = v1.z * v2.y;
-    result[2][2] = v1.z * v2.z;
-
-    return result;
-}
-
-sm::Matrix3x3 sm::Matrix3x3::createSkewSymmetric(const sm::Vec3 &v)
-{
-    sm::Matrix3x3 result;
-
-    result[0][0] = 0;
-    result[0][1] = -v.z;
-    result[0][2] = v.y;
-
-    result[1][0] = v.z;
-    result[1][1] = 0;
-    result[1][2] = -v.x;
-
-    result[2][0] = -v.y;
-    result[2][1] = v.x;
-    result[2][2] = 0;
 
     return result;
 }

@@ -48,17 +48,14 @@ public:
      * @return the const internal sm::real[]
      */
     const sm::real *data() const;
-    
-    //////////////////////////
-    //   Static functions   //
-    //////////////////////////
 
     /**
-     * Static helper.
-     * @param mat the Matrix3x4
+     * Returns an inversed version of the Matrix3x4.
+     * 
+     * NOTE: This is a non-modifying function.
      * @return the inverse copy-version of the Matrix3x4
      */
-    static sm::Matrix3x4 inversed(const Matrix3x4 &mat);
+    sm::Matrix3x4 inversed() const;
 }; // class Matrix3x4
 
 // Math operator overload declarations.
