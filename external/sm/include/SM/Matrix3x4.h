@@ -83,7 +83,7 @@ public:
     
     /**
      * Sets the data of the Matrix3x4.
-     * @mat the sm::Matrix3x4 to copy from
+     * @param mat the sm::Matrix3x4 to copy from
      */
     void setMatrix3x4(const Matrix3x4 &mat);
     
@@ -137,14 +137,14 @@ public:
 }; // class Matrix3x4
 
 // Math operator overload declarations.
-Matrix3x4 operator+(Matrix3x4 lhs, const Matrix3x4 &rhs);
+[[nodiscard]] Matrix3x4 operator+(Matrix3x4 lhs, const Matrix3x4 &rhs);
 
-Matrix3x4 operator*(Matrix3x4 lhs, const Matrix3x4 &rhs);
-Matrix3x4 operator*(Matrix3x4 mat, real scalar);
-Matrix3x4 operator*(real scalar, Matrix3x4 mat);
+[[nodiscrad]] Matrix3x4 operator*(Matrix3x4 lhs, const Matrix3x4 &rhs);
+[[nodiscrad]] Matrix3x4 operator*(Matrix3x4 mat, real scalar);
+[[nodiscard]] Matrix3x4 operator*(real scalar, Matrix3x4 mat);
 
-Vec3 operator*(const Vec3 &v, const Matrix3x4 &mat);
-Vec3 operator*(const Matrix3x4 &mat, const Vec3 &v);
+[[nodiscard]] Vec3 operator*(const Vec3 &v, const Matrix3x4 &mat);
+[[nodiscard]] Vec3 operator*(const Matrix3x4 &mat, const Vec3 &v);
 
 } // namespace sm
 
