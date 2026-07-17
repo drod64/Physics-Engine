@@ -67,3 +67,35 @@ sm::Matrix3x4 sm::toMatrix3x4(const sm::Quaternion &quat, const sm::Vec3 &vec)
 
     return result;
 }
+
+sm::Vec3 sm::localToWorldPos(const sm::Vec3 &localPos, const sm::Matrix3x4 &transform)
+{
+    return transform.transformPoint(localPos);
+}
+
+sm::Vec3 sm::worldToLocalPos(const sm::Vec3 &worldPos, const sm::Matrix3x4 &transform)
+{
+    const sm::real dx = worldPos.x - transform[0][3];
+    const sm::real dy = worldPos.x - transform[1][3];
+    const sm::real dz = worldPos.x - transform[2][3];
+
+    return sm::Vec3(
+        transform[0][0] * dx + transform[1][0] * dy + transform[2][0] * dz,
+        transform[0][1] * dx + transform[1][1] * dy + transform[2][1] * dz,
+        transform[0][2] * dx + transform[1][2] * dy + transform[2][2] * dz
+    );
+}
+
+sm::Vec3 sm::localToWorldDir(const sm::Vec3 &localDir, const sm::Matrix3x4 &transform)
+{
+    return transform.transformDirection(localDir);
+}
+
+sm::Vec3 sm::worldToLocalDir(const sm::Vec3 &worldDir, const sm::Matrix3x4 &transform)
+{
+    return sm::Vec3(
+        worldDir.x * transform[0][0] + worldDir.y * transform[1][0] + worldDir.z * transform[2][0],
+        worldDir.x * transform[0][1] + worldDir.y * transform[1][1] + worldDir.z * transform[2][1],
+        worldDir.x * transform[0][2] + worldDir.y + transform[1][2] + worldDir.z + transform[2][2]
+    );
+}

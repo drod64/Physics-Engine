@@ -21,12 +21,99 @@ void sm::Matrix3x4::setMatrix(const sm::real *matrix)
 
 sm::real* sm::Matrix3x4::operator[](size_t row)
 {
-    return &this->m_matrix[row];
+    return &this->m_matrix[row * 4];
 }
 
 const sm::real* sm::Matrix3x4::operator[](size_t row) const
 {
-    return &this->m_matrix[row];
+    return &this->m_matrix[row * 4];
+}
+
+sm::Matrix3x4& sm::Matrix3x4::operator+=(const sm::Vec3 &v)
+{
+    this->m_matrix[3] += v.x;
+    this->m_matrix[7] += v.y;
+    this->m_matrix[11] += v.z;
+
+    return *this;
+}
+
+sm::Matrix3x4& sm::Matrix3x4::operator+=(const sm::Matrix3x4 &other)
+{
+    this->m_matrix[0] += other.m_matrix[0];
+    this->m_matrix[1] += other.m_matrix[1];
+    this->m_matrix[2] += other.m_matrix[2];
+    this->m_matrix[3] += other.m_matrix[3];
+
+    this->m_matrix[4] += other.m_matrix[4];
+    this->m_matrix[5] += other.m_matrix[5];
+    this->m_matrix[6] += other.m_matrix[6];
+    this->m_matrix[7] += other.m_matrix[7];
+
+    this->m_matrix[8] += other.m_matrix[8];
+    this->m_matrix[9] += other.m_matrix[9];
+    this->m_matrix[10] += other.m_matrix[10];
+    this->m_matrix[11] += other.m_matrix[11];
+}
+
+sm::Matrix3x4& sm::Matrix3x4::operator*=(const sm::Matrix3x4 &other)
+{
+    const sm::real a = this->m_matrix[0], b = this->m_matrix[1], c = this->m_matrix[2], d = this->m_matrix[3];
+    const sm::real e = this->m_matrix[4], f = this->m_matrix[5], g = this->m_matrix[6], h = this->m_matrix[7];
+    const sm::real i = this->m_matrix[8], j = this->m_matrix[9], k = this->m_matrix[10], l = this->m_matrix[11];
+
+    const sm::real m = other.m_matrix[0], n = other.m_matrix[1], o = other.m_matrix[2], p = other.m_matrix[3];
+    const sm::real q = other.m_matrix[4], r = other.m_matrix[5], s = other.m_matrix[6], t = other.m_matrix[7];
+    const sm::real u = other.m_matrix[8], v = other.m_matrix[9], w = other.m_matrix[10], x = other.m_matrix[11];
+
+    this->m_matrix[0] = (a * m) + (b * q) + (c * u); // + 0
+    this->m_matrix[1] = (a * n) + (b * r) + (c * v); // + 0
+    this->m_matrix[2] = (a * o) + (b * s) + (c * w); // + 0
+    this->m_matrix[3] = (a * p) + (b * t) + (c * x) + d;
+
+    this->m_matrix[4] = (e * m) + (f * q) + (g * u); // + 0
+    this->m_matrix[5] = (e * n) + (f * r) + (g * v); // + 0
+    this->m_matrix[6] = (e * o) + (f * s) + (g * w); // + 0
+    this->m_matrix[7] = (e * p) + (f * t) + (g * x) + h;
+    
+    this->m_matrix[8] = (i * m) + (j * q) + (k * u); // + 0
+    this->m_matrix[9] = (i * n) + (j * r) + (k * v); // + 0
+    this->m_matrix[10] = (i * o) + (j * s) + (k * w); // + 0
+    this->m_matrix[11] = (i * p) + (j * t) + (k * x) + l;
+}
+
+sm::Matrix3x4& sm::Matrix3x4::operator*=(sm::real scalar)
+{
+    this->m_matrix[0] *= scalar;
+    this->m_matrix[1] *= scalar;
+    this->m_matrix[2] *= scalar;
+    this->m_matrix[3] *= scalar;
+
+    this->m_matrix[4] *= scalar;
+    this->m_matrix[5] *= scalar;
+    this->m_matrix[6] *= scalar;
+    this->m_matrix[7] *= scalar;
+
+    this->m_matrix[8] *= scalar;
+    this->m_matrix[9] *= scalar;
+    this->m_matrix[10] *= scalar;
+    this->m_matrix[11] *= scalar;
+}
+
+void sm::Matrix3x4::translate(const sm::Vec3 &v)
+{
+    (*this) += v;
+}
+
+void sm::Matrix3x4::translate_local(const sm::Vec3 &v)
+{
+    const sm::real x = this->m_matrix[0] * v.x + this->m_matrix[1] * v.y + this->m_matrix[2] * v.z;
+    const sm::real y = this->m_matrix[4] * v.x + this->m_matrix[5] * v.y + this->m_matrix[6] * v.z;
+    const sm::real z = this->m_matrix[8] * v.x + this->m_matrix[9] * v.y + this->m_matrix[10] * v.z;
+
+    this->m_matrix[3] += x;
+    this->m_matrix[7] += y;
+    this->m_matrix[11] += z;
 }
 
 void sm::Matrix3x4::inverse()
@@ -97,11 +184,51 @@ const sm::real* sm::Matrix3x4::data() const
     return this->m_matrix;
 }
 
+sm::Vec3 sm::Matrix3x4::transformPoint(const sm::Vec3 &v) const
+{
+    const sm::real x = (this->m_matrix[0] * v.x) + (this->m_matrix[1] * v.y) + (this->m_matrix[2] * v.z) + this->m_matrix[3];
+    const sm::real y = (this->m_matrix[4] * v.x) + (this->m_matrix[5] * v.y) + (this->m_matrix[6] * v.z) + this->m_matrix[7];
+    const sm::real z = (this->m_matrix[8] * v.x) + (this->m_matrix[9] * v.y) + (this->m_matrix[10] * v.z) + this->m_matrix[11];
+
+    return sm::Vec3(x, y, z);
+}
+
+sm::Vec3 sm::Matrix3x4::transformDirection(const sm::Vec3 &v) const
+{
+    const sm::real x = (this->m_matrix[0] * v.x) + (this->m_matrix[1] * v.y) + (this->m_matrix[2] * v.z);
+    const sm::real y = (this->m_matrix[4] * v.x) + (this->m_matrix[5] * v.y) + (this->m_matrix[6] * v.z);
+    const sm::real z = (this->m_matrix[8] * v.x) + (this->m_matrix[9] * v.y) + (this->m_matrix[10] * v.z);
+
+    return sm::Vec3(x, y, z);
+}
+
+sm::Matrix3x4 sm::Matrix3x4::translated(const sm::Vec3 &v) const
+{
+    sm::Matrix3x4 result;
+
+    result.setMatrix3x4(*this);
+    
+    result += v;
+
+    return result;
+}
+
+sm::Matrix3x4 sm::Matrix3x4::translatedLocal(const sm::Vec3 &v) const
+{
+    sm::Matrix3x4 result;
+
+    result.setMatrix3x4(*this);
+
+    result.translate_local(v);
+
+    return result;
+}
+
 sm::Matrix3x4 sm::Matrix3x4::inversed() const
 {
     sm::Matrix3x4 result;
 
-    result.setMatrix(this->m_matrix);
+    result.setMatrix3x4(*this);
     
     result.inverse();
 
