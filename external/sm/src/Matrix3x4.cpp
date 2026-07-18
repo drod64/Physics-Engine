@@ -193,11 +193,33 @@ sm::Vec3 sm::Matrix3x4::transformPoint(const sm::Vec3 &v) const
     return sm::Vec3(x, y, z);
 }
 
+sm::Vec3 sm::Matrix3x4::transformPointInv(const sm::Vec3 &v) const
+{
+    const sm::real dx = v.x - this->m_matrix[3];
+    const sm::real dy = v.x - this->m_matrix[7];
+    const sm::real dz = v.x - this->m_matrix[11];
+
+    return sm::Vec3(
+        this->m_matrix[0] * dx + this->m_matrix[4] * dy + this->m_matrix[8] * dz,
+        this->m_matrix[1] * dx + this->m_matrix[5] * dy + this->m_matrix[9] * dz,
+        this->m_matrix[2] * dx + this->m_matrix[6] * dy + this->m_matrix[10] * dz
+    );
+}
+
 sm::Vec3 sm::Matrix3x4::transformDirection(const sm::Vec3 &v) const
 {
     const sm::real x = (this->m_matrix[0] * v.x) + (this->m_matrix[1] * v.y) + (this->m_matrix[2] * v.z);
     const sm::real y = (this->m_matrix[4] * v.x) + (this->m_matrix[5] * v.y) + (this->m_matrix[6] * v.z);
     const sm::real z = (this->m_matrix[8] * v.x) + (this->m_matrix[9] * v.y) + (this->m_matrix[10] * v.z);
+
+    return sm::Vec3(x, y, z);
+}
+
+sm::Vec3 sm::Matrix3x4::transformDirectionInv(const sm::Vec3 &v) const
+{
+    const sm::real x = (this->m_matrix[0] * v.x) + (this->m_matrix[4] * v.y) + (this->m_matrix[8] * v.z);
+    const sm::real y = (this->m_matrix[1] * v.x) + (this->m_matrix[5] * v.y) + (this->m_matrix[9] * v.z);
+    const sm::real z = (this->m_matrix[2] * v.x) + (this->m_matrix[6] * v.y) + (this->m_matrix[10] * v.z);
 
     return sm::Vec3(x, y, z);
 }

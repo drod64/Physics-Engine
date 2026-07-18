@@ -98,18 +98,32 @@ public:
     const sm::real *data() const;
     
     /**
-     * Transforms a point vector.
+     * Transforms a point vector (local -> global).
      * @param v the Vec3 point to transform
      * @return the resulting transformation point
      */
-    [[nodiscard]] Vec3 transformPoint(const sm::Vec3 &v) const;
+    [[nodiscard]] Vec3 transformPoint(const Vec3 &v) const;
     
     /**
-     * Transforms a directional vector.
+     * Transforms a point vector (but inverse!) (global -> local).
+     * @param v the Vec3 point to transform
+     * @return the resulting transformation point
+     */
+    [[nodiscard]] Vec3 transformPointInv(const Vec3 &v) const;
+    
+    /**
+     * Transforms a directional vector (local -> global).
      * @param v the Vec3 directional vector
      * @return the resulting transformation direction
      */
     [[nodiscard]] Vec3 transformDirection(const sm::Vec3 &v) const;
+
+    /**
+     * Transforms a directional vector (but inverse!) (global -> local).
+     * @param v the Vec3 directional vector
+     * @return the resulting transformation direction
+     */
+    [[nodiscard]] Vec3 transformDirectionInv(const sm::Vec3 &v) const;
 
     /**
      * Returns a globally translated version of the Matrix3x4.

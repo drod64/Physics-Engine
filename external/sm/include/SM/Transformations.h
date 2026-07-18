@@ -28,15 +28,15 @@ struct Vec3;
      * @param transform the Matrix3x4 transform
      * @return a global position
      */
-    Vec3 localToWorldPos(const Vec3 &localPos, const Matrix3x4 &transform);
+    Vec3 localToGlobalPos(const Vec3 &localPos, const Matrix3x4 &transform);
 
     /**
      * Returns a local position of a transform.
-     * @param worldPos the world position
+     * @param globalPos the global position
      * @param transform the Matrix3x4 transform
      * @return a local position
      */
-    Vec3 worldToLocalPos(const Vec3 &worldPos, const Matrix3x4 &transform);
+    Vec3 globalToLocalPos(const Vec3 &globalPos, const Matrix3x4 &transform);
 
     /**
      * Returns a global direction.
@@ -44,15 +44,15 @@ struct Vec3;
      * @param transform the Matrix3x4 transform
      * @return a global direction
      */
-    Vec3 localToWorldDir(const Vec3 &localDir, const Matrix3x4 &transform);
+    Vec3 localToGlobalDir(const Vec3 &localDir, const Matrix3x4 &transform);
 
     /**
      * Returns a local direction of a transform.
-     * @param worldDir the world direction
+     * @param globalDir the global direction
      * @param transform the Matrix3x4 transform
      * @return a local direction
      */
-    Vec3 worldToLocalDir(const Vec3 &worldDir, const Matrix3x4 &transform);
+    Vec3 globalToLocalDir(const Vec3 &globalDir, const Matrix3x4 &transform);
 } // namespace sm
 
 #endif // SM_TRANSFORMATIONS_H
