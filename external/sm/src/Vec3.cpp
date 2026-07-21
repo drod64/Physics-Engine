@@ -46,6 +46,13 @@ void sm::Vec3::normalize()
     }
 }
 
+void sm::Vec3::clear()
+{
+    this->x = 0;
+    this->y = 0;
+    this->z = 0;
+}
+
 sm::Vec3& sm::Vec3::operator *= (real scalar)
 {
     this->x *= scalar;

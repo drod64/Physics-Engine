@@ -47,6 +47,12 @@ public:
      * Normalizes the Vector3.
      */
     void normalize();
+
+    /**
+     * Clears the Vec3.
+     * Essentially resets x, y, and z to zero.
+     */
+    void clear();
     
     ////////////////////////////////////////
     //   Modifying Overloaded Operators   //

@@ -1,6 +1,7 @@
 #ifndef SGE_CRIGID_BODY3_H
 #define SGE_CRIGID_BODY3_H
 #include <SM/Vec3.h>
+#include <SM/Matrix3x3.h>
 
 namespace sge {
 /**
@@ -9,9 +10,16 @@ namespace sge {
 class CRigidBody3 {
 public:
     bool is_static = false;
-    sm::real inverseMass = 0;;
-    sm::Vec3 velocity = {0, 0, 0};
+
+    sm::real inverseMass = 0;
+    sm::Vec3 inverseInertiaTensor;
+    sm::Vec3 centerMassOffset = {0, 0, 0};
+
+    sm::Vec3 linearVelocity = {0, 0, 0};
+    sm::Vec3 angularVelocity = {0, 0, 0};
+
     sm::Vec3 accumulatedForce = {0, 0, 0};
+    sm::Vec3 accumulatedTorque = {0, 0, 0};
 
     /**
      * Parameterized Constructor.
@@ -40,9 +48,15 @@ public:
     void addForce(const sm::Vec3 &force);
 
     /**
-     * Clears all forces taking effect on the rigid body.
+     * Adds a torque to the rigid body.
+     * @param torque the torque to add to the rigid body
      */
-    void clearAccumulator();
+    void addTorque(const sm::Vec3 & torque);
+
+    /**
+     * Clears all forces/torques taking effect on the rigid body.
+     */
+    void clearAccumulators();
 }; // class CRigidBody3
 } // namespace sge
 

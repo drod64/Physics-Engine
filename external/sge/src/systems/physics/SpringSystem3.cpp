@@ -1,5 +1,4 @@
 #include <SGE/systems/physics/SpringSystem3.h>
-#include <iostream>
 
 void sge::SpringSystem3::update(sge::Registry &registry, sge::CommandBuffer &, sm::real dt)
 {
@@ -55,7 +54,6 @@ sge::SystemDescriptor sge::SpringSystem3::getSystemDescriptor()
 
     // System component reads.
     desc.componentReads.set(sge::ComponentIDCounter::get<sge::CTransform3>());
-    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CSpring3>());
 
     // No system component writes.
 

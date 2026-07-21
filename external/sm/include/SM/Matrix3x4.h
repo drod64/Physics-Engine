@@ -153,8 +153,8 @@ public:
 // Math operator overload declarations.
 [[nodiscard]] Matrix3x4 operator+(Matrix3x4 lhs, const Matrix3x4 &rhs);
 
-[[nodiscrad]] Matrix3x4 operator*(Matrix3x4 lhs, const Matrix3x4 &rhs);
-[[nodiscrad]] Matrix3x4 operator*(Matrix3x4 mat, real scalar);
+[[nodiscard]] Matrix3x4 operator*(Matrix3x4 lhs, const Matrix3x4 &rhs);
+[[nodiscard]] Matrix3x4 operator*(Matrix3x4 mat, real scalar);
 [[nodiscard]] Matrix3x4 operator*(real scalar, Matrix3x4 mat);
 
 [[nodiscard]] Vec3 operator*(const Vec3 &v, const Matrix3x4 &mat);

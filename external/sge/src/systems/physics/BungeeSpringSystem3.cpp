@@ -1,5 +1,4 @@
 #include <SGE/systems/physics/BungeeSpringSystem3.h>
-#include <iostream>
 
 void sge::BungeeSpringSystem3::update(sge::Registry &registry, sge::CommandBuffer &cmd, sm::real dt) {
     auto bungeePoolPtr = registry.getOrCreateConstraintPool<sge::BungeeConstraint>();

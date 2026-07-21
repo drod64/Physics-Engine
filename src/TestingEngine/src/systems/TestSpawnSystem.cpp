@@ -19,7 +19,7 @@ void TestSpawnSystem::update(sge::Registry &registry, sge::CommandBuffer &cmdBuf
             switch (static_cast<ScenePlayAction>(actionEvent.actionID))
             {
                 case ScenePlayAction::SpawnAnchorBungee:
-                    ScenePlaySpawn::spawnAnchorBungee(cmdBuffer, {0,10.5,0});
+                    ScenePlaySpawn::spawnAnchorBungee(cmdBuffer, {0,15,0});
                     break;
 
                 case ScenePlayAction::SpawnAnchorSpring:

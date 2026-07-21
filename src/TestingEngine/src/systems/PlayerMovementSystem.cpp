@@ -20,14 +20,14 @@ void PlayerMovementSystem::update(sge::Registry &registry, sge::CommandBuffer &,
 
         // 2. Accumulate velocity gradually using dt
         // This pushes current velocity toward the target velocity
-        if (r3.velocity.x < targetX) r3.velocity.x = std::min(targetX, r3.velocity.x + acceleration * dt);
-        else if (r3.velocity.x > targetX) r3.velocity.x = std::max(targetX, r3.velocity.x - acceleration * dt);
+        if (r3.linearVelocity.x < targetX) r3.linearVelocity.x = std::min(targetX, r3.linearVelocity.x + acceleration * dt);
+        else if (r3.linearVelocity.x > targetX) r3.linearVelocity.x = std::max(targetX, r3.linearVelocity.x - acceleration * dt);
 
-        if (r3.velocity.z < targetZ) r3.velocity.z = std::min(targetZ, r3.velocity.z + acceleration * dt);
-        else if (r3.velocity.z > targetZ) r3.velocity.z = std::max(targetZ, r3.velocity.z - acceleration * dt);
+        if (r3.linearVelocity.z < targetZ) r3.linearVelocity.z = std::min(targetZ, r3.linearVelocity.z + acceleration * dt);
+        else if (r3.linearVelocity.z > targetZ) r3.linearVelocity.z = std::max(targetZ, r3.linearVelocity.z - acceleration * dt);
         
-        if (r3.velocity.y < targetY) r3.velocity.y = std::min(targetY, r3.velocity.y + acceleration * dt);
-        else if (r3.velocity.y > targetY) r3.velocity.y = std::max(targetY, r3.velocity.y - acceleration * dt);
+        if (r3.linearVelocity.y < targetY) r3.linearVelocity.y = std::min(targetY, r3.linearVelocity.y + acceleration * dt);
+        else if (r3.linearVelocity.y > targetY) r3.linearVelocity.y = std::max(targetY, r3.linearVelocity.y - acceleration * dt);
     }
 }
 

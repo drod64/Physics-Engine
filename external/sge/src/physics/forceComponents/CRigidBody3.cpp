@@ -21,7 +21,13 @@ void sge::CRigidBody3::addForce(const sm::Vec3 &force)
     this->accumulatedForce += force;
 }
 
-void sge::CRigidBody3::clearAccumulator()
+void sge::CRigidBody3::addTorque(const sm::Vec3 &torque)
 {
-    this->accumulatedForce = sm::Vec3(0, 0, 0);
+    this->accumulatedTorque += torque;
+}
+
+void sge::CRigidBody3::clearAccumulators()
+{
+    this->accumulatedForce.clear();
+    this->accumulatedTorque.clear();
 }

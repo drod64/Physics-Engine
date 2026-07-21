@@ -6,7 +6,6 @@
 #include <SGE/util/DenseBytePool.h>
 #include <SGE/physics/constraints/Constraint.h>
 #include <SGE/physics/constraints/IConstraintPool.h>
-#include <iostream>
 
 
 namespace sge {

@@ -2,6 +2,7 @@
 #define SGE_CTRANSFORM3_H
 #include <numbers>
 #include <sm/Vec3.h>
+#include <sm/Quaternion.h>
 
 namespace sge {
 /**
@@ -9,9 +10,10 @@ namespace sge {
  */
 class CTransform3 {
 public:
-    sm::Vec3 position = {0,0,0};
-    sm::Vec3 prevPosition = {0,0,0};
-    sm::Vec3 rotation = {0,0,0};
+    sm::Vec3 position;
+    sm::Vec3 prevPosition;
+    sm::Quaternion orientation;
+    sm::Quaternion prevOrientation;
 
     /**
      * @return the forward vector of the CTransform3

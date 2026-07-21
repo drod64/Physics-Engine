@@ -8,6 +8,7 @@ public:
     sm::Vec3 anchorPosition;
     sm::real springConstant;
     sm::real restLength;
+    sm::Vec3 localAttachPoint;
 
     /**
      * Parameterized Constructor.

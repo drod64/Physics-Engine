@@ -2,6 +2,7 @@
 #define SGE_ANCHOR_BUNGEE_SYSTEM3_H
 #include <algorithm>
 #include <SM/Precision.h>
+#include <SGE/physics/RigidBodyUtils.h>
 #include <SGE/managers/View.h>
 #include <SGE/managers/CommandBuffer.h>
 #include <SGE/systems/SystemDescriptor.h>

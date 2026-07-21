@@ -2,7 +2,6 @@
 #define SGE_COMMAND_CONTEXT_H
 #include <SGE/managers/Registry.h>
 #include <exception>
-#include <iostream>
 
 namespace sge {
 class CommandContext {

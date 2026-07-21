@@ -54,6 +54,8 @@ sm::Matrix3x4& sm::Matrix3x4::operator+=(const sm::Matrix3x4 &other)
     this->m_matrix[9] += other.m_matrix[9];
     this->m_matrix[10] += other.m_matrix[10];
     this->m_matrix[11] += other.m_matrix[11];
+
+    return *this;
 }
 
 sm::Matrix3x4& sm::Matrix3x4::operator*=(const sm::Matrix3x4 &other)
@@ -80,6 +82,8 @@ sm::Matrix3x4& sm::Matrix3x4::operator*=(const sm::Matrix3x4 &other)
     this->m_matrix[9] = (i * n) + (j * r) + (k * v); // + 0
     this->m_matrix[10] = (i * o) + (j * s) + (k * w); // + 0
     this->m_matrix[11] = (i * p) + (j * t) + (k * x) + l;
+
+    return *this;
 }
 
 sm::Matrix3x4& sm::Matrix3x4::operator*=(sm::real scalar)
@@ -98,6 +102,8 @@ sm::Matrix3x4& sm::Matrix3x4::operator*=(sm::real scalar)
     this->m_matrix[9] *= scalar;
     this->m_matrix[10] *= scalar;
     this->m_matrix[11] *= scalar;
+
+    return *this;
 }
 
 void sm::Matrix3x4::translate(const sm::Vec3 &v)

@@ -11,21 +11,41 @@ void sge::DragSystem3::update(sge::Registry &registry, sge::CommandBuffer &cmdBu
 
         // Writes.
         auto &r3 = drag3View.get<sge::CRigidBody3>(e);
-    
+        
+        /////////////////////
+        //   Linear Drag   //
+        /////////////////////
+
         // Calculate squared speed of entity.
-        sm::real speedSqr = r3.velocity.sqrMagnitude();
+        sm::real speedSqr = r3.linearVelocity.sqrMagnitude();
     
         // Early exit if speed is close to 0.
         if (speedSqr < 0.00000001) continue;
         
         // Get real speed.
-        sm::real speed = r3.velocity.magnitude();
+        sm::real speed = r3.linearVelocity.magnitude();
 
         // Calculate drag coefficient (using simplified version of (v / speed) * -(k1 * speed + k2 * speed^2))
-        sm::real dragScalar = -(d3.k1 + d3.k2 * speed);
+        sm::real dragScalar = -(d3.linearK1 + d3.linearK2 * speed);
     
         // Multiply velocity by negative drag coefficient (will produce drag in the opposite way it is heading).
-        r3.addForce(r3.velocity * dragScalar);
+        r3.addForce(r3.linearVelocity * dragScalar);
+
+        //////////////////////
+        //   Angular Drag   //
+        //////////////////////
+
+        sm::real angularSpeedSqr = r3.angularVelocity.sqrMagnitude();
+
+        if (angularSpeedSqr < 0.00000001) continue;
+
+        sm::real angularSpeed = real_sqrt(angularSpeedSqr);
+
+        sm::real angularDragScalar = -(d3.angularK1 + d3.angularK2 * angularSpeed);
+
+        sm::Vec3 dragTorque = r3.angularVelocity * angularDragScalar;
+
+        r3.accumulatedTorque += dragTorque;
     }
 }
 

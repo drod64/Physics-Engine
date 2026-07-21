@@ -11,20 +11,20 @@ void ScenePlaySpawn::spawnProjectile(sge::CommandBuffer &cmdBuffer, ProjectileTy
     {
         case ProjectileType::PISTOL:
             r3.setMass(2.0f); // 2.0kg
-            r3.velocity = sm::Vec3(0.0f, 0.0f, 35.0f); // 35m/s
+            r3.linearVelocity = sm::Vec3(0.0f, 0.0f, 35.0f); // 35m/s
             break;
         case ProjectileType::ARTILLERY:
             r3.setMass(200.0f); // 200.0kg
-            r3.velocity = sm::Vec3(0.0f, 30.0f, 40.0f); // 50m/s
+            r3.linearVelocity = sm::Vec3(0.0f, 30.0f, 40.0f); // 50m/s
             break;
         case ProjectileType::FIREBALL:
             r3.setMass(1.0f); // 1.0kg - mostly blast damage
-            r3.velocity = sm::Vec3(0.0f, 0.0f, 10.0f); // 5m/s
+            r3.linearVelocity = sm::Vec3(0.0f, 0.0f, 10.0f); // 5m/s
             break;
         case ProjectileType::LASER:
         default:
         r3.setMass(0.1f); // 0.1kg - almost no weight
-        r3.velocity = sm::Vec3(0.0f, 0.0f, 100.0f); // 100m/s
+        r3.linearVelocity = sm::Vec3(0.0f, 0.0f, 100.0f); // 100m/s
         break;
     }
 
@@ -46,7 +46,7 @@ void ScenePlaySpawn::spawnFirework(sge::CommandBuffer &cmdBuffer, const std::str
 
     t3.position = {0,0,0};
     t3.prevPosition = t3.position;
-    r3.velocity = {0,35,0};
+    r3.linearVelocity = {0,35,0};
 
     cmdBuffer.addComponentDeferred(e, r3);
     cmdBuffer.addComponentDeferred(e, t3);
@@ -59,7 +59,7 @@ void ScenePlaySpawn::spawnSpringConnection(sge::CommandBuffer &cmdBuffer)
     sge::CLifespan lse1(10);
     sge::CTransform3 t3e1;
     sge::CRigidBody3 r3e1(10, false);
-    r3e1.velocity = {0, 20, 25};
+    r3e1.linearVelocity = {0, 20, 25};
 
     sge::Entity e2 = cmdBuffer.createEntityDeferred();
     sge::CLifespan lse2(10);
@@ -67,7 +67,7 @@ void ScenePlaySpawn::spawnSpringConnection(sge::CommandBuffer &cmdBuffer)
     t3e2.position = {5, 0 ,0};
     t3e2.prevPosition = t3e2.position;
     sge::CRigidBody3 r3e2(10, false);
-    r3e2.velocity = {0, 0, 0};
+    r3e2.linearVelocity = {0, 0, 0};
 
 
     cmdBuffer.addComponentDeferred(e1, lse1);
@@ -100,7 +100,7 @@ void ScenePlaySpawn::spawnAnchorSpring(sge::CommandBuffer &cmdBuffer, const sm::
     cmdBuffer.addComponentDeferred(e, t3);
     cmdBuffer.addComponentDeferred(e, r3);
     cmdBuffer.addComponentDeferred(e, sge::CGravity3({0, -9.81, 0}));
-    cmdBuffer.addComponentDeferred(e, sge::CDrag3(0.9, 0.5));
+    cmdBuffer.addComponentDeferred(e, sge::CDrag3(0.9, 0.5, 0.9, 0.5));
     cmdBuffer.addComponentDeferred(e, sge::CAnchorSpring3(position, 45, 10));
 }
 
@@ -111,11 +111,20 @@ void ScenePlaySpawn::spawnAnchorBungee(sge::CommandBuffer &cmdBuffer, const sm::
     sge::CTransform3 t3;
     t3.position = {0, 0, 0};
     t3.prevPosition = t3.position;
-    sge::CRigidBody3 r3(5, false);
+    sge::CRigidBody3 r3(40, false);
+    r3.linearVelocity.z = 30;
+    // Raw Inertia formulas for a solid box
+    sm::real Ix = (1.0f / 12.0f) * r3.getMass() * (2 * 2 + 2 * 2);
+    sm::real Iy = (1.0f / 12.0f) * r3.getMass() * (2 * 2 + 2 * 2);
+    sm::real Iz = (1.0f / 12.0f) * r3.getMass() * (2 * 2 + 2 * 2);
+    r3.inverseInertiaTensor = { 1.0f / Ix, 1.0f / Iy, 1.0f / Iz };
 
-    cmdBuffer.addComponentDeferred(e, sge::CAnchorBungee3(position, 45, 10));
+    sge::CAnchorBungee3 bungeeComponent(position, 45, 15);
+    bungeeComponent.localAttachPoint = {-1,-1,-1};
+
+    cmdBuffer.addComponentDeferred(e, bungeeComponent);
     cmdBuffer.addComponentDeferred(e, sge::CGravity3({0, -9.81, 0}));
-    cmdBuffer.addComponentDeferred(e, sge::CDrag3(0.9, 0.5));
+    cmdBuffer.addComponentDeferred(e, sge::CDrag3(0.9, 0.5, 0.9, 0.5));
     cmdBuffer.addComponentDeferred(e, ls);
     cmdBuffer.addComponentDeferred(e, t3);
     cmdBuffer.addComponentDeferred(e, r3);
@@ -129,7 +138,7 @@ void ScenePlaySpawn::spawnBungeeSpring(sge::CommandBuffer &cmdBuffer)
     t3_e1.position = {0, 25, 0};
     t3_e1.prevPosition = t3_e1.position;
     sge::CRigidBody3 r3_e1(10, false);
-    r3_e1.velocity = {0, 10, 10};
+    r3_e1.linearVelocity = {0, 10, 10};
 
     sge::Entity e2 = cmdBuffer.createEntityDeferred();
     sge::CLifespan ls_e2(10);
@@ -169,7 +178,7 @@ void ScenePlaySpawn::spawnBuoyancySpring(sge::CommandBuffer &cmdBuffer)
     cmdBuffer.addComponentDeferred(e, ls);
     cmdBuffer.addComponentDeferred(e, t3);
     cmdBuffer.addComponentDeferred(e, r3);
-    cmdBuffer.addComponentDeferred(e, sge::CDrag3(0.9, 0.5));
+    cmdBuffer.addComponentDeferred(e, sge::CDrag3(0.9, 0.5, 0.9, 0.5));
     cmdBuffer.addComponentDeferred(e, sge::CGravity3({0, -9.81, 0}));
     cmdBuffer.addComponentDeferred(e, sge::CBuoyancy3(-50, 100, -10, 100));
 }

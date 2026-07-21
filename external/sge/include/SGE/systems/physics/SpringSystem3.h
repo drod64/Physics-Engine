@@ -7,7 +7,6 @@
 
 // Component reads
 #include <SGE/core/ecs/components/CTransform3.h>
-#include <SGE/physics/forceComponents/CSpring3.h>
 #include <SGE/physics/constraints/types/SpringConstraint.h>
 
 // Component writes

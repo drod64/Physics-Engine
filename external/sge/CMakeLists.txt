@@ -22,6 +22,9 @@ set(SOURCE_FILES
     # managers
     src/managers/EntityManager.cpp
 
+    #physics
+    src/physics/RigidBodyUtils.cpp
+
     # physics/constraints
     src/physics/constraints/ConstraintManager.cpp
 

@@ -37,12 +37,13 @@ struct Quaternion {
 
     [[nodiscard]] Quaternion normalized() const;
 
-    // Ensures the entire struct stays exactly 16 bytes (4 floats * 4 bytes)
-    static_assert(sizeof(sm::Quaternion) == 16, "[sm::Quaternion]: Error. Quaternion size must be exactly 16 bytes!");
-
-    // Ensures the memory address of the array is identical to the x variable
-    static_assert(offsetof(Quaternion, data) == offsetof(Quaternion, x), "[sm::Quaternion]: Error. Array and x variable must align!");
 }; // class Quaternion
+
+// Ensures the entire struct stays exactly 16 bytes (4 floats * 4 bytes)
+static_assert(sizeof(sm::Quaternion) == 16, "[sm::Quaternion]: Error. Quaternion size must be exactly 16 bytes!");
+
+// Ensures the memory address of the array is identical to the x variable
+static_assert(offsetof(Quaternion, data) == offsetof(Quaternion, x), "[sm::Quaternion]: Error. Array and x variable must align!");
 
 // Math operator overload declarations.
 [[nodiscard]] Quaternion operator+ (Quaternion lhs, const Quaternion &rhs);

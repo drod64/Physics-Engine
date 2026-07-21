@@ -5,18 +5,22 @@
 namespace sge {
 class CDrag3 {
 public:
-    sm::real k1;
-    sm::real k2;
+    sm::real linearK1;
+    sm::real linearK2;
+    sm::real angularK1;
+    sm::real angularK2;
 
     /**
      * Parameterized constructor.
-     * @param k1 the linear constant (dominates at low speeds)
-     * @param k2 the quadratic constant (dominates at high speeds)
+     * @param linearK1 the linear constant (dominates at low speeds)
+     * @param linearK2 the quadratic constant (dominates at high speeds)
      */
-    CDrag3(sm::real k1, sm::real k2)
+    CDrag3(sm::real linearK1, sm::real linearK2, sm::real angularK1, sm::real angularK2)
     {
-        this->k1 = k1;
-        this->k2 = k2;
+        this->linearK1 = linearK2;
+        this->linearK2 = linearK2;
+        this->angularK1 = angularK1;
+        this->angularK2 = angularK2;
     }
 }; // class CDrag3
 } // namespace sge

@@ -12,23 +12,53 @@ void sge::IntegrationSystem3::update(sge::Registry &registry, sge::CommandBuffer
 
         // Update previos position.
         t3.prevPosition = t3.position;
+        t3.prevOrientation = t3.orientation;
         
         // Static entity. Continue to next entity.
         if (r3.is_static) continue;
         
         assert(dt > 0.0f);
         
+        ////////////////////////////
+        //   Linear Integration   //
+        ////////////////////////////
+
         // Calculate acceleration (dependending on acting forces) and integrate velocity
-        r3.velocity.addScaledVector(r3.accumulatedForce * r3.inverseMass, dt);
+        r3.linearVelocity.addScaledVector(r3.accumulatedForce * r3.inverseMass, dt);
         
         // Numerical rest check
-        if (r3.velocity.sqrMagnitude() < 0.00001)
+        if (r3.linearVelocity.sqrMagnitude() < 0.00001)
         {
-            r3.velocity = {0, 0, 0};
+            r3.linearVelocity = {0, 0, 0};
         }
         
         // Integrate position
-        t3.position.addScaledVector(r3.velocity, dt);
+        t3.position.addScaledVector(r3.linearVelocity, dt);
+
+        /////////////////////////////
+        //   Angular Integration   //
+        /////////////////////////////
+
+        sm::Quaternion globalToLocal = t3.orientation.conjugated();
+        sm::Vec3 localTorque = globalToLocal.transform(r3.accumulatedTorque);
+
+        sm::Vec3 localAngularAcc(
+            localTorque.x * r3.inverseInertiaTensor.x,
+            localTorque.y * r3.inverseInertiaTensor.y,
+            localTorque.z * r3.inverseInertiaTensor.z
+        );
+
+        sm::Vec3 worldAngularAcc = t3.orientation.transform(localAngularAcc);
+        r3.angularVelocity.addScaledVector(worldAngularAcc, dt);
+
+        if (r3.angularVelocity.sqrMagnitude() < 0.00001)
+        {
+            r3.angularVelocity = {0, 0, 0};
+        }
+
+        sm::Quaternion wQuat(r3.angularVelocity.x, r3.angularVelocity.y, r3.angularVelocity.z, 0);
+        t3.orientation += (wQuat * t3.orientation) * (dt * 0.5);
+        t3.orientation.normalize();
     }
 }
 

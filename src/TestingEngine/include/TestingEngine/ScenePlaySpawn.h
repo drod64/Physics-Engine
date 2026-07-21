@@ -11,9 +11,7 @@
 #include <SGE/physics/forceComponents/CRigidBody3.h>
 #include <SGE/physics/forceComponents/CGravity3.h>
 #include <SGE/physics/forceComponents/CAnchorSpring3.h>
-#include <SGE/physics/forceComponents/CSpring3.h>
 #include <SGE/physics/forceComponents/CAnchorBungee3.h>
-#include <SGE/physics/forceComponents/CBungee3.h>
 #include <SGE/physics/forceComponents/CDrag3.h>
 #include <SGE/physics/forceComponents/CBuoyancy3.h>
 #include <SGE/core/ecs/components/CLifespan.h>

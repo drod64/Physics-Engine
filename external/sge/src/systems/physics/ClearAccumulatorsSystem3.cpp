@@ -11,9 +11,7 @@ void sge::ClearAccumulatorsSystem3::update(sge::Registry &registry, sge::Command
     // Loop through dense pool and reset accumulators.
     for (sge::CRigidBody3 &r3 : rigidBodyPool->getDenseComponents())
     {
-        r3.accumulatedForce.x = 0;
-        r3.accumulatedForce.y = 0;
-        r3.accumulatedForce.z = 0;
+        r3.clearAccumulators();
     }
 }
 

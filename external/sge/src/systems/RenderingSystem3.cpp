@@ -51,7 +51,20 @@ void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer,
     {
         sm::Vec3 renderPos = sm::MathUtil::lerp(t3.prevPosition, t3.position, dt);
 
-        DrawCube({renderPos.x, renderPos.y, renderPos.z}, 2, 2, 2, RED);
+        // TODO: Optimize drawing
+        Quaternion raylibQuat = { t3.orientation.x, t3.orientation.y, t3.orientation.z, t3.orientation.w };
+        Matrix rotationMatrix = QuaternionToMatrix(raylibQuat);
+
+        rlPushMatrix();
+
+        rlTranslatef(renderPos.x, renderPos.y, renderPos.z);
+        rlMultMatrixf(&rotationMatrix.m0);
+
+        DrawCube({0, 0, 0}, 2, 2, 2, RED);
+        DrawSphere({0.0f, 1.5f, 0.0f}, 0.3f, BLUE); 
+        DrawCubeWires({0,0,0}, 2, 2, 2, BLACK);
+
+        rlPopMatrix();
     }
 
     EndMode3D();
