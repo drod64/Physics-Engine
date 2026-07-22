@@ -57,7 +57,7 @@ void sge::IntegrationSystem3::update(sge::Registry &registry, sge::CommandBuffer
         }
 
         sm::Quaternion wQuat(r3.angularVelocity.x, r3.angularVelocity.y, r3.angularVelocity.z, 0);
-        t3.orientation += (wQuat * t3.orientation) * (dt * 0.5);
+        t3.orientation += (t3.orientation * wQuat) * (dt * 0.5);
         t3.orientation.normalize();
     }
 }

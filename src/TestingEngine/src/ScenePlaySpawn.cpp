@@ -113,14 +113,21 @@ void ScenePlaySpawn::spawnAnchorBungee(sge::CommandBuffer &cmdBuffer, const sm::
     t3.prevPosition = t3.position;
     sge::CRigidBody3 r3(40, false);
     r3.linearVelocity.z = 30;
+    sm::real w = 2.0f, h = 2.0f, d = 2.0f;
     // Raw Inertia formulas for a solid box
-    sm::real Ix = (1.0f / 12.0f) * r3.getMass() * (2 * 2 + 2 * 2);
-    sm::real Iy = (1.0f / 12.0f) * r3.getMass() * (2 * 2 + 2 * 2);
-    sm::real Iz = (1.0f / 12.0f) * r3.getMass() * (2 * 2 + 2 * 2);
+    sm::real Ix = (1.0f / 12.0f) * r3.getMass() * (h * h + d * d);
+    sm::real Iy = (1.0f / 12.0f) * r3.getMass() * (w * w + d * d);
+    sm::real Iz = (1.0f / 12.0f) * r3.getMass() * (w * w + h * h);
+
+    // Tuning the spin factor.
+    Ix *= 0.1125;
+    Iy *= 0.1125;
+    Iz *= 0.1125;
+
     r3.inverseInertiaTensor = { 1.0f / Ix, 1.0f / Iy, 1.0f / Iz };
 
-    sge::CAnchorBungee3 bungeeComponent(position, 45, 15);
-    bungeeComponent.localAttachPoint = {-1,-1,-1};
+    sge::CAnchorBungee3 bungeeComponent(position, 70, 25);
+    bungeeComponent.localAttachPoint = {0, 1.5, 0};
 
     cmdBuffer.addComponentDeferred(e, bungeeComponent);
     cmdBuffer.addComponentDeferred(e, sge::CGravity3({0, -9.81, 0}));
