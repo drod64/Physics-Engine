@@ -6,8 +6,6 @@
 #include <SM/Vec3.h>
 
 namespace sm {
-enum class CoordinateFrame : uint8_t {Base, Internal};
-
 struct Quaternion {
     union {
         struct { sm::real x, y, z, w; };
@@ -23,7 +21,7 @@ struct Quaternion {
 
     Quaternion& operator*=(real scalar);
 
-    Quaternion& integrate(const Vec3 &w, real scalar, CoordinateFrame frame = CoordinateFrame::Base);
+    Quaternion& integrate(const Vec3 &w, real scalar);
 
     Quaternion& normalize();
 
@@ -31,7 +29,7 @@ struct Quaternion {
     
     [[nodiscard]] Vec3 transform(const Vec3 &rotation) const;
 
-    [[nodiscard]] Vec3 transfromInverse(const Vec3 &rotation) const;
+    [[nodiscard]] Vec3 transformInverse(const Vec3 &rotation) const;
 
     [[nodiscard]] Quaternion conjugated() const;
 

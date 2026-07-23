@@ -25,7 +25,7 @@ sm::Quaternion& sm::Quaternion::operator*=(sm::real scalar)
     return *this;
 }
 
-sm::Quaternion& sm::Quaternion::integrate(const sm::Vec3 &w, sm::real scalar, sm::CoordinateFrame frame)
+sm::Quaternion& sm::Quaternion::integrate(const sm::Vec3 &w, sm::real scalar)
 {
     const sm::real halfX = w.x * scalar * static_cast<sm::real>(0.5);
     const sm::real halfY = w.y * scalar * static_cast<sm::real>(0.5);
@@ -35,25 +35,13 @@ sm::Quaternion& sm::Quaternion::integrate(const sm::Vec3 &w, sm::real scalar, sm
     const sm::real prevY = this->y;
     const sm::real prevZ = this->z;
     const sm::real prevW = this->w;
-
-    switch (frame)
-    {
-        case sm::CoordinateFrame::Internal:
-            this->x += ( prevW * halfX + prevZ * halfY - prevY * halfZ);
-            this->y += (-prevZ * halfX + prevW * halfY + prevX * halfZ);
-            this->z += ( prevY * halfX - prevX * halfY + prevW * halfZ);
-            this->w += (-prevX * halfX - prevY * halfY - prevZ * halfZ);
-            break; 
-
-        case sm::CoordinateFrame::Base:
-        default:
-            this->x += ( halfX * prevW - halfY * prevZ - halfZ * prevY);
-            this->y += (-halfX * prevZ + halfY * prevW - halfZ * prevX);
-            this->z += ( halfX * prevY - halfY * prevX + halfZ * prevW);
-            this->w += (-halfX * prevX - halfY * prevY - halfZ * prevZ);
-            break;
-    }
-
+    
+    // Global Space
+    this->x = halfX * prevW + 1.0f * prevX  - halfY * prevZ + halfZ * prevY;
+    this->y = halfY * prevW + halfX * prevZ + 1.0f * prevY  - halfZ * prevX;
+    this->z = halfZ * prevW - halfX * prevY + halfY * prevX + 1.0f * prevZ;
+    this->w = 1.0f * prevW  - halfX * prevX - halfY * prevY - halfZ * prevZ;
+    
     this->normalize();
 
     return *this;
@@ -95,7 +83,7 @@ sm::Vec3 sm::Quaternion::transform(const sm::Vec3 &rotation) const
     return (*this) * rotation;
 }
 
-sm::Vec3 sm::Quaternion::transfromInverse(const sm::Vec3 &rotation) const
+sm::Vec3 sm::Quaternion::transformInverse(const sm::Vec3 &rotation) const
 {
     sm::Vec3 qVec(-this->x, -this->y, -this->z);
 

@@ -20,16 +20,19 @@ void sge::DragSystem3::update(sge::Registry &registry, sge::CommandBuffer &cmdBu
         sm::real speedSqr = r3.linearVelocity.sqrMagnitude();
     
         // Early exit if speed is close to 0.
-        if (speedSqr < 0.00000001) continue;
-        
-        // Get real speed.
-        sm::real speed = r3.linearVelocity.magnitude();
-
-        // Calculate drag coefficient (using simplified version of (v / speed) * -(k1 * speed + k2 * speed^2))
-        sm::real dragScalar = -(d3.linearK1 + d3.linearK2 * speed);
+        if (speedSqr > 0.00000001)
+        {
+            // Get real speed.
+            sm::real speed = r3.linearVelocity.magnitude();
     
-        // Multiply velocity by negative drag coefficient (will produce drag in the opposite way it is heading).
-        r3.addForce(r3.linearVelocity * dragScalar);
+            // Calculate drag coefficient (using simplified version of (v / speed) * (k1 * speed + k2 * speed^2))
+            sm::real dragScalar = (d3.linearK1 + d3.linearK2 * speed);
+
+            sm::real x = dragScalar * dt;
+            sm::real dragFactor = static_cast<sm::real>(1.0) / (static_cast<sm::real>(1.0) + x + static_cast<sm::real>(0.5) * x * x);
+            r3.linearVelocity *= dragFactor;
+        }
+        
 
         //////////////////////
         //   Angular Drag   //
@@ -37,15 +40,16 @@ void sge::DragSystem3::update(sge::Registry &registry, sge::CommandBuffer &cmdBu
 
         sm::real angularSpeedSqr = r3.angularVelocity.sqrMagnitude();
 
-        if (angularSpeedSqr < 0.00000001) continue;
-
-        sm::real angularSpeed = real_sqrt(angularSpeedSqr);
-
-        sm::real angularDragScalar = -(d3.angularK1 + d3.angularK2 * angularSpeed);
-
-        sm::Vec3 dragTorque = r3.angularVelocity * angularDragScalar;
-
-        r3.accumulatedTorque += dragTorque;
+        if (angularSpeedSqr > 0.00000001)
+        {
+            sm::real angularSpeed = real_sqrt(angularSpeedSqr);
+    
+            sm::real angularDragScalar = (d3.angularK1 + d3.angularK2 * angularSpeed);
+    
+            sm::real x = angularDragScalar * dt;
+            sm::real dragFactor = static_cast<sm::real>(1.0) / (static_cast<sm::real>(1.0) + x + static_cast<sm::real>(0.5) * x * x);
+            r3.angularVelocity *= dragFactor;
+        }
     }
 }
 

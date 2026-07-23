@@ -38,27 +38,28 @@ void sge::IntegrationSystem3::update(sge::Registry &registry, sge::CommandBuffer
         /////////////////////////////
         //   Angular Integration   //
         /////////////////////////////
-
-        sm::Quaternion globalToLocal = t3.orientation.conjugated();
-        sm::Vec3 localTorque = globalToLocal.transform(r3.accumulatedTorque);
-
+        
+        sm::Vec3 localTorque = t3.orientation.transformInverse(r3.accumulatedTorque);
+        sm::Vec3 localAngularVel = t3.orientation.transformInverse(r3.angularVelocity);
+        
         sm::Vec3 localAngularAcc(
             localTorque.x * r3.inverseInertiaTensor.x,
             localTorque.y * r3.inverseInertiaTensor.y,
             localTorque.z * r3.inverseInertiaTensor.z
         );
 
-        sm::Vec3 worldAngularAcc = t3.orientation.transform(localAngularAcc);
-        r3.angularVelocity.addScaledVector(worldAngularAcc, dt);
+        localAngularVel.addScaledVector(localAngularAcc, dt);
 
+        r3.angularVelocity = t3.orientation.transform(localAngularVel);
+
+        // Numerical rest check
         if (r3.angularVelocity.sqrMagnitude() < 0.00001)
         {
             r3.angularVelocity = {0, 0, 0};
         }
 
-        sm::Quaternion wQuat(r3.angularVelocity.x, r3.angularVelocity.y, r3.angularVelocity.z, 0);
-        t3.orientation += (t3.orientation * wQuat) * (dt * 0.5);
-        t3.orientation.normalize();
+        // Integrate orientation
+        t3.orientation.integrate(r3.angularVelocity, dt);
     }
 }
 

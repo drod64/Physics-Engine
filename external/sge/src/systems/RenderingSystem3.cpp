@@ -56,9 +56,9 @@ void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer,
         Matrix rotationMatrix = QuaternionToMatrix(raylibQuat);
 
         rlPushMatrix();
-
+        
         rlTranslatef(renderPos.x, renderPos.y, renderPos.z);
-        rlMultMatrixf(&rotationMatrix.m0);
+        rlMultMatrixf(MatrixToFloat(rotationMatrix));
 
         DrawCube({0, 0, 0}, 2, 2, 2, RED);
         DrawSphere({0.0f, 1.5f, 0.0f}, 0.3f, BLUE); 
