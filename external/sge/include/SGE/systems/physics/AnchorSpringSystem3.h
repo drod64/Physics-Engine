@@ -1,8 +1,9 @@
 #ifndef SGE_ANCHOR_SPRING_SYSTEM3_H
 #define SGE_ANCHOR_SPRING_SYSTEM3_H
+#include <SM/Vec3.h>
+#include <SGE/physics/RigidBodyUtils.h>
 #include <SGE/managers/View.h>
 #include <SGE/managers/CommandBuffer.h>
-#include <SM/Vec3.h>
 #include <SGE/systems/SystemDescriptor.h>
 
 // Component Reads

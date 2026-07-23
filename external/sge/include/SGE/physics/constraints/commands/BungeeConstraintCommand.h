@@ -10,7 +10,8 @@ struct BungeeConstraintCommand {
     Entity entityB;
     sm::real springConstant;
     sm::real restLength;
-    sm::Vec3 localAttachPoint;
+    sm::Vec3 localAttachPointA;
+    sm::Vec3 localAttachPointB;
 
     /**
      * Executes constraint logic for a bungee spring connection.
@@ -26,7 +27,8 @@ struct BungeeConstraintCommand {
             .entityB = realB,
             .restLength = this->restLength,
             .springConstant = this->springConstant,
-            .localAttachPoint = this->localAttachPoint
+            .localAttachPointA = this->localAttachPointA,
+            .localAttachPointB = this->localAttachPointB
         };
 
         context.getRegistry().addConstraint(bungeePayload);

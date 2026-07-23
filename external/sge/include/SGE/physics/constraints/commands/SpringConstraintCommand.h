@@ -10,7 +10,8 @@ struct SpringConstraintCommand {
     Entity entityB = sge::Entity::INVALID;
     sm::real springConstant = 10;
     sm::real restLength = 10;
-    sm::Vec3 localAttachPoint;
+    sm::Vec3 localAttachPointA;
+    sm::Vec3 localAttachPointB;
 
     /**
      * Executes constraint logic for a regular spring connection.
@@ -31,7 +32,8 @@ struct SpringConstraintCommand {
             .entityB = realB,
             .springConstant = this->springConstant,
             .restLength = this->restLength,
-            .localAttachPoint = this->localAttachPoint
+            .localAttachPointA = this->localAttachPointA,
+            .localAttachPointB = this->localAttachPointB
         };
 
         context.getRegistry().addConstraint(constraintPayload);

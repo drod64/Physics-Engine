@@ -11,7 +11,8 @@ public:
     sge::Entity entityB = sge::Entity::INVALID;
     sm::real restLength = 10;
     sm::real springConstant = 10;
-    sm::Vec3 localAttachPoint;
+    sm::Vec3 localAttachPointA;
+    sm::Vec3 localAttachPointB;
 
 }; // class BungeeConstraint
 } // namespace sge

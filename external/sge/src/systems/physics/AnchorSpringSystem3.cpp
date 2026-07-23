@@ -12,9 +12,10 @@ void sge::AnchorSpringSystem3::update(sge::Registry &registry, sge::CommandBuffe
         
         // Write
         auto &r3 = anchorSpring3View.get<sge::CRigidBody3>(e);
-
+        
+        sm::Vec3 globalAttachPoint = t3.position + t3.orientation.transform(as3.localAttachPoint);
         // Get displacement between both entities.
-        sm::Vec3 displacement = t3.position - as3.anchorPosition;
+        sm::Vec3 displacement = globalAttachPoint - as3.anchorPosition;
 
         // Calculate squared magnitude of displacement vector.
         sm::real sqrLength = displacement.sqrMagnitude() + (sm::real)1e-6f;
@@ -28,7 +29,7 @@ void sge::AnchorSpringSystem3::update(sge::Registry &registry, sge::CommandBuffe
         sm::Vec3 forceVec = displacement * (forceMagnitude / length);
 
         // Add spring (push or pulling) force to entity.
-        r3.addForce(forceVec);
+        sge::RigidBodyUtils::addForceAtGlobalPoint(r3, t3, forceVec, globalAttachPoint);
     }
 }
 

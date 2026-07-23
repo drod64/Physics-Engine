@@ -16,7 +16,7 @@ void sge::AnchorBungeeSystem3::update(sge::Registry &registry, sge::CommandBuffe
         // Calculate global attachment point.
         sm::Vec3 globalAttachPoint = t3.position + t3.orientation.transform(ab3.localAttachPoint);
         // Get displacement between both entities.
-        sm::Vec3 displacement = ab3.anchorPosition - globalAttachPoint;
+        sm::Vec3 displacement = globalAttachPoint - ab3.anchorPosition;
 
         // Calculate squared magnitude of displacement vector.
         sm::real sqrLength = displacement.sqrMagnitude() + (sm::real)1e-6f;
@@ -27,7 +27,8 @@ void sge::AnchorBungeeSystem3::update(sge::Registry &registry, sge::CommandBuffe
 
         sm::real activeStretch = std::max(static_cast<sm::real>(0), stretch);
 
-        sm::real forceMagnitude = ab3.springConstant * activeStretch;
+        // Pull back towards anchor.
+        sm::real forceMagnitude = -ab3.springConstant * activeStretch;
 
         sm::Vec3 forceVec = displacement * (forceMagnitude / length);
 

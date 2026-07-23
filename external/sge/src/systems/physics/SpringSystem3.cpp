@@ -22,8 +22,12 @@ void sge::SpringSystem3::update(sge::Registry &registry, sge::CommandBuffer &, s
         auto &aR3 = registry.getComponent<sge::CRigidBody3>(constraint.entityA);
         auto &bR3 = registry.getComponent<sge::CRigidBody3>(constraint.entityB);
 
+        // Get global attachment points.
+        sm::Vec3 globalAttachPointA = aT3.position + aT3.orientation.transform(constraint.localAttachPointA);
+        sm::Vec3 globalAttachPointB = bT3.position + bT3.orientation.transform(constraint.localAttachPointB);
+
         // Get displacement between both entities.
-        sm::Vec3 displacement = aT3.position - bT3.position;
+        sm::Vec3 displacement = globalAttachPointA - globalAttachPointB;
 
         // Calculate squared magnitude of displacement vector.
         sm::real sqrLength = displacement.sqrMagnitude() + (sm::real)1e-6f;
@@ -36,9 +40,9 @@ void sge::SpringSystem3::update(sge::Registry &registry, sge::CommandBuffer &, s
 
         sm::Vec3 forceVec = displacement * (forceMagnitude / length);
 
-        // Add spring (push or pulling) force to entity.
-        aR3.addForce(forceVec);
-        bR3.addForce(forceVec * -1);
+        // Add spring (push or pulling) force to entities.
+        sge::RigidBodyUtils::addForceAtGlobalPoint(aR3, aT3, forceVec, globalAttachPointA);
+        sge::RigidBodyUtils::addForceAtGlobalPoint(bR3, bT3, forceVec * -1, globalAttachPointB);
     }
 }
 
