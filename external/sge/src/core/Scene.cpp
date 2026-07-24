@@ -8,8 +8,11 @@ Scene(nullptr)
 void sge::Scene::init()
 {
     sge::SystemManager &sysManager = this->m_world.getSystemManager();
-    // Register core physic systems.
+    // Register core systems.
+    sysManager.registerSystem(sge::CameraSystem::getSystemDescription());
     sysManager.registerSystem(sge::LifespanSystem::getSystemDescription());
+
+    // Register core physic systems.
     sysManager.registerSystem(sge::ClearAccumulatorsSystem3::getSystemDescriptor());
     sysManager.registerSystem(sge::GravitySystem3::getSystemDescriptor());
     sysManager.registerSystem(sge::AnchorBungeeSystem3::getSystemDescriptor());
@@ -19,6 +22,18 @@ void sge::Scene::init()
     sysManager.registerSystem(sge::DragSystem3::getSystemDescriptor());
     sysManager.registerSystem(sge::SpringSystem3::getSystemDescriptor());
     sysManager.registerSystem(sge::IntegrationSystem3::getSystemDescriptor());
+
+    // Create camera entity.
+    sge::Registry &registry = this->m_world.getRegistry();
+    sge::Entity defaultCamera = registry.createEntity();
+    sge::CTransform3 camT3 = sge::CTransform3();
+    sge::CCamera3 camCC3 = sge::CCamera3(false, 0);
+    registry.addComponent(defaultCamera, camT3);
+    registry.addComponent(defaultCamera, camCC3);
+
+    // Create camera context.
+    sge::CameraContext &camContext = registry.getGlobalContext().registerContext<sge::CameraContext>();
+    camContext.activeCamera = defaultCamera;
 }
 
 sge::Scene::Scene(sge::GameEngine *gameEngine) :

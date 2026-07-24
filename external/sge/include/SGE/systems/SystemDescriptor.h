@@ -16,10 +16,10 @@ namespace sge {
     enum class ExecutionPhase : uint32_t {
         PreUpdate = 0,      
         Gameplay,           // Gameplay systems
-        PostGameplay,
         PhysicsClear,       // Clear force accumulation
         PhysicsForceGen,    // Physics force generation
         PhysicsIntegrate,   // Physics integration 
+        PostGameplay,
         PostUpdate          // Rendering.
     };
     

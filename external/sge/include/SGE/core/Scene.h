@@ -17,6 +17,7 @@
 
 // Other system(s)
 #include <SGE/systems/LifespanSystem.h>
+#include <SGE/systems/CameraSystem.h>
 
 namespace sge {
 // Forward declaration of GameEngine class.
