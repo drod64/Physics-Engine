@@ -13,33 +13,36 @@ void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer,
         return;
     }
 
-    const auto &t3 = registry.getComponent<sge::CTransform3>(activeCamera);
-    auto &c3 = registry.getComponent<sge::CCamera3>(activeCamera);
+    const auto &cameraT3 = registry.getComponent<sge::CTransform3>(activeCamera);
+    auto &cameraC3 = registry.getComponent<sge::CCamera3>(activeCamera);
 
-    c3.forward = t3.orientation * sm::Vec3(0, 0, 1);
-    c3.up = t3.orientation * sm::Vec3(0, 1, 0);
+    cameraC3.forward = cameraT3.orientation * sm::Vec3(0, 0, 1);
+    cameraC3.up = cameraT3.orientation * sm::Vec3(0, 1, 0);
     // Set up raylib Camera3D.
     Camera3D rayCam = { 0 };
-    rayCam.position = Vector3{t3.position.x, t3.position.y, t3.position.z};
-    rayCam.target = Vector3{t3.position.x + c3.forward.x,
-                            t3.position.y + c3.forward.y,
-                            t3.position.z + c3.forward.z};
-    rayCam.up = Vector3{c3.up.x, c3.up.y, c3.up.z};
-    rayCam.fovy = c3.fov;
-    rayCam.projection = c3.projection;
+    rayCam.position = Vector3{cameraT3.position.x, cameraT3.position.y, cameraT3.position.z};
+    rayCam.target = Vector3{cameraT3.position.x + cameraC3.forward.x,
+                            cameraT3.position.y + cameraC3.forward.y,
+                            cameraT3.position.z + cameraC3.forward.z};
+    rayCam.up = Vector3{cameraC3.up.x, cameraC3.up.y, cameraC3.up.z};
+    rayCam.fovy = cameraC3.fov;
+    rayCam.projection = cameraC3.projection;
     // End of camera setup. Begin drawing entities.
 
     BeginMode3D(rayCam);
 
     // Component pool of sge::CTransform3
-    const auto &t3Components = registry.getComponentPool<sge::CTransform3>()->getDenseComponents();
+    auto renderView = registry.viewAll<sge::CTransform3>();
 
-    for (const auto &t3 : t3Components)
+    for (sge::Entity e : renderView)
     {
-        sm::Vec3 renderPos = sm::MathUtil::lerp(t3.prevPosition, t3.position, dt);
+        if (e == activeCamera) continue;
+
+        auto &renderT3 = renderView.get<sge::CTransform3>(e);
+        sm::Vec3 renderPos = sm::MathUtil::lerp(renderT3.prevPosition, renderT3.position, dt);
 
         // TODO: Optimize drawing
-        Quaternion raylibQuat = { t3.orientation.x, t3.orientation.y, t3.orientation.z, t3.orientation.w };
+        Quaternion raylibQuat = { renderT3.orientation.x, renderT3.orientation.y, renderT3.orientation.z, renderT3.orientation.w };
         Matrix rotationMatrix = QuaternionToMatrix(raylibQuat);
 
         rlPushMatrix();

@@ -43,7 +43,7 @@ void ScenePlay::init()
     // Update camera entity (Camera entity already built with CTransform3 and CCamera3).
     sge::Entity camera = this->getRegistry().getContext<sge::CameraContext>().activeCamera;
     // Tag the camera as a First Person cam.
-    this->getCommandBuffer().addComponentDeferred(camera, TagFPSCam());
+    this->getCommandBuffer().addComponentDeferred(camera, TagThirdPersonCam());
     this->getCommandBuffer().addComponentDeferred(camera, CCameraControl3());
 
     sge::Entity playerID = spawnPlayer();
@@ -51,7 +51,8 @@ void ScenePlay::init()
     CameraFollow3Command followCommand {
         .cameraEntity = camera,
         .targetEntity = playerID,
-        .offset = {0, 1, 0}
+        .offset = {-1.5, 2, 5},
+        .smoothSpeed = 50
     };
 
     // Link Camera to player.

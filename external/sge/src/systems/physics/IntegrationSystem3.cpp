@@ -10,7 +10,7 @@ void sge::IntegrationSystem3::update(sge::Registry &registry, sge::CommandBuffer
         sge::CRigidBody3 &r3 = view.get<sge::CRigidBody3>(e);
         sge::CTransform3 &t3 = view.get<sge::CTransform3>(e);
 
-        // Update previos position.
+        // Update previous position.
         t3.prevPosition = t3.position;
         t3.prevOrientation = t3.orientation;
         

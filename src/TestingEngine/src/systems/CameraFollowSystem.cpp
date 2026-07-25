@@ -1,5 +1,4 @@
 #include <TestingEngine/systems/CameraFollowSystem.h>
-#include <iostream>
 
 void CameraFollowSystem::update(sge::Registry &registry, sge::CommandBuffer &cmd, sm::real dt)
 {
@@ -42,23 +41,25 @@ void CameraFollowSystem::update(sge::Registry &registry, sge::CommandBuffer &cmd
         const auto &targetT3 = registry.getComponent<sge::CTransform3>(follow.targetEntity);
         
         // First person tracking.
-        // if (registry.hasComponent<TagFPSCam>(e))
-        // {
-        //     cameraT3.position = targetT3.position + follow.offset;
-        // }
-        // // Third person tracking.
-        // else if (registry.hasComponent<TagThirdPersonCam>(e))
-        // {
-        //     sm::Vec3 targetPos = targetT3.position;
-        //     targetPos.y += + follow.offset.y;
-        //     targetPos -= (cleanForward * follow.offset.z);
+        if (registry.hasComponent<TagFPSCam>(e))
+        {
+            cameraT3.position = targetT3.position + follow.offset;
+        }
+        // Third person tracking.
+        else if (registry.hasComponent<TagThirdPersonCam>(e))
+        {
+            sm::Vec3 targetPos = targetT3.position;
+            sm::Vec3 right = targetT3.orientation * sm::Vec3(1, 0, 0);
+            right.normalize();
 
-        //     sm::real alpha = static_cast<sm::real>(1) - real_exp(-follow.smoothSpeed * dt);
+            targetPos += (right * follow.offset.x);
+            targetPos.y += follow.offset.y;
+            targetPos -= (cleanForward * follow.offset.z);
 
-        //     cameraT3.position = sm::MathUtil::lerp(cameraT3.position, targetPos, alpha);
-        // }
+            sm::real alpha = static_cast<sm::real>(1) - real_exp(-follow.smoothSpeed * dt);
 
-        // std::cout << "[CameraFollowSystem]: Target --> " << (int)follow.targetEntity << '\n';
+            cameraT3.position = sm::MathUtil::lerp(cameraT3.position, targetPos, alpha);
+        }
     }
 }
 
