@@ -66,11 +66,10 @@ void CameraFollowSystem::update(sge::Registry &registry, sge::CommandBuffer &cmd
 sge::SystemDescriptor CameraFollowSystem::getSystemDescription()
 {
     sge::SystemDescriptor desc;
-    desc.phase = sge::ExecutionPhase::Gameplay;
+    desc.phase = sge::ExecutionPhase::PostGameplay;
 
     desc.components.reads.set(sge::ComponentIDCounter::get<CCameraFollow3>());
     desc.components.reads.set(sge::ComponentIDCounter::get<CCameraControl3>());
-
     desc.components.writes.set(sge::ComponentIDCounter::get<sge::CTransform3>());
 
     desc.name = "CameraFollowSystem";

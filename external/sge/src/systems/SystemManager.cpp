@@ -45,44 +45,56 @@ void sge::SystemManager::compile()
             // Same phase data dependency.
             else if (sysA.phase == sysB.phase)
             {
-                // 1. Component dependency check.
-                // WAR, RAW, and WAW 
-                bool componentReadWriteHazard = (sysA.components.writes & sysB.components.reads).any()  ||
-                                                (sysA.components.reads & sysB.components.writes).any() ||
-                                                (sysA.components.writes & sysB.components.writes).any();
+                bool hasRealHazard = false;
 
+                bool aExcludesB = (sysA.components.requirez & sysB.components.withouts).any();
+                bool bExcludesA = (sysB.components.requirez & sysA.components.withouts).any();
 
-                bool componentAccumulationHazard = (sysA.components.accumulates & sysB.components.reads).any()      ||
-                                                    (sysA.components.reads & sysB.components.accumulates).any()     ||
-                                                    (sysA.components.accumulates & sysB.components.writes).any()    ||
-                                                    (sysA.components.writes & sysB.components.accumulates).any();
+                bool areDisjoint = aExcludesB || bExcludesA;
 
-                // WAR, RAW, WAW
-                bool contextReadWriteHazard = (sysA.contexts.writes & sysB.contexts.reads).any()     ||
-                                                (sysA.contexts.reads & sysB.contexts.writes).any()    ||
-                                                (sysA.contexts.writes & sysB.contexts.writes).any();
+                if (!areDisjoint)
+                {
+                    // 1. Component dependency check.
+                    // WAR, RAW, and WAW 
+                    bool componentReadWriteHazard = (sysA.components.writes & sysB.components.reads).any()  ||
+                                                    (sysA.components.reads & sysB.components.writes).any() ||
+                                                    (sysA.components.writes & sysB.components.writes).any();
+    
+    
+                    bool componentAccumulationHazard = (sysA.components.accumulates & sysB.components.reads).any()      ||
+                                                        (sysA.components.reads & sysB.components.accumulates).any()     ||
+                                                        (sysA.components.accumulates & sysB.components.writes).any()    ||
+                                                        (sysA.components.writes & sysB.components.accumulates).any();
+    
+                    // WAR, RAW, WAW
+                    bool contextReadWriteHazard = (sysA.contexts.writes & sysB.contexts.reads).any()     ||
+                                                    (sysA.contexts.reads & sysB.contexts.writes).any()    ||
+                                                    (sysA.contexts.writes & sysB.contexts.writes).any();
+    
+                    bool contextAccumulateHazard = (sysA.contexts.accumulates & sysB.contexts.reads).any()   ||
+                                                    (sysA.contexts.reads & sysB.contexts.accumulates).any()   ||
+                                                    (sysA.contexts.accumulates & sysB.contexts.writes).any()  ||
+                                                    (sysA.contexts.writes & sysB.contexts.accumulates).any();
+    
+    
+                    bool hasDataHazard = componentReadWriteHazard || componentAccumulationHazard ||
+                                        contextReadWriteHazard || contextAccumulateHazard;
+    
+                    // 2. Structural dependency check.
+                    sge::Mask sysA_componentMutations = sysA.components.writes | sysA.components.accumulates;
+                    bool componentStructuralHazard = (sysA_componentMutations & sysB.components.requirez).any() ||
+                                                    (sysA_componentMutations & sysB.components.withouts).any();
+    
+                    sge::Mask sysA_contextMutations = sysA.contexts.writes | sysA.contexts.accumulates;
+                    bool contextStructuralHazard = (sysA_contextMutations & sysB.contexts.requirez).any() ||
+                                                    (sysA_contextMutations & sysB.contexts.withouts).any();
+    
+                    bool hasStructuralHazard =  componentStructuralHazard || contextStructuralHazard;
 
-                bool contextAccumulateHazard = (sysA.contexts.accumulates & sysB.contexts.reads).any()   ||
-                                                (sysA.contexts.reads & sysB.contexts.accumulates).any()   ||
-                                                (sysA.contexts.accumulates & sysB.contexts.writes).any()  ||
-                                                (sysA.contexts.writes & sysB.contexts.accumulates).any();
+                    hasRealHazard = hasDataHazard || hasStructuralHazard;
+                }
 
-
-                bool hasDataHazard = componentReadWriteHazard || componentAccumulationHazard ||
-                                    contextReadWriteHazard || contextAccumulateHazard;
-
-                // 2. Structural dependency check.
-                sge::Mask sysA_componentMutations = sysA.components.writes | sysA.components.accumulates;
-                bool componentStructuralHazard = (sysA_componentMutations & sysB.components.requirez).any() ||
-                                                (sysA_componentMutations & sysB.components.withouts).any();
-
-                sge::Mask sysA_contextMutations = sysA.contexts.writes | sysA.contexts.accumulates;
-                bool contextStructuralHazard = (sysA_contextMutations & sysB.contexts.requirez).any() ||
-                                                (sysA_contextMutations & sysB.contexts.withouts).any();
-
-                bool hasStructuralHazard =  componentStructuralHazard || contextStructuralHazard;
-
-                if (hasDataHazard || hasStructuralHazard)
+                if (hasRealHazard)
                 {
                     sysBhasDependency = true;
                 }

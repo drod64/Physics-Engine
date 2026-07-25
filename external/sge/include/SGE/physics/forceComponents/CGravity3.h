@@ -11,7 +11,7 @@ public:
      * Explicit constructor that accepts the gravity force that should be applied.
      * @param gravity the desired gravity force
      */
-    CGravity3(const sm::Vec3 &gravity)
+    CGravity3(const sm::Vec3 &gravity = sm::Vec3(0, -9.81, 0))
     {
         this->gravity = gravity;
     }

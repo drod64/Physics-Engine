@@ -26,7 +26,7 @@ sge::SystemDescriptor sge::CameraSystem::getSystemDescription()
 {
     sge::SystemDescriptor desc;
 
-    desc.phase = sge::ExecutionPhase::PostGameplay;
+    desc.phase = sge::ExecutionPhase::PostUpdate;
 
     desc.contexts.reads.set(sge::GlobalContextIDCounter::get<sge::CameraContext>());
     desc.components.reads.set(sge::ComponentIDCounter::get<sge::CTransform3>());
