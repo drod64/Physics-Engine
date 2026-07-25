@@ -16,8 +16,10 @@ void sge::CameraSystem::update(sge::Registry &registry, sge::CommandBuffer &buff
     auto &camera = registry.getComponent<sge::CCamera3>(activeCamera);
 
     camera.forward = t3.orientation * sm::Vec3(0, 0, 1);
-    camera.up = t3.orientation * sm::Vec3(0, 1, 0);
     camera.right = t3.orientation * sm::Vec3(1, 0, 0);
+    camera.up = t3.orientation * sm::Vec3(0, 1, 0);
+
+    sm::Vec3 target = t3.position + camera.forward;
 }
 
 sge::SystemDescriptor sge::CameraSystem::getSystemDescription()
@@ -26,9 +28,9 @@ sge::SystemDescriptor sge::CameraSystem::getSystemDescription()
 
     desc.phase = sge::ExecutionPhase::PostGameplay;
 
-    desc.contextReads.set(sge::GlobalContextIDCounter::get<sge::CameraContext>());
-    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CTransform3>());
-    desc.componentWrites.set(sge::ComponentIDCounter::get<sge::CCamera3>());
+    desc.contexts.reads.set(sge::GlobalContextIDCounter::get<sge::CameraContext>());
+    desc.components.reads.set(sge::ComponentIDCounter::get<sge::CTransform3>());
+    desc.components.writes.set(sge::ComponentIDCounter::get<sge::CCamera3>());
 
     desc.name = "CameraSystem";
 

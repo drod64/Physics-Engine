@@ -48,13 +48,13 @@ sge::SystemDescriptor sge::AnchorBungeeSystem3::getSystemDescriptor()
     desc.functionPtr = &sge::AnchorBungeeSystem3::update;
 
     // System component reads.
-    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CTransform3>());
-    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CAnchorBungee3>());
+    desc.components.reads.set(sge::ComponentIDCounter::get<sge::CTransform3>());
+    desc.components.reads.set(sge::ComponentIDCounter::get<sge::CAnchorBungee3>());
     
     // No system component writes.
 
     // System component accumulation.
-    desc.componentAccumulates.set(sge::ComponentIDCounter::get<sge::CRigidBody3>());
+    desc.components.accumulates.set(sge::ComponentIDCounter::get<sge::CRigidBody3>());
 
     // No system resource reads.
 

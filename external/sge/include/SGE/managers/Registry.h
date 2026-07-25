@@ -35,6 +35,16 @@ public:
     auto& addComponent(Entity e, T &&component);
 
     /**
+     * Replaces an already existing component's data.
+     * @tparam T the component type
+     * @param e the sge::Entity ID
+     * @param component the component data to replace with
+     * @return a transient reference to the just replaced component.
+     */
+    template <typename T>
+    auto &replaceComponent(Entity e, T &&component);
+
+    /**
      * Removes a component from an existing entity.
      * @tparam T the component type
      * @param e the sge::Entity ID
@@ -226,6 +236,16 @@ inline auto& sge::Registry::addComponent(sge::Entity e, T &&component)
 {
     using CleanType = std::decay_t<T>;
     return this->m_components.addComponent<CleanType>(e, std::forward<T>(component));
+}
+
+template <typename T>
+inline auto& sge::Registry::replaceComponent(sge::Entity e, T &&component)
+{
+    using CleanType = std::decay_t<T>;
+    auto &activeComponent = this->getComponent<CleanType>(e);
+    activeComponent = std::forward<T>(component);
+
+    return activeComponent;
 }
 
 template <typename T>

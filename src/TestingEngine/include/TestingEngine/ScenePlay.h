@@ -2,17 +2,23 @@
 #define SCENE_PLAY_H
 #include <assert.h>
 #include <string>
-#include <SGE/core/ecs/Entity.h>
-#include <SGE/core/Scene.h>
-#include <SGE/core/GameEngine.h>
-#include <TestingEngine/ScenePlaySpawn.h>
-#include <SGE/core/ecs/components/CCamera3.h>
 #include <raylib.h>
+#include <SGE/core/GameEngine.h>
+#include <SGE/core/Scene.h>
+#include <SGE/core/ecs/Entity.h>
+#include <SGE/core/ecs/components/CCamera3.h>
+#include <TestingEngine/components/TagPlayer.h>
+#include <TestingEngine/ScenePlaySpawn.h>
+#include <TestingEngine/components/TagFPSCam.h>
+#include <TestingEngine/components/CCameraControl3.h>
+#include <TestingEngine/commands/CameraFollow3Command.h>
 
 // Testing systems with SystemManager implementation.
+#include <TestingEngine/systems/CameraFollowSystem.h>
+#include <TestingEngine/systems/CameraMovementSystem.h>
 #include <TestingEngine/systems/InputDispatcherSystem.h>
-#include <TestingEngine/systems/TestSpawnSystem.h>
 #include <TestingEngine/systems/PlayerMovementSystem.h>
+#include <TestingEngine/systems/TestSpawnSystem.h>
 
 class ScenePlay : public sge::Scene {
 private:
@@ -38,9 +44,7 @@ private:
      */
     void init();
 
-    /////////////////////
-    //     Systems     //
-    /////////////////////
+    sge::Entity spawnPlayer();
 
     /**
      * Private default constructor

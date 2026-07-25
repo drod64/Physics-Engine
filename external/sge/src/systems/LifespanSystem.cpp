@@ -28,7 +28,7 @@ sge::SystemDescriptor sge::LifespanSystem::getSystemDescription()
     desc.functionPtr = &sge::LifespanSystem::update;
 
     // System component accumulation.
-    desc.componentAccumulates.set(sge::ComponentIDCounter::get<sge::CLifespan>());
+    desc.components.accumulates.set(sge::ComponentIDCounter::get<sge::CLifespan>());
 
     // System name.
     desc.name = "LifespanSystem";

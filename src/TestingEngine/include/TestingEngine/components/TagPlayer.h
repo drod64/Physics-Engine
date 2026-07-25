@@ -1,0 +1,6 @@
+#ifndef TESTING_ENGINE_TAG_PLAYER_H
+#define TESTING_ENGINE_TAG_PLAYER_H
+
+struct TagPlayer {};
+
+#endif // TESTING_ENGINE_TAG_PLAYER_H

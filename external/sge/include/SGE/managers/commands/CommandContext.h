@@ -36,15 +36,15 @@ public:
      */
     Entity getEntity(Entity bufferID) const
     {
-        if (sge::IsFakeEntity(bufferID))
-        {
-            uint32_t fakeID = static_cast<uint32_t>(bufferID);
-            uint32_t tableIndex = fakeID & sge::REAL_ENTITY_MASK;
+        // Return real/valid ID.
+        if (!sge::IsFakeEntity(bufferID)) return bufferID;
 
-            if (tableIndex < this->m_translationTable.size())
-            {
-                return this->m_translationTable[tableIndex];
-            }
+        // Attempt to find real ID.
+        uint32_t tableIndex = sge::GetRawIndex(bufferID);
+        
+        if (tableIndex < this->m_translationTable.size())
+        {
+            return this->m_translationTable[tableIndex];
         }
 
         return sge::Entity::INVALID;

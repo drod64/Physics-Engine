@@ -1,0 +1,6 @@
+#ifndef TESTING_ENGINE_TAG_FPS_CAM_H
+#define TESTING_ENGINE_TAG_FPS_CAM_H
+
+struct TagFPSCam {};
+
+#endif // TESTING_ENGINE_TAG_FPS_CAM_H

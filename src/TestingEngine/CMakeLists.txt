@@ -3,9 +3,11 @@ cmake_minimum_required(VERSION 3.27.3)
 project(TestingEngine)
 
 set(SOURCE_FILES
-    src/systems/TestSpawnSystem.cpp
+    src/systems/CameraFollowSystem.cpp
+    src/systems/CameraMovementSystem.cpp
     src/systems/InputDispatcherSystem.cpp
     src/systems/PlayerMovementSystem.cpp
+    src/systems/TestSpawnSystem.cpp
     src/ScenePlay.cpp
     src/ScenePlaySpawn.cpp
     src/TestingEngine.cpp

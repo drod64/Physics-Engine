@@ -72,9 +72,9 @@ sge::SystemDescriptor TestSpawnSystem::getSystemDescriptor()
     desc.functionPtr = &TestSpawnSystem::update;
 
     // System component reads.
-    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CGravity3>());
-    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CRigidBody3>());
-    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CPlayerController3>());
+    desc.components.reads.set(sge::ComponentIDCounter::get<sge::CGravity3>());
+    desc.components.reads.set(sge::ComponentIDCounter::get<sge::CRigidBody3>());
+    desc.components.reads.set(sge::ComponentIDCounter::get<sge::CPlayerController3>());
 
     // No system component writes.
 

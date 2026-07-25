@@ -4,6 +4,7 @@
 #include <raymath.h>
 #include <rlgl.h>
 #include <SM/MathUtil.h>
+#include <SGE/core/globalContext/contexts/CameraContext.h>
 #include <SGE/managers/View.h>
 #include <SGE/managers/CommandBuffer.h>
 #include <SGE/systems/SystemDescriptor.h>

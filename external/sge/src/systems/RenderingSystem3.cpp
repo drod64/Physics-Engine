@@ -2,41 +2,28 @@
 
 void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer, sm::real dt)
 {
-    // Begin looking for camera data.
-    auto cameraView = registry.viewAll<sge::CTransform3, sge::CCamera3>();
-
-    sge::CTransform3 t3;
-    sge::CCamera3 c3(true, CAMERA_PERSPECTIVE);
-    bool cameraFound = false;
-    
-    for (Entity e : cameraView)
-    {
-        const auto &camera = cameraView.get<sge::CCamera3>(e);
-
-        if (camera.isActive)
-        {
-            t3 = cameraView.get<sge::CTransform3>(e);
-            c3 = camera;
-            cameraFound = true;
-            break;
-        }
-    }
+    sge::Entity activeCamera = registry.getContext<sge::CameraContext>().activeCamera;
 
     // Fallback: If no camera exists in this scene, draw basic text or skip 3D
-    if (!cameraFound)
+    if (activeCamera == sge::Entity::INVALID ||
+        !registry.hasComponent<sge::CTransform3>(activeCamera) ||
+        !registry.hasComponent<sge::CCamera3>(activeCamera))
     {
         DrawText("NO ACTIVE CAMERA FOUND", 10, 10, 20, RED);
-        EndDrawing();
         return;
     }
 
+    const auto &t3 = registry.getComponent<sge::CTransform3>(activeCamera);
+    auto &c3 = registry.getComponent<sge::CCamera3>(activeCamera);
+
+    c3.forward = t3.orientation * sm::Vec3(0, 0, 1);
+    c3.up = t3.orientation * sm::Vec3(0, 1, 0);
     // Set up raylib Camera3D.
-    Camera3D rayCam;
+    Camera3D rayCam = { 0 };
     rayCam.position = Vector3{t3.position.x, t3.position.y, t3.position.z};
-    sm::Vec3 forward = t3.getForward();
-    rayCam.target = Vector3{t3.position.x + forward.x,
-                            t3.position.y + forward.y,
-                            t3.position.z + forward.z};
+    rayCam.target = Vector3{t3.position.x + c3.forward.x,
+                            t3.position.y + c3.forward.y,
+                            t3.position.z + c3.forward.z};
     rayCam.up = Vector3{c3.up.x, c3.up.y, c3.up.z};
     rayCam.fovy = c3.fov;
     rayCam.projection = c3.projection;
@@ -81,10 +68,10 @@ sge::SystemDescriptor sge::RenderingSystem3::getSystemDescription()
     desc.functionPtr = &sge::RenderingSystem3::update;
 
     // System component reads.
-    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CTransform3>());
-    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CCamera3>());
-
+    desc.components.reads.set(sge::ComponentIDCounter::get<sge::CTransform3>());
+    
     // No system component writes.
+    desc.components.writes.set(sge::ComponentIDCounter::get<sge::CCamera3>());
 
     // No system component accumulations.
 

@@ -3,6 +3,7 @@
 #include <vector>
 #include <queue>
 #include <stdexcept>
+#include <SM/Precision.h>
 #include <SGE/systems/SystemDescriptor.h>
 
 namespace sge {

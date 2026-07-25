@@ -56,10 +56,10 @@ sge::SystemDescriptor InputDispatcherSystem::getSystemDescription()
     // No system component reads.
 
     // System component writes.
-    desc.componentWrites.set(sge::ComponentIDCounter::get<sge::CPlayerController3>());
+    desc.components.writes.set(sge::ComponentIDCounter::get<sge::CPlayerController3>());
 
     // System context reads.
-    desc.contextReads.set(sge::GlobalContextIDCounter::get<sge::PlayerInputContext>());
+    desc.contexts.reads.set(sge::GlobalContextIDCounter::get<sge::PlayerInputContext>());
 
     // No system context writes.
     

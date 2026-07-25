@@ -27,7 +27,7 @@ void sge::Scene::init()
     sge::Registry &registry = this->m_world.getRegistry();
     sge::Entity defaultCamera = registry.createEntity();
     sge::CTransform3 camT3 = sge::CTransform3();
-    sge::CCamera3 camCC3 = sge::CCamera3(false, 0);
+    sge::CCamera3 camCC3 = sge::CCamera3(true, 0);
     registry.addComponent(defaultCamera, camT3);
     registry.addComponent(defaultCamera, camCC3);
 

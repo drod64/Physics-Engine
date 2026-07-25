@@ -7,6 +7,7 @@ set(SOURCE_FILES
     src/MathUtil.cpp
     src/Matrix3x3.cpp
     src/Matrix3x4.cpp
+    src/Orientations.cpp
     src/Quaternion.cpp
     src/Transformations.cpp
     src/Vec2.cpp

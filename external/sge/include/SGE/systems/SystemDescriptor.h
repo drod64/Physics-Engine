@@ -4,13 +4,15 @@
 #include <bitset>
 #include <string>
 #include <SM/Precision.h>
-#include <SGE/core/ecs/components/ComponentIDCounter.h>
-#include <SGE/core/globalContext/GlobalContextIDCounter.h>
 
 namespace sge {
     // Forwarded classes.
     class Registry;
     class CommandBuffer;
+
+    constexpr size_t MAX_MASK_SIZE = 100;
+    using Mask = std::bitset<MAX_MASK_SIZE>;
+    using SystemFn = void(*)(Registry &, CommandBuffer &, sm::real);
 
     // 2. Execution phase of systems. Will be used to sort them.
     enum class ExecutionPhase : uint32_t {
@@ -22,19 +24,22 @@ namespace sge {
         PostGameplay,
         PostUpdate          // Rendering.
     };
-    
-    using SystemFn = void(*)(Registry &, CommandBuffer &, sm::real);
 
+    struct AccessMasks {
+        Mask reads;
+        Mask writes;
+        Mask accumulates;
+        Mask requirez;
+        Mask withouts;
+    };
+    
     // 3. Struct that holds the description of a System.
     struct SystemDescriptor {
         ExecutionPhase phase;
         SystemFn functionPtr;
-        ComponentMask componentReads;
-        ComponentMask componentWrites;
-        ComponentMask componentAccumulates;
-        GlobalContextMask contextReads;
-        GlobalContextMask contextWrites;
-        GlobalContextMask contextAccumulates;
+        AccessMasks components;
+        AccessMasks contexts;
+        
         std::string name;
 
         SystemDescriptor()

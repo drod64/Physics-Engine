@@ -28,7 +28,7 @@ sge::SystemDescriptor sge::ClearAccumulatorsSystem3::getSystemDescriptor()
     // No system component reads.
 
     // System component writes.
-    desc.componentWrites.set(sge::ComponentIDCounter::get<sge::CRigidBody3>());
+    desc.components.writes.set(sge::ComponentIDCounter::get<sge::CRigidBody3>());
 
     // No system component accumulation.
 

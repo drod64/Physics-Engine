@@ -78,8 +78,8 @@ sge::SystemDescriptor sge::IntegrationSystem3::getSystemDescriptor()
     // No system component writes.
 
     // System component accumulation.
-    desc.componentAccumulates.set(sge::ComponentIDCounter::get<sge::CRigidBody3>());
-    desc.componentAccumulates.set(sge::ComponentIDCounter::get<sge::CTransform3>());
+    desc.components.accumulates.set(sge::ComponentIDCounter::get<sge::CRigidBody3>());
+    desc.components.accumulates.set(sge::ComponentIDCounter::get<sge::CTransform3>());
 
     // No system resource reads.
 

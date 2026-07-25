@@ -42,12 +42,12 @@ sge::SystemDescriptor PlayerMovementSystem::getSystemDescriptor()
     desc.functionPtr = &PlayerMovementSystem::update;
 
     // System component reads.
-    desc.componentReads.set(sge::ComponentIDCounter::get<sge::CPlayerController3>());
+    desc.components.reads.set(sge::ComponentIDCounter::get<sge::CPlayerController3>());
 
     // No system component writes.
 
     // System component accumulations.
-    desc.componentAccumulates.set(sge::ComponentIDCounter::get<sge::CRigidBody3>());
+    desc.components.accumulates.set(sge::ComponentIDCounter::get<sge::CRigidBody3>());
 
     // No system resources used.
 

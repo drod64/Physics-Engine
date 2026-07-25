@@ -44,12 +44,12 @@ sge::SystemDescriptor sge::PollInputSystem::getSystemDescriptor()
     // No system component writes.
 
     // System context reads.
-    desc.contextReads.set(sge::GlobalContextIDCounter::get<sge::InputMappingContext>());
+    desc.contexts.reads.set(sge::GlobalContextIDCounter::get<sge::InputMappingContext>());
     
     // No system context accumulation.
     
     // System context writes.
-    desc.contextWrites.set(sge::GlobalContextIDCounter::get<sge::PlayerInputContext>());
+    desc.contexts.writes.set(sge::GlobalContextIDCounter::get<sge::PlayerInputContext>());
 
     // System name.
     desc.name = "PollInputSystem";
