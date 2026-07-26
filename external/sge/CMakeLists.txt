@@ -9,7 +9,6 @@ set(SOURCE_FILES
     src/core/ecs/components/CScore.cpp
     src/core/ecs/components/CShape.cpp
     src/core/ecs/components/CTransform.cpp
-    src/core/ecs/components/CTransform3.cpp
 
     # core/globalContexts/contexts
     src/core/globalContexts/contexts/InputMappingContext.cpp

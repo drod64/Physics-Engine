@@ -8,9 +8,9 @@ namespace sge {
         inline constexpr sm::Vec3 GLOBAL_UP         {static_cast<sm::real>(0), static_cast<sm::real>(1), static_cast<sm::real>(0)};
         inline constexpr sm::Vec3 GLOBAL_FORWARD    {static_cast<sm::real>(0), static_cast<sm::real>(0), static_cast<sm::real>(-1)};
         
-        inline constexpr sm::Vec3 GLOBAL_LEFT       {static_cast<sm::real>(-1), static_cast<sm::real>(0), static_cast<sm::real>(0)};
-        inline constexpr sm::Vec3 GLOBAL_DOWN       {static_cast<sm::real>(0), static_cast<sm::real>(-1), static_cast<sm::real>(0)};
-        inline constexpr sm::Vec3 GLOBAL_BACKWARDS  {static_cast<sm::real>(0), static_cast<sm::real>(0), static_cast<sm::real>(1)};
+        inline constexpr sm::Vec3 GLOBAL_LEFT       {-GLOBAL_RIGHT.x,       -GLOBAL_RIGHT.y,    -GLOBAL_RIGHT.z};
+        inline constexpr sm::Vec3 GLOBAL_DOWN       {-GLOBAL_UP.x,          -GLOBAL_UP.y,       -GLOBAL_UP.z};
+        inline constexpr sm::Vec3 GLOBAL_BACKWARDS  {-GLOBAL_FORWARD.x,    -GLOBAL_FORWARD.y, -GLOBAL_FORWARD.z};
 
         inline constexpr sm::real getRightSign()
         {
