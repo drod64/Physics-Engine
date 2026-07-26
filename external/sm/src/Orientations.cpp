@@ -16,6 +16,29 @@ sm::Quaternion sm::fromAxisAngle(const sm::Vec3 &axis, sm::real angle)
     return result;
 }
 
+sm::Quaternion sm::fromEuler(sm::real pitch, sm::real yaw, sm::real roll)
+{
+    sm::real p = pitch * static_cast<sm::real>(0.5);
+    sm::real y = yaw * static_cast<sm::real>(0.5);
+    sm::real r = roll * static_cast<sm::real>(0.5);
+
+    sm::real sinP = real_sin(p);
+    sm::real cosP = real_cos(p);
+    sm::real sinY = real_sin(y);
+    sm::real cosY = real_cos(y);
+    sm::real sinR = real_sin(r);
+    sm::real cosR = real_cos(r);
+
+    Quaternion q;
+
+    q.x = (sinP * cosY * cosR) + (cosP * sinY * sinR);
+    q.y = (cosP * sinY * cosR) - (sinP * cosY * sinR);
+    q.z = (cosP * cosY * sinR) - (sinP * sinY * cosR);
+    q.w = (cosP * cosY * cosR) + (sinP * sinY * sinR);
+
+    return q;
+}
+
 sm::Quaternion sm::lookAt(const sm::Vec3 &source, const sm::Vec3 &target, const sm::Vec3 &globalUp)
 {
     sm::Vec3 forward = target - source;

@@ -13,25 +13,7 @@ void CameraFollowSystem::update(sge::Registry &registry, sge::CommandBuffer &cmd
         // Read CCameraControl3
         const auto &control = registry.getComponent<CCameraControl3>(e);
 
-        // Update camera orientation with raw trigonometry.
-        sm::real cosPitch = real_cos(control.pitch);
-        sm::real sinPitch = real_sin(control.pitch);
-        sm::real cosYaw = real_cos(control.yaw);
-        sm::real sinYaw = real_sin(control.yaw);
-
-        // Calculate clean forward vector.
-        sm::Vec3 cleanForward(
-            cosPitch * sinYaw,
-            sinPitch,
-            cosPitch * cosYaw
-        );
-
-        // Normalize clean forward.
-        cleanForward.normalize();
-
-        // Update camera orientation via lookAt().
-        sm::Vec3 globalUp(0, 1, 0);
-        cameraT3.orientation = sm::lookAt(sm::Vec3(0, 0, 0), cleanForward, globalUp);
+        cameraT3.orientation = sm::fromEuler(control.pitch, control.yaw, static_cast<sm::real>(0));
 
         // Check if entity to follow is valid.
         if (follow.targetEntity == sge::Entity ::INVALID ||
@@ -43,21 +25,26 @@ void CameraFollowSystem::update(sge::Registry &registry, sge::CommandBuffer &cmd
         // First person tracking.
         if (registry.hasComponent<TagFPSCam>(e))
         {
-            cameraT3.position = targetT3.position + follow.offset;
+            sm::Vec3 rotatedOffset = targetT3.orientation * follow.offset;
+            cameraT3.position = targetT3.position + rotatedOffset;
         }
         // Third person tracking.
         else if (registry.hasComponent<TagThirdPersonCam>(e))
         {
             sm::Vec3 targetPos = targetT3.position;
-            sm::Vec3 right = targetT3.orientation * sm::Vec3(1, 0, 0);
-            right.normalize();
 
-            targetPos += (right * follow.offset.x);
-            targetPos.y += follow.offset.y;
-            targetPos -= (cleanForward * follow.offset.z);
+            sm::Vec3 camRight = cameraT3.orientation * sge::Directions3::GLOBAL_RIGHT;
+            sm::Vec3 camUp = cameraT3.orientation * sge::Directions3::GLOBAL_UP;
+            sm::Vec3 camForward = cameraT3.orientation * sge::Directions3::GLOBAL_FORWARD;
+            camRight.normalize();
+            camUp.normalize();
+            camForward.normalize();
+
+            targetPos   +=      (camRight * follow.offset.x);
+            targetPos   +=      (camUp * follow.offset.y);
+            targetPos   +=      (camForward * follow.offset.z);
 
             sm::real alpha = static_cast<sm::real>(1) - real_exp(-follow.smoothSpeed * dt);
-
             cameraT3.position = sm::MathUtil::lerp(cameraT3.position, targetPos, alpha);
         }
     }

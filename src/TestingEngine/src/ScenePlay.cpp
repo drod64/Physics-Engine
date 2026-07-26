@@ -51,7 +51,7 @@ void ScenePlay::init()
     CameraFollow3Command followCommand {
         .cameraEntity = camera,
         .targetEntity = playerID,
-        .offset = {-1.5, 2, 5},
+        .offset = {1.5, 2, -5},
         .smoothSpeed = 50
     };
 

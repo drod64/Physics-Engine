@@ -17,8 +17,8 @@ void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer,
     const auto &cameraT3 = registry.getComponent<sge::CTransform3>(activeCamera);
     auto &cameraC3 = registry.getComponent<sge::CCamera3>(activeCamera);
 
-    cameraC3.forward = cameraT3.orientation * sm::Vec3(0, 0, 1);
-    cameraC3.up = cameraT3.orientation * sm::Vec3(0, 1, 0);
+    cameraC3.forward = cameraT3.orientation * sge::Directions3::GLOBAL_FORWARD;
+    cameraC3.up = cameraT3.orientation * sge::Directions3::GLOBAL_UP;
     // Set up raylib Camera3D.
     Camera3D rayCam = { 0 };
     rayCam.position = Vector3{cameraT3.position.x, cameraT3.position.y, cameraT3.position.z};
@@ -60,7 +60,7 @@ void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer,
         // Local axes.
         DrawLine3D({0, 0, 0}, {5, 0, 0}, GREEN);
         DrawLine3D({0, 0, 0}, {0, 5, 0}, RED);
-        DrawLine3D({0, 0, 0}, {0, 0, 5}, BLUE);
+        DrawLine3D({0, 0, 0}, {0, 0, -5}, BLUE);
 
         rlPopMatrix();
     }

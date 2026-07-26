@@ -17,14 +17,14 @@ void InputDispatcherSystem::update(sge::Registry &registry, sge::CommandBuffer &
         // Reset movement axes to zero
         controller.resetMovementAxes();
 
-        if(playerInput.isActionHeld(ScenePlayAction::MoveForward)) controller.movementAxisZ += 1;
-        if(playerInput.isActionHeld(ScenePlayAction::MoveBackward)) controller.movementAxisZ -= 1;
+        if(playerInput.isActionHeld(ScenePlayAction::MoveForward)) controller.movementAxisZ += sge::Directions3::getForwardSign();
+        if(playerInput.isActionHeld(ScenePlayAction::MoveBackward)) controller.movementAxisZ += sge::Directions3::getBackwardSign();
         
-        if(playerInput.isActionHeld(ScenePlayAction::MoveUp)) controller.movementAxisY += 1;
-        if(playerInput.isActionHeld(ScenePlayAction::MoveDown)) controller.movementAxisY -= 1;
+        if(playerInput.isActionHeld(ScenePlayAction::MoveUp)) controller.movementAxisY += sge::Directions3::getUpSign();
+        if(playerInput.isActionHeld(ScenePlayAction::MoveDown)) controller.movementAxisY += sge::Directions3::getDownSign();
         
-        if(playerInput.isActionHeld(ScenePlayAction::MoveRight)) controller.movementAxisX -= 1;
-        if(playerInput.isActionHeld(ScenePlayAction::MoveLeft)) controller.movementAxisX += 1;
+        if(playerInput.isActionHeld(ScenePlayAction::MoveRight)) controller.movementAxisX += sge::Directions3::getRightSign();
+        if(playerInput.isActionHeld(ScenePlayAction::MoveLeft)) controller.movementAxisX += sge::Directions3::getLeftSign();
 
 
         // Loop through max possible amount of actions.

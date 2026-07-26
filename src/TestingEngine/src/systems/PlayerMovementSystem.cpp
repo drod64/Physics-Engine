@@ -22,8 +22,7 @@ void PlayerMovementSystem::update(sge::Registry &registry, sge::CommandBuffer &,
         auto &playerR3 = playerView.get<sge::CRigidBody3>(e);
 
         // 1. Update "player" orientation.
-        sm::Vec3 globalUp(0, 1, 0);
-        sm::Quaternion playerYawRotation = sm::fromAxisAngle(globalUp, cameraCtrl.yaw);
+        sm::Quaternion playerYawRotation = sm::fromAxisAngle(sge::Directions3::GLOBAL_UP, cameraCtrl.yaw);
         playerT3.orientation = playerYawRotation;
         playerT3.orientation.normalize();
 

@@ -13,13 +13,14 @@ void CameraMovementSystem::update(sge::Registry &registry, sge::CommandBuffer &c
     {
         // Write CCameraControl3
         auto &cameraCtrl = registry.getComponent<CCameraControl3>(e);
-
-        cameraCtrl.yaw -= mouseX;
-        cameraCtrl.pitch -= mouseY;
+                            
+        cameraCtrl.yaw += sge::Directions3::getForwardSign() * mouseX;
+        cameraCtrl.pitch -= sge::Directions3::getUpSign() * mouseY;
 
         // Clamp yaw to be 85 degrees (1.4385 in radians) or less in both extremes.
-        if (cameraCtrl.pitch > static_cast<sm::real>(1.4385)) cameraCtrl.pitch = static_cast<sm::real>(1.4385);
-        if (cameraCtrl.pitch < static_cast<sm::real>(-1.4385)) cameraCtrl.pitch = static_cast<sm::real>(-1.4385);
+        sm::real cap_in_radians = 1.4385;
+        cameraCtrl.pitch = (cameraCtrl.pitch > cap_in_radians) ? cap_in_radians : cameraCtrl.pitch;
+        cameraCtrl.pitch = (cameraCtrl.pitch < -cap_in_radians) ? -cap_in_radians : cameraCtrl.pitch;
     }
 }
 

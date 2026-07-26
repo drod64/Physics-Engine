@@ -8,6 +8,7 @@
 #include <SGE/managers/View.h>
 #include <SGE/managers/CommandBuffer.h>
 #include <SGE/systems/SystemDescriptor.h>
+#include <SGE/physics/Directions3.h>
 
 // Reads.
 #include <SGE/core/ecs/components/CCamera3.h>
