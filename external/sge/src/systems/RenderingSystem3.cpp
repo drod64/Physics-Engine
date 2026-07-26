@@ -2,6 +2,7 @@
 
 void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer, sm::real dt)
 {
+    // 1. Set-up viewport camera.
     sge::Entity activeCamera = registry.getContext<sge::CameraContext>().activeCamera;
 
     // Fallback: If no camera exists in this scene, draw basic text or skip 3D
@@ -31,9 +32,8 @@ void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer,
 
     BeginMode3D(rayCam);
 
-    // Component pool of sge::CTransform3
+    // 2. Draw entities with transforms.
     auto renderView = registry.viewAll<sge::CTransform3>();
-
     for (sge::Entity e : renderView)
     {
         if (e == activeCamera) continue;
@@ -45,14 +45,22 @@ void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer,
         Quaternion raylibQuat = { renderT3.orientation.x, renderT3.orientation.y, renderT3.orientation.z, renderT3.orientation.w };
         Matrix rotationMatrix = QuaternionToMatrix(raylibQuat);
 
+        // World Axes.
+        DrawLine3D({0, 0, 0}, {5, 0, 0}, GREEN);
+        DrawLine3D({0, 0, 0}, {0, 5, 0}, RED);
+        DrawLine3D({0, 0, 0}, {0, 0, 5}, BLUE);
+
         rlPushMatrix();
-        
         rlTranslatef(renderPos.x, renderPos.y, renderPos.z);
         rlMultMatrixf(MatrixToFloat(rotationMatrix));
 
         DrawCube({0, 0, 0}, 2, 2, 2, RED);
-        DrawSphere({0.0f, 1.5f, 0.0f}, 0.3f, BLUE); 
+        DrawSphere({0, 1.5, 0}, 0.3f, BLUE); 
         DrawCubeWires({0,0,0}, 2, 2, 2, BLACK);
+        // Local axes.
+        DrawLine3D({0, 0, 0}, {5, 0, 0}, GREEN);
+        DrawLine3D({0, 0, 0}, {0, 5, 0}, RED);
+        DrawLine3D({0, 0, 0}, {0, 0, 5}, BLUE);
 
         rlPopMatrix();
     }

@@ -48,14 +48,12 @@ void GameEngine::run()
                 _mm_pause();
                 #endif
             }
-            
-            curTime = Clock::now();
-            elapsed = curTime - prevTime;
         }
         
-        prevTime = curTime;
-        raw_dt = elapsed.count();
-
+        auto frameEndTime = Clock::now();
+        raw_dt = std::chrono::duration<sm::real>(frameEndTime - prevTime).count();
+        prevTime = frameEndTime;
+        
         if (raw_dt > 0.10f)
         {
             raw_dt = 0.10f;

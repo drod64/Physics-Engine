@@ -8,9 +8,9 @@ namespace sm {
 
 class Vec3 {
 public:
-    real x;
-    real y;
-    real z;
+    real x = static_cast<real>(0);
+    real y = static_cast<real>(0);
+    real z = static_cast<real>(0);
 
     /**
      * Explicit constructor.
@@ -18,13 +18,23 @@ public:
      * @param y the y-axis position
      * @param z the z-axis position
      */
-    Vec3(real x = 0, real y = 0, real z = 0);
+    constexpr Vec3(real x = static_cast<real>(0), real y = static_cast<real>(0), real z = static_cast<real>(0)) :
+    x(x),
+    y(y),
+    z(z),
+    _pad(0)
+    {}
 
     /**
      * Explicit construtor that accepts array-style declaration.
      * @param list an array-style declaration of size 3
      */
-    Vec3(const std::array<real, 3> &list);
+    constexpr Vec3(const std::array<real, 3> &list) :
+    x(list.at(0)),
+    y(list.at(1)),
+    z(list.at(2)),
+    _pad(0)
+    {}
 
     /**
      * Inverts the contents of the Vector3.
