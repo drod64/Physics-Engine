@@ -72,11 +72,6 @@ sm::Vec3& sm::Vec3::operator %= (const sm::Vec3 &vec)
     return *this;
 }
 
-sm::Vec3 sm::Vec3::operator * (real scalar) const
-{
-    return Vec3(this->x * scalar, this->y * scalar, this->z * scalar);
-}
-
 sm::Vec3 sm::Vec3::operator + (const sm::Vec3 &vec) const
 {
     return Vec3(this->x + vec.x, this->y + vec.y, this->z + vec.z);
@@ -85,13 +80,6 @@ sm::Vec3 sm::Vec3::operator + (const sm::Vec3 &vec) const
 sm::Vec3 sm::Vec3::operator - (const sm::Vec3 &vec) const
 {
     return Vec3(this->x - vec.x, this->y - vec.y, this->z - vec.z);
-}
-
-sm::Vec3 sm::Vec3::operator % (const sm::Vec3 &vec) const
-{
-    return Vec3(this->y * vec.z - this->z * vec.y,
-                this->z * vec.x - this->x * vec.z,
-                this->x * vec.y - this->y * vec.x);
 }
 
 sm::Vec3& sm::Vec3::componentProductUpdate(const sm::Vec3 &vec)
@@ -123,19 +111,7 @@ sm::Vec3 sm::Vec3::normalized(const sm::Vec3 &v)
     return v * invMag;
 }
 
-sm::real sm::Vec3::dot(const sm::Vec3 &v1, const sm::Vec3 &v2)
-{
-    return  v1.x * v2.x +
-            v1.y * v2.y +
-            v1.z * v2.z;
-}
-
 sm::Vec3 sm::Vec3::componentProduct(const sm::Vec3 &v1, const sm::Vec3 &v2)
 {
     return Vec3(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
-}
-
-sm::Vec3 sm::Vec3::crossProduct(const sm::Vec3 &v1, const sm::Vec3 &v2)
-{
-    return v1 % v2;
 }

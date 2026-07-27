@@ -6,7 +6,7 @@
 #include <SGE/managers/View.h>
 #include <SGE/managers/CommandBuffer.h>
 #include <SGE/systems/SystemDescriptor.h>
-#include <SGE/physics/Directions3.h>
+#include <SGE/SGEConfig.h>
 
 // Reads.
 #include <SGE/core/globalContext/contexts/PlayerInputContext.h>

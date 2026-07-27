@@ -1,6 +1,7 @@
 #ifndef SGE_CCAMERA3_H
 #define SGE_CCAMERA3_H
 #include <SM/Vec3.h>
+#include <SGE/SGEConfig.h>
 
 namespace sge {
 /**
@@ -11,9 +12,9 @@ public:
     sm::real fov;
     bool isActive;
     int projection;
-    sm::Vec3 right =   {1, 0, 0};
-    sm::Vec3 up =      {0, 1, 0};
-    sm::Vec3 forward = {0, 0, 1};
+    sm::Vec3 right =   sge::Axes::GLOBAL_RIGHT;
+    sm::Vec3 up =      sge::Axes::GLOBAL_UP;
+    sm::Vec3 forward = sge::Axes::GLOBAL_FORWARD;
 
     /**
      * Parameterized constructor.

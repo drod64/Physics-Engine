@@ -12,11 +12,10 @@ private:
     ActionEvent m_actions[MAX_ACTIONS];
     size_t m_curSize = 0;
 
-
 public:
-    sm::real movementAxisX = 0;
-    sm::real movementAxisY = 0;
-    sm::real movementAxisZ = 0;
+    sm::real forwardDirection = 0;
+    sm::real upDirection = 0;
+    sm::real rightDirection = 0;
 
     /**
      * Retrives the queued action events of the frame.
@@ -57,13 +56,13 @@ public:
     }
 
     /**
-     * Resets the all movement axes to 0.
+     * Resets the all direction axes to 0.
      */
-    void resetMovementAxes()
+    void resetDirectionAxes()
     {
-        this->movementAxisX = 0;
-        this->movementAxisY = 0;
-        this->movementAxisZ = 0;
+        this->forwardDirection = 0;
+        this->upDirection = 0;
+        this->rightDirection = 0;
     }
 };
 }

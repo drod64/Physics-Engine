@@ -22,27 +22,39 @@ void PlayerMovementSystem::update(sge::Registry &registry, sge::CommandBuffer &,
         auto &playerR3 = playerView.get<sge::CRigidBody3>(e);
 
         // 1. Update "player" orientation.
-        sm::Quaternion playerYawRotation = sm::fromAxisAngle(sge::Directions3::GLOBAL_UP, cameraCtrl.yaw);
+        sm::Quaternion playerYawRotation = sm::fromAxisAngle(sge::Axes::GLOBAL_UP, cameraCtrl.yaw);
         playerT3.orientation = playerYawRotation;
         playerT3.orientation.normalize();
 
         // 2. Update player velocity.
         // 4 mph maximum target speed
-        const float maxSpeed = 225.f;
+        const float maxSpeed = 150;
         const float acceleration = 50.0f;
 
-        // Calculate target velocity based on input
-        sm::Vec3 localIntentVelocity(
-            playerCtrl.movementAxisX * maxSpeed,
-            playerCtrl.movementAxisY * maxSpeed,
-            playerCtrl.movementAxisZ * maxSpeed
-        );
+        // Calculate target speed based on player input.
+        sm::Vec3 localIntentVelocity = 
+            (sge::Axes::GLOBAL_FORWARD  * playerCtrl.forwardDirection   * maxSpeed) +
+            (sge::Axes::GLOBAL_UP       * playerCtrl.upDirection        * maxSpeed) +
+            (sge::Axes::GLOBAL_RIGHT    * playerCtrl.rightDirection     * maxSpeed);
         
+        // Retrieve current speed of player.
         sm::Vec3 localPlayerVelocity = playerT3.orientation.transformInverse(playerR3.linearVelocity);
-        // Accumulate local velocity gradually using dt
-        // This pushes current velocity toward the target velocity
-        sm::real maxStep = acceleration * dt;
+    
+        // Calculate current speed axes of player.
+        sm::real curForwardSpeed =      sm::Vec3::dot(localPlayerVelocity, sge::Axes::GLOBAL_FORWARD);
+        sm::real curUpSpeed =           sm::Vec3::dot(localPlayerVelocity, sge::Axes::GLOBAL_UP);
+        sm::real curRightSpeed =        sm::Vec3::dot(localPlayerVelocity, sge::Axes::GLOBAL_RIGHT);
 
+        // Calculate target speed axes of player.
+        sm::real targetForwardSpeed =   sm::Vec3::dot(localIntentVelocity, sge::Axes::GLOBAL_FORWARD); 
+        sm::real targetUpSpeed =        sm::Vec3::dot(localIntentVelocity, sge::Axes::GLOBAL_UP); 
+        sm::real targetRightSpeed =     sm::Vec3::dot(localIntentVelocity, sge::Axes::GLOBAL_RIGHT); 
+
+        // Accumulate local velocity gradually using dt
+        // This pushes current speed toward the target speed
+        sm::real maxStep = acceleration * dt;
+        
+        // Lambda helper function.
         auto moveTowards = [](sm::real cur, sm::real target, sm::real step) {
             if (cur < target) return std::min(target, cur + step);
             if (cur > target) return std::max(target, cur - step);
@@ -50,9 +62,14 @@ void PlayerMovementSystem::update(sge::Registry &registry, sge::CommandBuffer &,
             return target;
         };
 
-        localPlayerVelocity.x = moveTowards(localPlayerVelocity.x, localIntentVelocity.x, maxStep);
-        localPlayerVelocity.y = moveTowards(localPlayerVelocity.y, localIntentVelocity.y, maxStep);
-        localPlayerVelocity.z = moveTowards(localPlayerVelocity.z, localIntentVelocity.z, maxStep);
+        sm::real newForwardSpeed =  moveTowards(curForwardSpeed, targetForwardSpeed, maxStep);
+        sm::real newUpSpeed =       moveTowards(curUpSpeed, targetUpSpeed, maxStep);
+        sm::real newRightSpeed =    moveTowards(curRightSpeed, targetRightSpeed, maxStep);
+
+        localPlayerVelocity =
+        (sge::Axes::GLOBAL_FORWARD * newForwardSpeed) +
+        (sge::Axes::GLOBAL_UP * newUpSpeed) +
+        (sge::Axes::GLOBAL_RIGHT * newRightSpeed);
 
         playerR3.linearVelocity = playerT3.orientation.transform(localPlayerVelocity);
     }

@@ -114,7 +114,7 @@ void ScenePlaySpawn::spawnAnchorSpring(sge::CommandBuffer &cmdBuffer, const sm::
     sge::CTransform3 t3;
     t3.position = {0, -90, 0};
     t3.prevPosition = t3.position;
-    sge::CRigidBody3 r3(5, false);
+    sge::CRigidBody3 r3(60, false);
     sm::real w = 2.0f, h = 2.0f, d = 2.0f;
     // Raw Inertia formulas for a solid box
     sm::real Ix = (1.0f / 12.0f) * r3.getMass() * (h * h + d * d);
@@ -133,8 +133,8 @@ void ScenePlaySpawn::spawnAnchorSpring(sge::CommandBuffer &cmdBuffer, const sm::
     cmdBuffer.addComponentDeferred(e, ls);
     cmdBuffer.addComponentDeferred(e, t3);
     cmdBuffer.addComponentDeferred(e, r3);
-    cmdBuffer.addComponentDeferred(e, sge::CGravity3({0, -9.81, 0}));
-    cmdBuffer.addComponentDeferred(e, sge::CDrag3(0.9, 0.5, 0.9, 0.5));
+    cmdBuffer.addComponentDeferred(e, sge::CGravity3(sge::Axes::GLOBAL_UP * -9.81));
+    cmdBuffer.addComponentDeferred(e, sge::CDrag3(0.02f, 0.005f, 0.05f, 0.005f));
     cmdBuffer.addComponentDeferred(e, springComponent);
 }
 
@@ -165,8 +165,8 @@ void ScenePlaySpawn::spawnAnchorBungee(sge::CommandBuffer &cmdBuffer, const sm::
     bungeeComponent.localAttachPoint = {0, 1.5, 0};
 
     cmdBuffer.addComponentDeferred(e, bungeeComponent);
-    cmdBuffer.addComponentDeferred(e, sge::CGravity3({0, -9.81, 0}));
-    cmdBuffer.addComponentDeferred(e, sge::CDrag3(0.3, 0.05, 0.4, 0.05));
+    cmdBuffer.addComponentDeferred(e, sge::CGravity3(sge::Axes::GLOBAL_UP * -9.81));
+    cmdBuffer.addComponentDeferred(e, sge::CDrag3(0.02f, 0.005f, 0.05f, 0.005f));
     cmdBuffer.addComponentDeferred(e, ls);
     cmdBuffer.addComponentDeferred(e, t3);
     cmdBuffer.addComponentDeferred(e, r3);

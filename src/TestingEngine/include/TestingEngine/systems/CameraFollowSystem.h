@@ -5,7 +5,7 @@
 #include <SGE/managers/View.h>
 #include <SGE/managers/CommandBuffer.h>
 #include <SGE/systems/SystemDescriptor.h>
-#include <SGE/physics/Directions3.h>
+#include <SGE/SGEConfig.h>
 
 // Reads
 #include <TestingEngine/components/CCameraFollow3.h>

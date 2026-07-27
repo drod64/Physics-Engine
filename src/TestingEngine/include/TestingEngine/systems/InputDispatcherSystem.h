@@ -5,8 +5,8 @@
 #include <SGE/managers/CommandBuffer.h>
 #include <SGE/systems/SystemDescriptor.h>
 #include <SGE/core/globalContext/GlobalContextIDCounter.h>
-#include <SGE/physics/Directions3.h>
 #include <TestingEngine/ScenePlayActions.h>
+#include <SGE/SGEConfig.h>
 
 // Writes.
 #include <SGE/core/globalContext/contexts/PlayerInputContext.h>

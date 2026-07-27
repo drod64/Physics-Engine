@@ -75,10 +75,19 @@ public:
     ////////////////////////////////////////////
     //   Non-Modifying Overloaded Operators   //
     ////////////////////////////////////////////
-    Vec3 operator * (const real scalar) const;
+    constexpr Vec3 operator * (const real scalar) const
+    {
+        return Vec3(this->x * scalar, this->y * scalar, this->z * scalar);
+    }
+    
     Vec3 operator + (const Vec3 &vec) const;
     Vec3 operator - (const Vec3 &vec) const;
-    Vec3 operator % (const Vec3 &vec) const;
+    constexpr Vec3 operator % (const Vec3 &vec) const
+    {
+        return Vec3(this->y * vec.z - this->z * vec.y,
+                    this->z * vec.x - this->x * vec.z,
+                    this->x * vec.y - this->y * vec.x);
+    }
 
     /**
      * Updates this Vector3 by multiplying its components with the components of another Vec3.
@@ -112,7 +121,12 @@ public:
      * @param v2 the second Vec3
      * @return a floating-point scalar
      */
-    static real dot(const Vec3& v1, const Vec3 &v2);
+    constexpr static real dot(const Vec3& v1, const Vec3 &v2)
+    {
+        return  v1.x * v2.x +
+                v1.y * v2.y +
+                v1.z * v2.z;
+    }
 
     /**
      * Calculates the component product between two Vec3s.
@@ -128,7 +142,10 @@ public:
      * @param v2 the second Vec3
      * @return a brand new Vec3 representing the vector product between both Vec3s
      */
-    static Vec3 crossProduct(const Vec3 &v1, const Vec3 &v2);
+    constexpr static Vec3 crossProduct(const Vec3 &v1, const Vec3 &v2)
+    {
+        return v1 % v2;
+    }
 
 private:
     float _pad;

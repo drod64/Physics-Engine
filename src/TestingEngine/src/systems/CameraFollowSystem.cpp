@@ -33,9 +33,9 @@ void CameraFollowSystem::update(sge::Registry &registry, sge::CommandBuffer &cmd
         {
             sm::Vec3 targetPos = targetT3.position;
 
-            sm::Vec3 camRight = cameraT3.orientation * sge::Directions3::GLOBAL_RIGHT;
-            sm::Vec3 camUp = cameraT3.orientation * sge::Directions3::GLOBAL_UP;
-            sm::Vec3 camForward = cameraT3.orientation * sge::Directions3::GLOBAL_FORWARD;
+            sm::Vec3 camRight = cameraT3.orientation * sge::Axes::GLOBAL_RIGHT;
+            sm::Vec3 camUp = cameraT3.orientation * sge::Axes::GLOBAL_UP;
+            sm::Vec3 camForward = cameraT3.orientation * sge::Axes::GLOBAL_FORWARD;
             camRight.normalize();
             camUp.normalize();
             camForward.normalize();

@@ -17,8 +17,8 @@ void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer,
     const auto &cameraT3 = registry.getComponent<sge::CTransform3>(activeCamera);
     auto &cameraC3 = registry.getComponent<sge::CCamera3>(activeCamera);
 
-    cameraC3.forward = cameraT3.orientation * sge::Directions3::GLOBAL_FORWARD;
-    cameraC3.up = cameraT3.orientation * sge::Directions3::GLOBAL_UP;
+    cameraC3.forward = cameraT3.orientation * sge::Axes::GLOBAL_FORWARD;
+    cameraC3.up = cameraT3.orientation * sge::Axes::GLOBAL_UP;
     // Set up raylib Camera3D.
     Camera3D rayCam = { 0 };
     rayCam.position = Vector3{cameraT3.position.x, cameraT3.position.y, cameraT3.position.z};
@@ -45,7 +45,7 @@ void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer,
         Quaternion raylibQuat = { renderT3.orientation.x, renderT3.orientation.y, renderT3.orientation.z, renderT3.orientation.w };
         Matrix rotationMatrix = QuaternionToMatrix(raylibQuat);
 
-        // World Axes.
+        // Raw raylib Axes.
         DrawLine3D({0, 0, 0}, {5, 0, 0}, GREEN);
         DrawLine3D({0, 0, 0}, {0, 5, 0}, RED);
         DrawLine3D({0, 0, 0}, {0, 0, 5}, BLUE);
@@ -57,10 +57,16 @@ void sge::RenderingSystem3::update(Registry &registry, CommandBuffer &cmdBuffer,
         DrawCube({0, 0, 0}, 2, 2, 2, RED);
         DrawSphere({0, 1.5, 0}, 0.3f, BLUE); 
         DrawCubeWires({0,0,0}, 2, 2, 2, BLACK);
-        // Local axes.
-        DrawLine3D({0, 0, 0}, {5, 0, 0}, GREEN);
-        DrawLine3D({0, 0, 0}, {0, 5, 0}, RED);
-        DrawLine3D({0, 0, 0}, {0, 0, -5}, BLUE);
+
+        // World aligned axes.
+        sm::real lineLength = 5;
+        sm::Vec3 rightAxis      = sge::Axes::GLOBAL_RIGHT   * lineLength;
+        sm::Vec3 upAxis         = sge::Axes::GLOBAL_UP      * lineLength;
+        sm::Vec3 forwardAxis    = sge::Axes::GLOBAL_FORWARD * lineLength;
+
+        DrawLine3D({0, 0, 0}, {rightAxis.x,     rightAxis.y,    rightAxis.z},GREEN);
+        DrawLine3D({0, 0, 0}, {upAxis.x,        upAxis.y,       upAxis.z}, RED);
+        DrawLine3D({0, 0, 0}, {forwardAxis.x,   forwardAxis.y,  forwardAxis.z}, BLUE);
 
         rlPopMatrix();
     }

@@ -1,8 +1,8 @@
 #ifndef SGE_CTRANSFORM3_H
 #define SGE_CTRANSFORM3_H
-#include <numbers>
 #include <sm/Vec3.h>
 #include <sm/Quaternion.h>
+#include <SGE/SGEConfig.h>
 
 namespace sge {
 /**
@@ -15,10 +15,25 @@ public:
     sm::Quaternion orientation;
     sm::Quaternion prevOrientation;
 
-    /**
-     * @return the forward vector of the CTransform3
-     */
-    sm::Vec3 getForward() const;
+    inline sm::Vec3 forward() const
+    {
+        return orientation * sge::Axes::GLOBAL_FORWARD;
+    }
+
+    inline sm::Vec3 up() const
+    {
+        return orientation * sge::Axes::GLOBAL_UP;
+    }
+
+    inline sm::Vec3 right() const
+    {
+        return orientation * sge::Axes::GLOBAL_RIGHT;
+    }
+
+    inline void translate(const sm::Vec3 &direction, sm::real distance)
+    {
+        position += direction * distance;
+    }
 };
 } // namespace sge
 
