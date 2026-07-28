@@ -29,11 +29,6 @@ public:
     {
         return orientation * sge::Axes::GLOBAL_RIGHT;
     }
-
-    inline void translate(const sm::Vec3 &direction, sm::real distance)
-    {
-        position += direction * distance;
-    }
 };
 } // namespace sge
 
