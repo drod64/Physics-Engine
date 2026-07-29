@@ -125,6 +125,26 @@ public:
      */
     [[nodiscard]] Vec3 transformDirectionInv(const sm::Vec3 &v) const;
 
+    [[nodiscard]] inline sm::Vec3 getForward() const
+    {
+        return sm::Vec3(this->m_matrix[2], this->m_matrix[6], this->m_matrix[10]);
+    }
+
+    [[nodiscard]] inline sm::Vec3 getUp() const
+    {
+        return sm::Vec3(this->m_matrix[1], this->m_matrix[5], this->m_matrix[9]);
+    }
+
+    [[nodiscard]] inline sm::Vec3 getRight() const
+    {
+        return sm::Vec3(this->m_matrix[0], this->m_matrix[4], this->m_matrix[8]);
+    }
+
+    [[nodiscard]] inline sm::Vec3 getPosition() const
+    {
+        return sm::Vec3(this->m_matrix[3], this->m_matrix[7], this->m_matrix[11]);
+    }
+    
     /**
      * Returns a globally translated version of the Matrix3x4.
      * 
