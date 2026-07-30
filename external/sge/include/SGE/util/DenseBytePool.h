@@ -51,6 +51,8 @@ public:
      */
     void copyData(size_t srcIndex, size_t destIndex);
 
+    void swapData(size_t indexA, size_t indexB);
+
     /**
      * @return a non-modifiable type-erased pointer to the raw data in bytes
      */
@@ -110,6 +112,21 @@ inline void sge::DenseBytePool::copyData(size_t srcIndex, size_t destIndex)
         static_cast<unsigned char*>(baseBuffer) + srcOffset,
         this->m_OBJECT_SIZE
     );
+}
+
+inline void sge::DenseBytePool::swapData(size_t indexA, size_t indexB)
+{
+    if (indexA == indexB) return;
+
+    size_t offsetA = indexA * this->m_OBJECT_SIZE;
+    size_t offsetB = indexB * this->m_OBJECT_SIZE;
+
+    unsigned char *baseBuffer = reinterpret_cast<unsigned char*>(this->m_byteStream.data());
+
+    unsigned char *ptrA = baseBuffer + offsetA;
+    unsigned char *ptrB = baseBuffer + offsetB;
+
+    std::swap_ranges(ptrA, ptrA + this->m_OBJECT_SIZE, ptrB);
 }
 
 inline const void* sge::DenseBytePool::getRawData() const

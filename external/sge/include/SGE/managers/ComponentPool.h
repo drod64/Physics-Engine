@@ -130,7 +130,20 @@ public:
      * @return a read-only list of dense component indexes mapped to their entity
      */
     const std::vector<Entity>& getDenseToEntities() const;
-};
+
+    /**
+     * Swaps two entities in the pool.
+     * @param lhs the left entity
+     * @param rhs the right entity
+     */
+    void swapEntities(sge::Entity lhs, sge::Entity rhs);
+
+    /**
+     * Permutes the pool to match the passed in permutation order.
+     * @param permutation the index permutation to follow
+     */
+    void permute(const std::vector<size_t> &permutation);
+}; // class ComponentPool
 } // namespace sge
 
 template <typename T>
@@ -278,6 +291,54 @@ template <typename T>
 inline const std::vector<sge::Entity>& sge::ComponentPool<T>::getDenseToEntities() const
 {
     return this->m_denseToEntity;
+}
+
+template <typename T>
+inline void sge::ComponentPool<T>::swapEntities(sge::Entity lhs, sge::Entity rhs)
+{
+    if (lhs == rhs) return;
+
+    size_t leftIdx = this->m_sparse[static_cast<size_t>(lhs)];
+    size_t rightIdx = this->m_sparse[static_cast<size_t>(rhs)];
+    
+    this->m_densePool.swapData(leftIdx, rightIdx);
+    std::swap(this->m_denseToEntity[leftIdx], this->m_denseToEntity[rightIdx]);
+    
+    this->m_sparse[static_cast<size_t>(lhs)] = rightIdx;
+    this->m_sparse[static_cast<size_t>(rhs)] = leftIdx;
+}
+
+
+template <typename T>
+inline void sge::ComponentPool<T>::permute(const std::vector<size_t> &permutation)
+{
+    if (permutation.size() != this->m_denseToEntity.size()) return;
+
+    std::vector<bool> visited(this->m_denseToEntity.size(), false);
+
+    for (size_t i = 0; i < this->m_denseToEntity.size(); ++i)
+    {
+        if (visited[i]) continue;
+
+        size_t cur = i;
+
+        while (!visited[cur])
+        {
+            visited[cur] = true;
+            size_t next = permutation[cur];
+
+            if (next != cur)
+            {
+                this->m_densePool.swapData(cur, next);
+                std::swap(this->m_denseToEntity[cur], this->m_denseToEntity[next]);
+
+                this->m_sparse[static_cast<size_t>(this->m_denseToEntity[cur])] = next;
+                this->m_sparse[static_cast<size_t>(this->m_denseToEntity[next])] = cur;
+            }
+
+            cur = next;
+        }
+    }
 }
 
 #endif // SGE_COMPONENT_POOL
