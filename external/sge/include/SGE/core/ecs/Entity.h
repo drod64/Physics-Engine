@@ -9,7 +9,10 @@ enum class Entity : uint32_t
 
 // Bit 31 mask (1 in the highest bit, 0 everywhere else)
 static constexpr uint32_t FAKE_ENTITY_FLAG = 0x80000000;
-static constexpr uint32_t REAL_ENTITY_MASK = 0x7FFFFFFF;
+static constexpr uint32_t PURE_INDEX_MASK  = 0x000FFFFF;
+
+static constexpr uint32_t GENERATION_MASK  = 0x7FF00000;
+static constexpr uint32_t GENERATION_SHIFT = 20;
 
 /**
  * Checks if an Entity is fake.
@@ -41,7 +44,12 @@ inline bool IsRealEntity(Entity e)
  */
 inline uint32_t GetRawIndex(Entity e)
 {
-    return static_cast<uint32_t>(e) & REAL_ENTITY_MASK;
+    return static_cast<uint32_t>(e) & PURE_INDEX_MASK;
+}
+
+inline uint32_t GetGeneration(Entity e)
+{
+    return (static_cast<uint32_t>(e) & GENERATION_MASK) >> GENERATION_SHIFT;
 }
 
 } // namespace sge
