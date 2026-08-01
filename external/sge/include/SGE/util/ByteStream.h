@@ -259,9 +259,9 @@ inline void sge::ByteStream::reserve(size_t newCapacity)
     }
 
     // Copy old data to new address
-    if (this->m_data && this->m_writePointer != 0)
+    if (this->m_data && this->m_capacity > 0)
     {
-        std::memcpy(newData, this->m_data, this->m_writePointer);
+        std::memcpy(newData, this->m_data, this->m_capacity);
     }
 
     // Free old data.
