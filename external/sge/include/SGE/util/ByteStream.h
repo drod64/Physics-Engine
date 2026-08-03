@@ -120,6 +120,34 @@ public:
     T read();
 
     /**
+     * Write a trivially copyable struct into the stream.
+     * @param podStruct the struct to write into the stream
+     * @param explicitAlignment bypasses alignof(T) and applies explicit alignment (when greater than 0)
+     */
+    template <typename T>
+    void writeStruct(const T &podStruct, uint64_t explicitAlignment = 0);
+
+    /**
+     * Read a trivially copyable struct from the stream.
+     * @param podStruct the struct to read from the stream
+     * @param explicitAlignment bypasses alignof(T) and applies explicit alignment (when greater than 0)
+     */
+    template <typename T>
+    T readStruct(uint64_t explicitAlignment = 0);
+
+    /**
+     * Write a string to the stream.
+     * @param str the string to write into the stream
+     */
+    void writeString(const std::string &str);
+
+    /**
+     * Read a string from the buffer.
+     * @return the string
+     */
+    std::string readString();
+
+    /**
      * Write a chunk of data to the stream.
      * @param src the source address of the data
      * @param size the size of the data
@@ -441,6 +469,80 @@ inline T sge::ByteStream::read()
     }
 
     return value;
+}
+
+template <typename T>
+inline void sge::ByteStream::writeStruct(const T &podStruct, uint64_t explicitAlignment)
+{
+    static_assert(std::is_trivially_copyable_v<T>,
+        "[ByteStream]::writeStruct(uint64_t explicitAlignment = 0) | Error. Type must be trivially copyable to serialize safely.");
+    
+    uint64_t chosenAlignment = (explicitAlignment > 0) ? explicitAlignment : alignof(T);
+
+    this->alignWriteTo(chosenAlignment);
+
+    this->writeBytes(&podStruct, sizeof(T));
+}
+
+template <typename T>
+inline T sge::ByteStream::readStruct(uint64_t explicitAlignment)
+{
+    static_assert(std::is_trivially_copyable_v<T>,
+        "[ByteStream]::readStruct(uint64_t explicitAlignment = 0) | Error. Type must be trivially copyable to deserialize safely.");
+    
+    if (this->m_hasFailed) return T{};
+
+    uint64_t chosenAlignment = (explicitAlignment > 0) ? explicitAlignment : alignof(T);
+
+    this->alignReadTo(chosenAlignment);
+
+    if (this->m_readPointer + sizeof(T) > this->m_writePointer)
+    {
+        this->m_hasFailed = true;
+        return T{};
+    }
+
+    T result{};
+
+    this->readBytes(&result, sizeof(T));
+
+    return result;
+}
+
+inline void sge::ByteStream::writeString(const std::string &str)
+{
+    uint64_t length = str.size();
+
+    this->write<uint64_t>(length);
+
+    if (length > 0)
+    {
+        this->writeBytes(str.data(), length);
+    }
+}
+
+inline std::string sge::ByteStream::readString()
+{
+    if (this->m_hasFailed) return std::string();
+
+    uint64_t length = this->read<uint64_t>();
+
+    if (this->m_hasFailed) return std::string();
+
+    if (length == 0) return std::string();
+    
+    if (this->m_readPointer + length > this->m_writePointer)
+    {
+        this->m_hasFailed = true;
+        return std::string();
+    }
+
+    std::string str;
+    str.resize(static_cast<size_t>(length));
+
+    this->readBytes(str.data(), length);
+
+    return str;
 }
 
 inline void sge::ByteStream::writeBytes(const void *src, uint64_t size)
