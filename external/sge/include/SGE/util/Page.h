@@ -11,6 +11,7 @@ template <typename T, size_t PAGE_SIZE, typename Allocator>
 class Page {
 private:
     using AllocTraits = std::allocator_traits<Allocator>;
+    static constexpr OBJECT_SIZE = sizeof(T);
 
     T* m_data = nullptr;
     size_t m_count = 0;
@@ -137,7 +138,7 @@ public:
 template <typename T, size_t PAGE_SIZE, typename Allocator>
 inline void sge::Page<T, PAGE_SIZE, Allocator>::moveAssignmentElements(Page&& other)
 {
-    T* newData = AllocTraits::allocate(this->m_alloc, PAGE_SIZE);
+    T* newData = AllocTraits::allocate(this->m_alloc, PAGE_SIZE * OBJECT_SIZE);
 
     size_t constructedCount = 0;
 
@@ -245,7 +246,7 @@ inline void sge::Page<T, PAGE_SIZE, Allocator>::allocate()
     if (this->m_data) return;
 
     // Allocate fresh memory.
-    this->m_data = AllocTraits::allocate(this->m_alloc, PAGE_SIZE);
+    this->m_data = AllocTraits::allocate(this->m_alloc, PAGE_SIZE * OBJECT_SIZE);
 }
 
 template <typename T, size_t PAGE_SIZE, typename Allocator>
